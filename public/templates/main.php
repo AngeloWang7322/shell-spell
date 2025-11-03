@@ -1,5 +1,5 @@
 <?php
-$title = "shell spell";
+$title = "Shell spell";
 $extraCss = 'main.css';
 ?>
 

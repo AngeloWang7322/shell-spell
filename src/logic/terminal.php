@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 $input = trim($_POST["command"] ?? "");
-$response = "";
+$response = "unknown spell";
 
-echo "<br>terminal.php ack";
+echo "<br>terminal.php ack<br>" . $input;
+echo json_encode($_SESSION["map"]);
 try {
-    switch ($input) {
+    $inputArray = explode(" ", $input);
+    switch ($inputArray[0]) {
         case "cd": {
             echo "<br>cd ack";
             $pathArray = explode("/", trim(substr($input, 3) ?? ""));
@@ -18,17 +20,26 @@ try {
                         break;
                     }
                     default: {
-                        if (in_array($path, $this->doors)) {
-                            $_SESSION["currentDirectory"][] = $path;
-                        } else {
-                            return "this path does not exist";
-                        }
+                        getCurRoom();
+                        // if (in_array($path, $this->doors)) {
+                        //     $_SESSION["currentDirectory"][] = $path;
+                        // } else {
+                        //     return "this path does not exist";
+                        // }
                     }
                 }
             }
         }
-        case "mv": {
-
+        case "mkdir": {
+            $tempRoom =& getCurRoom();
+            $tempRoom["doors"][] = [new Room($inputArray[2], $tempRoom)];
+        }
+        case "ls": {
+            $tempRoom =& getCurRoom();  
+            $response = implode($tempRoom->doors, ", -");
+        }
+        case "pwd": {
+            $response = "/" . $_SESSION["currentDirectory"];
         }
         default: {
 
@@ -44,10 +55,11 @@ $_SESSION["history"][] =
         "response" => $response
     ];
 function getRoomByPath($path)
-{
+{   
     $tempRoom =& $_SESSION["map"];
     $pathArray = explode("/", trim($path ?? ""));
     foreach ($pathArray as $path) {
+        echo $path;
         if (in_array($path, $tempRoom["doors"])) {
             $tempRoom =& $tempRoom["doors"][$path];
         }
@@ -59,7 +71,7 @@ function getRoomByPath($path)
             switch ($path) {
                 case ".": {
                     if (count($_SESSION["currentDirectory"]) != 1) {
-                        $tempRoom =& tempRoom -> parentRoom;
+                        // $tempRoom =& tempRoom -> parentRoom;
                     }
                     break;
                 }
@@ -77,8 +89,12 @@ function getRoomByPath($path)
     }
 }
 
-function getCurRoom()
-{
-    return getRoomByPath($_SESSION["currentDirectory"]);
-}
-?>
+// function getCurRoom()
+// {
+//     public static $curRoom = "";
+// if (empty($curRoom)){
+//     $curRoom =& $_SESSION["map"];
+// }
+//     return getRoomByPath($_SESSION["currentDirectory"]);
+// }
+// ?>
