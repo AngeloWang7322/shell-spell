@@ -3,7 +3,7 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/model/map.php';
 session_start();
-
+//test
 $_SESSION["currentDirectory"] = "hall";
 $_SESSION["map"] = [new Room("hall", "root")];
 
