@@ -1,23 +1,23 @@
 <?php
 declare(strict_types=1);
-session_start();
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../src/model/map.php';
+session_start();
 
-$_SESSION["currentDirectory"] ??= "hall";
+$_SESSION["currentDirectory"] = "hall";
+$_SESSION["map"] = [new Room("hall", "root")];
 
-use App\Controller\GameController;
-use FastRoute\RouteCollector;
 
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->safeLoad();
 
-if($_SERVER["REQUEST_METHOD"] == "POST")
-{
-    switch($_POST["action"])
-    {
-        case "enterCommand":
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    switch ($_POST["action"]) {
+        case "enterCommand": {
             require __DIR__ . "/../src/logic/terminal.php";
             break;
+        }
     }
 }
 
@@ -31,12 +31,9 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = trim($path, '/');
 ?>
 <?php
-if (isset($routes[$path])) 
-{
+if (isset($routes[$path])) {
     require __DIR__ . '/' . $routes[$path];
-}
-else
-{
+} else {
     require __DIR__ . '/' . $routes['notfound'];
 }
 

@@ -9,8 +9,13 @@ $extraCss = 'main.css';
 
         <div class="history-container">
             <?php
+            echo "count" . count($_SESSION["history"]);
             for ($i = 0; $i < count($_SESSION["history"]); $i++)
-                echo "<p class='prev-command'>" . $_SESSION["history"][$i] . "</p>";
+                echo "<p class='prev-command'>" 
+            . $_SESSION["history"][$i]["directory"] . ">" 
+            . $_SESSION["history"][$i]["command"] . "<br>"
+            . $_SESSION["history"][$i]["response"]
+            . "</p>";
             ?>
         </div>
         <div class="input-line">
