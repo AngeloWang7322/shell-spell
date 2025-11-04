@@ -4,12 +4,14 @@ require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/model/map.php';
 session_start();
 
-
+// session_unset();
 if(!isset($_SESSION["history"])){
     $_SESSION["history"] = [];
     $_SESSION["currentDirectory"] = "hall";
-    $_SESSION["map"] = new Room("hall", "root");
-    $_SESSION["map"]["doors"][] = [new Room("Library", "hall")];
+    $_SESSION["map"] = new Room("hall", null);
+    $_SESSION["map"] -> doors[] = new Room("Library",$_SESSION["map"]);
+    $_SESSION["map"] -> doors[] = new Room("Armory", $_SESSION["map"]);
+    $_SESSION["curRoom"] =& $_SESSION["map"];
 }
 
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));

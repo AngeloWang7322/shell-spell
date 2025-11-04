@@ -13,7 +13,9 @@ class Room
         $this->name = $name;
         $this->parentRoom = $parentRoom;
     }
-
+    function getName(){
+        return $this -> name;
+    }
     function _cd($newDir)
     {
         $pathArray = explode("/", $newDir);

@@ -4,7 +4,6 @@ $extraCss = 'main.css';
 ?>
 
 <div class="main-wrapper">
-    main
     <div class="spellbook-wrapper">
 
         <div class="history-container">
