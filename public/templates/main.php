@@ -19,8 +19,8 @@ $extraCss = 'main.css';
         <div class="input-line">
             <?php 
             $type = gettype($_SESSION["curRoom"] -> path);
-            // $tempPathString = implode("/", $_SESSION["curRoom"] -> path);
-                echo $type . ">";
+            $tempPathString = implode("/", $_SESSION["curRoom"] -> path);
+                echo $tempPathString . ">";
             ?>
             <form class="command-input" method="post">
                 <input type="hidden" value="enterCommand" name="action">

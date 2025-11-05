@@ -14,18 +14,23 @@ try {
             $pathArray = explode("/", $inputArray[1]);
             $index = 0;
             $pathLength = sizeof($pathArray);
-
-            echo "imploded path: " . implode("/", $pathArray) . "<br>";
-
+            echo json_encode($pathArray);
             switch ($pathArray[0]) {
                 case "hall": {
                     moveToPath($inputArray);
                     break;
                 }
                 case '.': {
+                    echo "in . path!<br>";
                     while ($pathArray[$index] == '.' && $index < $pathLength) {
                         $index++;
+                        echo "index: $index <br>";
+
                     }
+                    echo "calling moveToPath with " . json_encode(array_slice($_SESSION["curRoom"]->path, 0, $pathLength - $index + 1)) . "<br>";
+                    moveToPath(array_slice($_SESSION["curRoom"]->path, 0, $pathLength - $index + 1));
+                    // moveToPath(array_intersect(array_slice($pathArray, ($pathLength - $index)), $_SESSION["map"] -> path));
+                    break;
                 }
                 default: {
                     $tempRoom =& $_SESSION["curRoom"];
@@ -46,7 +51,7 @@ try {
                         }
                     }
                     $_SESSION["curRoom"] =& $tempRoom;
-                    
+
                 }
             }
             $reponse = "moved?";
@@ -74,6 +79,11 @@ try {
             $response = implode("/", $_SESSION["curRoom"]->path);
             break;
         }
+        case "rm": {
+            if ("") {
+
+            }
+        }
     }
 } catch (Exception $e) {
     $response = $e->getMessage();
@@ -86,12 +96,12 @@ $_SESSION["history"][] =
     ];
 function moveToPath($path)
 {
-    foreach ($path as $door) {
+    $tempRoomRef =& $_SESSION["map"];
+    for ($i = 1; $i < count($path); $i++) {
         //if sollte nie false returnen, kann spaeter entfernt werden
-        $tempRoomRef =& $_SESSION["map"];
-        if (key_exists($door, $tempRoomRef->doors)) {
-            $tempRoomRef =& $tempRoomRef->doors[$door];
-            echo "<br>found door: $door";
+        if (key_exists($path[$i], $tempRoomRef->doors)) {
+            $tempRoomRef =& $tempRoomRef->doors[$path[$i]];
+            echo "<br>found door: " . $path[$i];
         } else {
             echo "invalid path provided";
             throw (new Exception("unexpected: invalid path"));
@@ -100,5 +110,4 @@ function moveToPath($path)
     $_SESSION["curRoom"] =& $tempRoomRef;
     echo "moveToPath() curRoom reference or object: " . json_encode($_SESSION["curRoom"]);
 }
-
 ?>
