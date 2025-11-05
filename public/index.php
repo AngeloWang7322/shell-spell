@@ -7,7 +7,6 @@ session_start();
 // session_unset();
 if(!isset($_SESSION["history"])){
     $_SESSION["history"] = [];
-    $_SESSION["currentDirectory"] = "hall";
     $_SESSION["map"] = new Room("hall");
     $_SESSION["curRoom"] =& $_SESSION["map"];
     $_SESSION["map"] -> path = ["hall"];

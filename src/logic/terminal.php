@@ -1,8 +1,10 @@
 <?php
 
 declare(strict_types=1);
+
 $input = trim($_POST["command"] ?? "");
 $response = "unknown spell";
+$inputDirectory = implode("/", $_SESSION["curRoom"]->path);
 
 echo "map:<br>" . json_encode($_SESSION["map"]) . "<br>";
 echo "cur: <br>" . json_encode($_SESSION["curRoom"]) . "<br>";
@@ -20,27 +22,24 @@ try {
                     moveToPath($inputArray);
                     break;
                 }
-                case '.': {
+                case '..': {
                     echo "in . path!<br>";
-                    while ($pathArray[$index] == '.' && $index < $pathLength) {
+                    while ($pathArray[$index] == '..' && $index < $pathLength) {
                         $index++;
                         echo "index: $index <br>";
-
                     }
-                    echo "calling moveToPath with " . json_encode(array_slice($_SESSION["curRoom"]->path, 0, $pathLength - $index + 1)) . "<br>";
-                    moveToPath(array_slice($_SESSION["curRoom"]->path, 0, $pathLength - $index + 1));
-                    // moveToPath(array_intersect(array_slice($pathArray, ($pathLength - $index)), $_SESSION["map"] -> path));
-                    break;
+                    echo "calling moveToPath with " . json_encode(array_slice($_SESSION["curRoom"]->path, 0, count($_SESSION["curRoom"]->path) - $index)) . "<br>";
+                    moveToPath(array_slice($_SESSION["curRoom"]->path, 0, count($_SESSION["curRoom"]->path) - $index));
                 }
                 default: {
                     $tempRoom =& $_SESSION["curRoom"];
                     for ($i = $index; $i < $pathLength; $i++) {
                         echo "comparing if $pathArray[$i] exists in " . json_encode($_SESSION["curRoom"]->doors);
                         $pathFound = false;
-                        foreach ($_SESSION["curRoom"]->doors as $door) {
-                            echo "<br>comparing $pathArray[$i] to " . $door->name . "<br>";
-                            if ($pathArray[$i] == $door->name) {
-                                $tempRoom =& $door;
+                        for ($j = 0; $j < count($tempRoom -> doors); $j++) {
+                            echo "<br>comparing $pathArray[$i] to " . $tempRoom -> doors[$j] -> name . "<br>";
+                            if ($pathArray[$i] == $tempRoom -> doors[$j] -> name) {
+                                $tempRoom =& $tempRoom -> doors[$j];
                                 echo "found!!!";
                                 $pathFound = true;
                                 break;
@@ -54,7 +53,7 @@ try {
 
                 }
             }
-            $reponse = "moved?";
+            $response = "moved";
             break;
         }
         case "mkdir": {
@@ -90,24 +89,26 @@ try {
 }
 $_SESSION["history"][] =
     [
-        "directory" => $_SESSION["currentDirectory"],
+        "directory" => $inputDirectory,
         "command" => $input,
         "response" => $response
     ];
 function moveToPath($path)
 {
+    echo "count: " . count($path);
     $tempRoomRef =& $_SESSION["map"];
     for ($i = 1; $i < count($path); $i++) {
-        //if sollte nie false returnen, kann spaeter entfernt werden
-        if (key_exists($path[$i], $tempRoomRef->doors)) {
-            $tempRoomRef =& $tempRoomRef->doors[$path[$i]];
-            echo "<br>found door: " . $path[$i];
-        } else {
-            echo "invalid path provided";
-            throw (new Exception("unexpected: invalid path"));
+        echo "<br>i: $i, path: $path[$i]";
+        for ($j = 0; $j <  count($tempRoomRef -> doors); $j++) {
+            echo "<br>comparing $path[$i] to " . $tempRoomRef-> doors[$j] -> name . "<br>";
+            if ($path[$i] == $tempRoomRef->doors[$j] -> name) {
+                $tempRoomRef =& $tempRoomRef -> doors[$j];
+                echo "found!!!";
+                continue 2;
+            }
         }
     }
+    echo "<br>curRoom changing";
     $_SESSION["curRoom"] =& $tempRoomRef;
-    echo "moveToPath() curRoom reference or object: " . json_encode($_SESSION["curRoom"]);
 }
 ?>
