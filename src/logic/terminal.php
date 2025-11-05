@@ -1,21 +1,33 @@
 <?php
-
 declare(strict_types=1);
 
 $input = trim($_POST["command"] ?? "");
 $response = "";
 $inputDirectory = implode("/", $_SESSION["curRoom"]->path);
 
+$spellCosts = [
+    "cd" => 1,
+    "ls" => 1,
+    "mkdir" => 5,
+    "pwd" => 0,
+    "rm" => 5,
+];
+
 echo "map:<br>" . json_encode($_SESSION["map"]) . "<br>";
-echo "cur: <br>" . json_encode($_SESSION["curRoom"]) . "<br>";
+echo "curRoom: <br>" . json_encode($_SESSION["curRoom"]) . "<br>";
+echo "<br><br> mana: " . $_SESSION["user"] -> curMana;
 try {
     $inputArray = explode(" ", $input);
     $index = 0;
 
     echo "<br>" . json_encode($inputArray) . "<br>";
     switch ($inputArray[0]) {
-        case "cd": {    
+        case "cd": {
+            if (count($inputArray) <= 1) {
+                throw new Exception("no path provided");
+            }
             $pathArray = explode("/", $inputArray[1]);
+            $_SESSION["user"]->curMana -= (count($pathArray) - 1) * 2;
             $_SESSION["curRoom"] =& getRoom($pathArray);
             break;
         }
@@ -41,16 +53,20 @@ try {
         }
         case "rm": {
             $removeRoomIndex = hasDoor($_SESSION["curRoom"], $inputArray[1]);
-            if ($removeRoomIndex >= 0)
-            {
-                unset($_SESSION["curRoom"] -> doors[$removeRoomIndex]);
-            }
-            else{
+            if ($removeRoomIndex >= 0) {
+                unset($_SESSION["curRoom"]->doors[$removeRoomIndex]);
+            } else {
                 throw new Exception("couldn't find '$inputArray[1]'");
             }
+            break;
+        }
+        default:{
+            throw new Exception("unknown spell");
         }
     }
 } catch (Exception $e) {
+    editMana(amount: 10);
+    echo "mana edited: ";
     $response = $e->getMessage();
 }
 $_SESSION["history"][] =
@@ -94,10 +110,9 @@ function &getRoomAbsolute($path): Room
     for ($i = 1; $i < count($path); $i++) {
         $roomIndex = hasDoor($tempRoom, $path[$i]);
         if ($roomIndex >= 0) {
-            $tempRoom =& $tempRoom ->doors[$roomIndex];
-        }
-        else{
-            throw(new Exception("path not found"));
+            $tempRoom =& $tempRoom->doors[$roomIndex];
+        } else {
+            throw (new Exception("path not found"));
         }
     }
     return $tempRoom;
@@ -126,5 +141,9 @@ function hasDoor($room, $name)
         }
     }
     return -1;
+}
+function editMana($amount)
+{
+    $_SESSION["user"] -> curMana -= $amount;
 }
 ?>
