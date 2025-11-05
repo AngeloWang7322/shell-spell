@@ -8,7 +8,6 @@ $extraCss = 'main.css';
 
         <div class="history-container">
             <?php
-            echo "count" . count($_SESSION["history"]);
             for ($i = 0; $i < count($_SESSION["history"]); $i++)
                 echo "<p class='prev-command'>" 
             . $_SESSION["history"][$i]["directory"] . ">" 
@@ -19,7 +18,9 @@ $extraCss = 'main.css';
         </div>
         <div class="input-line">
             <?php 
-                echo $_SESSION["currentDirectory"] . ">";
+            $type = gettype($_SESSION["curRoom"] -> path);
+            // $tempPathString = implode("/", $_SESSION["curRoom"] -> path);
+                echo $type . ">";
             ?>
             <form class="command-input" method="post">
                 <input type="hidden" value="enterCommand" name="action">

@@ -1,24 +1,25 @@
 <?php
 declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../src/model/map.php';
+require __DIR__ . '/../src/model/room.php';
 session_start();
 
 // session_unset();
 if(!isset($_SESSION["history"])){
     $_SESSION["history"] = [];
     $_SESSION["currentDirectory"] = "hall";
-    $_SESSION["map"] = new Room("hall", null);
-    $_SESSION["map"] -> doors[] = new Room("Library",$_SESSION["map"]);
-    $_SESSION["map"] -> doors[] = new Room("Armory", $_SESSION["map"]);
+    $_SESSION["map"] = new Room("hall");
     $_SESSION["curRoom"] =& $_SESSION["map"];
+    $_SESSION["map"] -> path = ["hall"];
+    $_SESSION["map"] -> doors[] = new Room("Library");
+    $_SESSION["map"] -> doors[] = new Room("Armory");
+    echo "<br>curRoom: " . json_encode($_SESSION["curRoom"]) . "<br>";
 }
 
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->safeLoad();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
     switch ($_POST["action"]) {
         case "enterCommand": {
             require __DIR__ . "/../src/logic/terminal.php";
