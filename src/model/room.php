@@ -4,14 +4,11 @@ class Room
     public $name;
     public $path;
     public array $doors = [];
-    public array $elements = [];
-
-
+    public array $items = [];
 
     function __construct($name)
     {
         $this->name = $name;
-        // array_merge($this->path, $_SESSION["curRoom"] -> path);
         $this->path = $_SESSION["curRoom"] -> path ?? ["root"];
         array_push($this->path, $name);
     }
@@ -44,8 +41,6 @@ class Room
             $tempRoom =& $tempRoom["doors"][$seg];
         }
         $tempRoom["doors"][] = [$newDoor];
-    }
-
-  
+    }  
 }
 ?>

@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/model/room.php';
 require __DIR__ . '/../src/model/user.php';
+require __DIR__ . '/../src/model/item.php';
 session_start();
 // $x = 1;
 // $y =& $x;
@@ -12,15 +14,20 @@ session_start();
 // echo "x: $x <br>y: $y<br>z: $z <br>";
 
 // session_unset();
-if(!isset($_SESSION["history"])){
+if (!isset($_SESSION["history"])) {
     $_SESSION["history"] = [];
     $_SESSION["map"] = new Room("hall");
-    $_SESSION["curRoom"] =& $_SESSION["map"];
-    $_SESSION["map"] -> path = ["hall"];
-    $_SESSION["map"] -> doors[] = new Room("library");
-    $_SESSION["map"] -> doors[] = new Room("armory");
+    $_SESSION["curRoom"] = &$_SESSION["map"];
+    $_SESSION["map"]->path = ["hall"];
+    $_SESSION["map"]->doors[] = new Room("library");
+    $_SESSION["map"]->doors[] = new Room("armory");
+    $_SESSION["map"]->items[] = new Item(
+        "manaPotion",
+        ItemType::SPELL,
+        ActionType::MANA,
+        Rarity::COMMON
+    );
     $_SESSION["user"] = new User();
-    echo "<br>curRoom: " . json_encode($_SESSION["curRoom"]) . "<br>";
 }
 
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
@@ -29,9 +36,9 @@ $dotenv->safeLoad();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     switch ($_POST["action"]) {
         case "enterCommand": {
-            require __DIR__ . "/../src/logic/terminal.php";
-            break;
-        }
+                require __DIR__ . "/../src/logic/terminal.php";
+                break;
+            }
     }
 }
 
