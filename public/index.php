@@ -6,13 +6,8 @@ require __DIR__ . '/../src/model/room.php';
 require __DIR__ . '/../src/model/user.php';
 require __DIR__ . '/../src/model/item.php';
 require __DIR__ . '/../src/model/scroll.php';
-session_start();
-// $x = 1;
-// $y =& $x;
-// $z =& $y;
-// $z++;
 
-// echo "x: $x <br>y: $y<br>z: $z <br>";
+session_start();
 
 // session_unset();     
 if (!isset($_SESSION["history"])) {

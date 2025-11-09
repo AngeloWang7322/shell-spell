@@ -5,7 +5,9 @@ declare(strict_types=1);
 $input = trim($_POST["command"] ?? "");
 $response = "";
 $inputDirectory = implode("/", $_SESSION["curRoom"]->path);
+$inputArray = explode(" ", $input);
 
+$inputArgs = organizeInput();
 $spellCosts = [
     "cd" => 1,
     "ls" => 1,
@@ -18,61 +20,61 @@ $spellCosts = [
 // echo "curRoom: <br>" . json_encode($_SESSION["curRoom"]) . "<br>";
 // echo "<br><br> mana: " . $_SESSION["user"]->curMana;
 try {
-    $inputArray = explode(" ", $input);
     $index = 0;
 
     echo "<br>" . json_encode($inputArray) . "<br>";
-    switch ($inputArray[0]) {
+    switch ($_[0]) {
         case "cd": {
-            if (count($inputArray) <= 1) {
-                throw new Exception("no path provided");
-            }
-            $pathArray = explode("/", $inputArray[1]);
-            $_SESSION["user"]->curMana -= (count($pathArray) - 1) * 2;
-            $_SESSION["curRoom"] = &getRoom($pathArray);
-            break;
-        }
-        case "mkdir": {
-            if (sizeof($inputArray) <= 1 && trim($inputArray[1] ?? "") == "") {
-                $response = "no directory name provided";
+                if (count($inputArgs["path"]) == null) {
+                    throw new Exception("no path provided");
+                }
+                $_SESSION["user"]->curMana -= (count($inputArgs["path"]) - 1) * 2;
+                $_SESSION["curRoom"] = &getRoom($inputArgs["path"]);
                 break;
             }
-            array_push($_SESSION["curRoom"]->doors, new Room($inputArray[1]));
-            break;
-        }
+        case "mkdir": {
+                if ($inputArgs["path"] == null) {
+                    throw new Exception ("no directory name provided");
+                    break;
+                }
+                else if ($inputArgs[""])
+                $tempRoom =& getRoom("path");
+                array_push($_SESSION["curRoom"]->doors, new Room($inputArray[1]));
+                break;
+            }
         case "ls": {
-            $lsArray = [];
-            foreach ($_SESSION["curRoom"]->doors as $door) {
-                $lsArray[] = $door->name;
+                $lsArray = [];
+                foreach ($_SESSION["curRoom"]->doors as $door) {
+                    $lsArray[] = $door->name;
+                }
+                foreach ($_SESSION["curRoom"]->items as $element) {
+                    $lsArray[] = $element->name;
+                }
+                $response = "- " . implode(", ", $lsArray);
+                break;
             }
-            foreach ($_SESSION["curRoom"]->items as $element) {
-                $lsArray[] = $element->name;
-            }
-            $response = "- " . implode(", ", $lsArray);
-            break;
-        }
         case "pwd": {
-            $response = implode("/", $_SESSION["curRoom"]->path);
-            break;
-        }
+                $response = implode("/", $_SESSION["curRoom"]->path);
+                break;
+            }
         case "rm": {
-            echo "<br><br>aa: ". json_encode( explode( "/", $inputArray[1]));
-            deleteRoom( explode( "/", $inputArray[1]));
-            break;
-        }
-        case "type": {
-            $item = &getItem(null, $inputArray[1]);
-            echo "found item:" . json_encode($item);
-            $_SESSION["openedScroll"]->header = $item->name;
-            $_SESSION["openedScroll"]->content = $item->content;
-            $_SESSION["openedScroll"]->isOpen = true;
-            break;
-        }
+                echo "<br><br>aa: " . json_encode(explode("/", $inputArray[1]));
+                deleteRoom(explode("/", $inputArray[1]));
+                break;
+            }
+        case "cat": {
+                $item = &getItem(null, $inputArray[1]);
+                echo "found item:" . json_encode($item);
+                $_SESSION["openedScroll"]->header = $item->name;
+                $_SESSION["openedScroll"]->content = $item->content;
+                $_SESSION["openedScroll"]->isOpen = true;
+                break;
+            }
         default: {
-            $item = &getItem(null, $inputArray[0]);
-            $item->executeAction();
-            $fileType = stristr($inputArray[0], '.');
-        }
+                $item = &getItem(null, $inputArray[0]);
+                $item->executeAction();
+                $fileType = stristr($inputArray[0], '.');
+            }
     }
 } catch (Exception $e) {
     editMana(amount: 10);
@@ -84,7 +86,23 @@ $_SESSION["history"][] =
         "command" => $input,
         "response" => $response
     ];
-
+function organizeInput()
+{
+    $inputArray = explode(" ", $_SESSION["command"]);
+    $inputArgs = [
+        "command" => $inputArray[0],
+        "path" => [],
+        "flags" => [],
+    ];
+    for ($i = 1; $i < count($inputArray); $i++) {
+        if ($inputArray[$i][0] == '-') {
+            $inputArgs["flags"][] = $inputArray[$i];
+        } else {
+            $inputArgs["path"] = explode("/", $inputArray[$i]);
+        }
+    }
+    return $inputArgs;
+}
 function &getRoom($path, $tempRoom = null): Room
 {
     $index = 0;
@@ -93,23 +111,23 @@ function &getRoom($path, $tempRoom = null): Room
     }
     switch ($path[0]) {
         case "hall": {
-            return getRoomAbsolute($path);
-        }
+                return getRoomAbsolute($path);
+            }
         case '..': {
-            if ($_SESSION["curRoom"]->name == "hall") {
-                throw new Exception("invalid path");
+                if ($_SESSION["curRoom"]->name == "hall") {
+                    throw new Exception("invalid path");
+                }
+                while ($path[$index] == '..' && $index < $path) {
+                    $index++;
+                }
+                $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 0, count($tempRoom->path) - $index));
             }
-            while ($path[$index] == '..' && $index < $path) {
-                $index++;
-            }
-            $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 0, count($tempRoom->path) - $index));
-        }
         default: {
-            if ($index == $path) {
-                return $tempRoom;
+                if ($index == $path) {
+                    return $tempRoom;
+                }
+                return getRoomRelative(array_slice($path, $index), $tempRoom);
             }
-            return getRoomRelative(array_slice($path, $index), $tempRoom);
-        }
     }
 }
 function &getRoomAbsolute($path): Room
@@ -162,7 +180,7 @@ function hasElementWithName($array, $name)
 {
     echo "<br> name: $name<br>";
     for ($i = 0; $i < count($array); $i++) {
-        echo "comparing $name with " . $array[$i]->name ."<br>";
+        echo "comparing $name with " . $array[$i]->name . "<br>";
         if ($name == $array[$i]->name) {
             return $i;
         }
@@ -173,13 +191,12 @@ function deleteRoom($path)
 {
     echo "arg: " . $path;
     if (count($path) > 1) {
-        $tempRoom =& getRoom(array_splice($path, 0, count($path) -1));
-    }
-    else{
-        $tempRoom =& $_SESSION["curRoom"];
+        $tempRoom = &getRoom(array_splice($path, 0, count($path) - 1));
+    } else {
+        $tempRoom = &$_SESSION["curRoom"];
     }
     echo "<br>tempRoom: " . json_encode($tempRoom);
-    $removeRoomIndex = hasElementWithName($tempRoom -> doors, $path[count($path)- 1]);
+    $removeRoomIndex = hasElementWithName($tempRoom->doors, $path[count($path) - 1]);
     echo json_encode($removeRoomIndex);
     if ($removeRoomIndex >= 0) {
         unset($tempRoom->doors[$removeRoomIndex]);
