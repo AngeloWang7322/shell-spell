@@ -33,7 +33,7 @@ $extraCss = 'main.css';
                 $tempPathString = implode("/", $_SESSION["curRoom"]->path);
                 echo $tempPathString . ">";
                 ?>
-                <form class="command-input" method="post">
+                <form class="command-input" method="post" required>
                     <input type="hidden" value="enterCommand" name="action">
                     <input name="command" @class="command-input" type="text" autofocus>
                 </form>

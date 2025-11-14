@@ -8,10 +8,10 @@ require __DIR__ . '/../src/model/item.php';
 require __DIR__ . '/../src/model/scroll.php';
 
 session_start();
-$x = 1;
-$y = &$x;
-$z = $y;
-$x = 2;
+// $x = 1;
+// $y = &$x;
+// $z = $y;
+// $x = 2;
 // echo ("x: $x, y: $y, z: $z<br>");
 // session_unset();     
 if (!isset($_SESSION["history"])) {
