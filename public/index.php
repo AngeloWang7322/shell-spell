@@ -13,7 +13,7 @@ session_start();
 // $z = $y;
 // $x = 2;
 // echo ("x: $x, y: $y, z: $z<br>");
-// session_unset();     
+// session_unset();      
 if (!isset($_SESSION["history"])) {
     $_SESSION["history"] = [];
     $_SESSION["map"] = new Room("hall");
@@ -21,6 +21,9 @@ if (!isset($_SESSION["history"])) {
     $_SESSION["map"]->path = ["hall"];
     $_SESSION["map"]->doors["library"] = new Room("library");
     $_SESSION["map"]->doors["armory"] = new Room("armory");
+    $_SESSION["map"]->doors["passage"] = new Room("passage");
+    $_SESSION["map"]->doors["passage"]->doors["staircase"] = new Room(name: "staircase", path: $_SESSION["map"]-> doors["passage"]-> path);
+
     $_SESSION["map"]->items["manaPotion.exe"] = new Item(
         "manaPotion",
         ItemType::SPELL,

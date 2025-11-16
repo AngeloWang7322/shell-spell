@@ -151,8 +151,6 @@ function &getRoom($path): Room
                 if ($index == count($path)) {
                     return $tempRoom;
                 }
-                echo "defulatt: " . json_encode(array_slice($path, $index));
-
                 return getRoomRelative(array_slice($path, $index), $tempRoom);
             }
     }
@@ -176,7 +174,6 @@ function &getRoomRelative($path, $tempRoom = null): Room
     }
     for ($i = 0; $i < count($path); $i++) {
         if (in_array($path[$i], array_keys($tempRoom->doors))) {
-            echo "is in room";
             $tempRoom = &$tempRoom->doors[$path[$i]];
         } else {
             throw (new Exception("path not found relative"));
