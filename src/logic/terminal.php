@@ -7,13 +7,13 @@ $inputDirectory = implode("/", $_SESSION["curRoom"]->path);
 
 // echo "map:<br>" . json_encode($_SESSION["map"]) . "<br>";
 // echo "curRoom: <br>" . json_encode($_SESSION["curRoom"]) . "<br>";
-echo "<br>items: " . json_encode($_SESSION["curRoom"] ->items);
+// echo "<br>items: " . json_encode($_SESSION["curRoom"] ->items);
 try {
     if (empty($_POST["command"])) {
         return;
     }
     $inputArgs = organizeInput(explode(" ", $_POST["command"]));
-    echo "<br>" . json_encode($inputArgs) . "<br>";
+    // echo "<br>" . json_encode($inputArgs) . "<br>";
     switch ($inputArgs["command"]) {
         case "cd": {
                 if (count($inputArgs["path"]) == 0) {

@@ -1,5 +1,4 @@
 document.addEventListener("keydown", function(e) {
-    console.log("key pressed");
     if (e.key == "Escape"){
             const form = document.createElement("form");
             form.method = "POST";

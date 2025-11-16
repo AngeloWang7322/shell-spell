@@ -1,7 +1,10 @@
 :root {
-    font-family: system-ui, sans-serif;
+    font-family: 
+        "Pixelify Sans"
+        ;
     background-color: black;
     color: white;
+    font-size: 22px;
 }
 
 main {

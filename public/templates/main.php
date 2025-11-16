@@ -6,13 +6,11 @@ $script = "main.js";
 <div class="game-container">
     <div class="elements-wrapper">
         <?php
-        foreach ($_SESSION["curRoom"] -> doors as $door)
-        {
-            echo "<div class='element'> <p>" . $door -> name . "</p> </div>";
+        foreach ($_SESSION["curRoom"]->doors as $door) {
+            echo "<div class='element'> <p>" . $door->name . "</p> </div>";
         }
-        foreach ($_SESSION["curRoom"] -> items as $item)
-        {
-            echo "<div class='element item'> <p>" . $item-> name . "</p> </div>";
+        foreach ($_SESSION["curRoom"]->items as $item) {
+            echo "<div class='element item'> <p>" . $item->name . "</p> </div>";
         }
         ?>
     </div>
@@ -36,7 +34,7 @@ $script = "main.js";
                 ?>
                 <form class="command-input" method="post">
                     <input type="hidden" value="enterCommand" name="action">
-                    <input name="command" class="command-input" type="text"  autocomplete="off"autofocus>
+                    <input name="command" class="command-input" type="text" autocomplete="off" autofocus>
                 </form>
             </div>
         </div>
@@ -51,11 +49,6 @@ $script = "main.js";
             </h3>
         </div>
     </div>
-    <?php
-    if ($_SESSION["openedScroll"]->isOpen == true) {
-        echo "ISOPEN!<br>";
-    }
-    ?>
     <div class="scroll-container" style="visibility: 
     <?php
     if ($_SESSION["openedScroll"]->isOpen) {
@@ -65,10 +58,10 @@ $script = "main.js";
     }
     ?>;">
         <div class="header-container">
-            <h2 class="scroll-header">
+            <h1 class="scroll-header">
                 <?php echo $_SESSION["openedScroll"]->header; ?>
 
-            </h2>
+            </h1>
         </div>
         <div class="scroll-content">
             <p>
