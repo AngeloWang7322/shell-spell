@@ -13,6 +13,7 @@ try {
         return;
     }
     $inputArgs = organizeInput(explode(" ", $_POST["command"]));
+    $inputPathLength = count($inputArgs["path"]);
     // echo "<br>" . json_encode($inputArgs) . "<br>";
     switch ($inputArgs["command"]) {
         case "cd": {
@@ -24,11 +25,11 @@ try {
                 break;
             }
         case "mkdir": {
-                if ($inputArgs["path"] == null) {
+                if (empty($inputArgs["path"]) || end($inputArgs["path"]) == "") {
                     throw new Exception("no directory name provided");
                 }
-                $roomName = $inputArgs["path"][count($inputArgs["path"]) - 1];
-                $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, count($inputArgs["path"]) - 1));
+                $roomName = end($inputArgs["path"]);
+                $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, length: $inputPathlength - 1));
                 $tempRoom->doors[$roomName] = new Room($roomName);
                 break;
             }
@@ -59,7 +60,7 @@ try {
                     throw new Exception("no source path provided");
                 }
 
-                if (stristr($inputArgs["path"][count($inputArgs["path"]) - 1], '.')) {
+                if (stristr(end($inputArgs["path"]), '.')) {
                     $tempItem = &getItem($inputArgs["path"]);
                     $destinationRoom->items[$tempItem->name] = $tempItem;
                 } else {
@@ -77,13 +78,11 @@ try {
                 break;
             }
         default: {
-            echo "<br>substr: " . substr($inputArgs["command"], 2);
+            // echo "<br>substr: " . substr($inputArgs["command"], 2);
                 if (strncmp($inputArgs["command"], "./", 2) == 0) {
-                    echo "execute command recognized";
-
                     $itemExec = &getItem(explode("/", substr($inputArgs["command"], 2)));
                     $itemExec->executeAction();
-                    echo "<br> items after: " . json_encode($_SESSION["curRoom"] -> items);
+                    // echo "<br> items after: " . json_encode($_SESSION["curRoom"] -> items);
                     break;
                 } else {
                     throw new Exception("invalid command");
@@ -103,7 +102,6 @@ $_SESSION["history"][] =
 function organizeInput(array $inputArray)
 {
     if (empty($inputArray)) {
-        echo "adasdsad";
         throw new Exception("no command entered");
     }
     $inputArgs = [
@@ -191,7 +189,7 @@ function &getItem($path): Item
     echo "<br>path in getItem: " . json_encode($path); 
     echo "<br>items: " . json_encode($tempRoom -> items); 
 
-    if (in_array($path[count($path) - 1], array_keys($tempRoom->items))) {
+    if (in_array(end($path), array_keys($tempRoom->items))) {
         return $tempRoom->items[$path[count($path) - 1]];
     } else {
         throw new Exception("item not found");
@@ -206,10 +204,10 @@ function deleteElement($path)
         $tempRoom = &$_SESSION["curRoom"];
     }
 
-    if (in_array($path[count($path) - 1], array_keys($tempRoom->doors))) {
-        unset($tempRoom->doors[$path[count($path) - 1]]);
-    } else if (in_array($path[count($path) - 1], array_keys($tempRoom->items))) {
-        unset($tempRoom->items[$path[count($path) - 1]]);
+    if (in_array(end($path), array_keys($tempRoom->doors))) {
+        unset($tempRoom->doors[end($path)]);
+    } else if (in_array(end($path), array_keys($tempRoom->items))) {
+        unset($tempRoom->items[end($path)]);
     } else {
         throw new Exception("element not found");
     }

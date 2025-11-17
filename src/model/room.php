@@ -10,7 +10,7 @@ class Room
     function __construct($name, $requiredRole = Role::WANDERER, array $path = [])
     {
         $this->name = $name;
-        $this->path = empty($path) ? ["hall"] : ["hall"]+ $path ;
+        $this->path = empty($path) ?[ $_SESSION["curRoom"] -> path]: ["hall"]+ $path ;
         array_push($this->path, $name);
         $this->requiredRole = $requiredRole;
     }

@@ -30,6 +30,13 @@ if (!isset($_SESSION["history"])) {
         ActionType::MANA,
         Rarity::COMMON
     );
+      $_SESSION["map"]->items["grimoire.txt"] = new Item(
+        "grimoire",
+        ItemType::SCROLL,
+        ActionType::OPEN_SCROLL,
+        Rarity::COMMON,
+        "OPEN SCROLL: <br>'cat [scroll name]'<br>"
+    );
     $_SESSION["map"]->items["testScroll.txt"] = new Item(
         "testScroll",
         ItemType::SCROLL,
