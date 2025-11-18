@@ -12,7 +12,7 @@ $x = 1;
 $y = &$x;
 $z = $y;
 $x = 2;
-echo ("x: $x, y: $y, z: $z<br>");
+//echo ("x: $x, y: $y, z: $z<br>");
 // session_unset();     
 if (!isset($_SESSION["history"])) {
     $_SESSION["history"] = [];
@@ -55,7 +55,7 @@ $routes = [
     '' => 'templates/main.php',
     'login' => 'templates/login.php',
     'profile' => 'templates/profile.php',
-    'notfound' => 'templates/notfound.php'
+    'notfound' => 'templates/notfound.php'  
 ];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = trim($path, '/');
