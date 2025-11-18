@@ -59,13 +59,19 @@ try {
                 if (empty($inputArgs["path_2"])) {
                     throw new Exception("no source path provided");
                 }
+                else if ($inputArgs["path"][0] == $inputArgs["path_2"][0])
+                {
+                    throw new Exception ("cannot move room into itsself");
+                }
 
                 if (stristr(end($inputArgs["path"]), '.')) {
                     $tempItem = &getItem($inputArgs["path"]);
                     $destinationRoom->items[$tempItem->name] = $tempItem;
+                    updateItemPaths($destinationRoom);
                 } else {
                     $tempRoom = &getRoom($inputArgs["path"]);
-                    $destinationRoom->doors[$tempRoom->name] = $tempRoom;
+                    $destinationRoom->doors[$tempRoom->name] = $tempRoom;    
+                    updatePathsAfterMv($destinationRoom);
                 }
                 deleteElement($inputArgs["path"]);
                 break;
@@ -210,6 +216,25 @@ function deleteElement($path)
         unset($tempRoom->items[end($path)]);
     } else {
         throw new Exception("element not found");
+    }
+}
+
+function updatePathsAfterMv(&$room) {
+    foreach ($room -> doors as &$door)
+    {
+        $path = $room -> path;
+        foreach($door -> items as &$item){
+            $item -> path = array_merge($path, $item -> name);
+        }
+        $door -> path = array_merge($path, array($door -> name));
+        updatePathsAfterMv($door);  
+    }
+}
+function updateItemPaths(&$room)
+{
+    foreach($room -> items as $item)
+    {
+        $item -> path = array_merge($room-> path, $item -> name);
     }
 }
 function editMana($amount)

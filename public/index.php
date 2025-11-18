@@ -13,7 +13,7 @@ session_start();
 // $z = $y;
 // $x = 2;
 // echo ("x: $x, y: $y, z: $z<br>");
-// session_unset();      
+// session_unset();         
 if (!isset($_SESSION["history"])) {
     $_SESSION["history"] = [];
     $_SESSION["map"] = new Room("hall");

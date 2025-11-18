@@ -75,21 +75,18 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgb(150, 150, 97);
+    background-color: rgb(224, 224, 143);
+    color: black;
     width: 524px;
     height: 764px;
     z-index: 10;
 }
 .scroll-header{
-    position: absolute;
-    top: 5;
-    left: 0;
     width: 100%;
     font-size: 46px;
     text-align: center;
-}
+}j
 .scroll-content{
-    position: absolute;
     width: 75%;
     height: 100%;
     font-size: 36px;
@@ -97,10 +94,8 @@
     text-justify: center;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 .elements-wrapper {
-    margin-top: 32px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

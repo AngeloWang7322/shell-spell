@@ -12,6 +12,5 @@ document.addEventListener("keydown", function(e) {
 
             document.body.appendChild(form);
             form.submit();
-
     }
 })
