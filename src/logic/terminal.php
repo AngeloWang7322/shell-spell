@@ -105,6 +105,8 @@ $_SESSION["history"][] =
         "command" => $_POST["command"],
         "response" => $response
     ];
+        header("Location: " . $_SERVER["REQUEST_URI"]);
+exit;
 function organizeInput(array $inputArray)
 {
     if (empty($inputArray)) {
