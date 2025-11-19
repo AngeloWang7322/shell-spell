@@ -23,20 +23,20 @@ class Item
     public function executeAction()
     {
         $actionFunction = $this -> action -> value;
-        echo "<br>executing: " . $actionFunction;
+        // echo "<br>executing: " . $actionFunction;
         $this -> $actionFunction();
     }
     function getMana()
     {
         switch ($this->rarity) {
             case Rarity::COMMON:
-                $_SESSION["user"]->curMana += 10;
+                $_SESSION["curMana"] += 10;
                 break;
             case Rarity::RARE:
-                $_SESSION["user"]->curMana += 25;
+                $_SESSION["curMana"] += 25;
                 break;
             case Rarity::EPIC:
-                $_SESSION["user"]->curMana += 50;
+                $_SESSION["curMana"] += 50;
                 break;
         }
     }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title><?= $title ?? 'CLI Dungeon' ?></title>
@@ -8,13 +9,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/base.css">
 
-  <?php if (!empty($extraCss)): ?>
-    <link rel="stylesheet" href="/assets/css/<?= htmlspecialchars($extraCss) ?>">
+  <?php if (count($extraCss) > 0)
+    foreach ($extraCss as $css) {
+      echo '<br><link rel="stylesheet" href="/assets/css/' .  htmlspecialchars($css) . '">';
+    }
+  ?>
+  <?php if (!empty($script)): ?>
+    <script src="/scripts/<?= htmlspecialchars($script) ?>"></script>
   <?php endif; ?>
-  <?php if(!empty($script)):?>
-    <script  src="/scripts/<?= htmlspecialchars($script)?>"></script>
-    <?php endif; ?>
-</head> 
+</head>
+
 <body>
 </body>
+
 </html>

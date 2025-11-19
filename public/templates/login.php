@@ -1,7 +1,9 @@
 <?php
-session_start();
-// require_once "./cli-game/src/db.php";
+declare(strict_types= 1);
 
+require_once "./../src/db.php";
+$extraCss[] = "auth.css";
+$title = "Log In";
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,40 +19,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password'])) {
-            
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_email'] = $user['email'];
+        if ($user && password_verify($password, $user['password_hash'])) {
+            $_SESSION['user']["name"] = [$user['username']];
 
-            header('Location: welcome.php');
+            header('Location: /');
             exit;
         } else {
             $errors[] = "E-Mail oder Passwort ist falsch.";
         }
     }
 }
-?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
-<body>
-    <h1>Login</h1>
 
+?>
+
+<div class="form-wrapper">
+    <h1>Log In</h1>
     <?php if (!empty($errors)): ?>
-        <div style="color:red;">
+        <div class="errors">
             <ul>
                 <?php foreach ($errors as $e): ?>
-                    <li><?php echo htmlspecialchars($e); ?></li>
+                    <?php echo htmlspecialchars($e); ?><br>
                 <?php endforeach; ?>
             </ul>
         </div>
     <?php endif; ?>
 
     <form method="post">
-        <label>
+        <label class="test">
             E-Mail:<br>
             <input type="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
         </label><br><br>
@@ -62,7 +57,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit">Einloggen</button>
     </form>
-
-    <p>Noch kein Konto? <a href="authentication">Registrieren</a></p>
-</body>
-</html>
+    <p>Noch kein Konto? <a href="register">Registrieren</a></p>
+</div>

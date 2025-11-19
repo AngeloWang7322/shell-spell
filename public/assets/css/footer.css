@@ -1,0 +1,11 @@
+.footer-wrapper{
+    display: flex;
+    justify-content: center;
+    align-self: flex-end;
+    align-items: center;
+    background-color: rgb(14, 15, 24);
+}
+
+.footer-item {
+    width: 256px;
+}

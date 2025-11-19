@@ -1,9 +1,11 @@
 <?php
-session_start();
-// require_once './cli-game/src/db.php';
+declare(strict_types=1);
+require_once "./../src/db.php";
 
 $errors = [];
 $success = "";
+$title = "register";
+$extraCss[] = "auth.css";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name     = trim($_POST['name'] ?? '');
@@ -24,23 +26,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
 
-        // prüfen, ob E-Mail schon existiert
         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->execute([':email' => $email]);
         if ($stmt->fetch()) {
             $errors[] = "Diese E-Mail ist bereits registriert.";
         } else {
-            // Passwort hashen, aber in deiner Spalte `password` speichern
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
             $insert = $pdo->prepare("
-                INSERT INTO users (name, email, password)
-                VALUES (:name, :email, :password)
+                INSERT INTO users (username, email, password_hash)
+                VALUES (:username, :email, :password_hash)
             ");
             $insert->execute([
-                ':name'     => $name,
+                ':username'     => $name,
                 ':email'    => $email,
-                ':password' => $passwordHash
+                ':password_hash' => $passwordHash
             ]);
 
             $success = "Registrierung erfolgreich. Du kannst dich jetzt einloggen.";
@@ -48,48 +48,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Registrierung</title>
-</head>
-<body>
-    <h1>Registrierung</h1>
+<div class="form-wrapper">
+<h1>Register</h1>
 
-    <?php if (!empty($errors)): ?>
-        <div style="color:red;">
-            <ul>
-                <?php foreach ($errors as $e): ?>
-                    <li><?php echo htmlspecialchars($e); ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
+<?php if (!empty($errors)): ?>
+    <div style="color:red;">
+        <ul>
+            <?php foreach ($errors as $e): ?>
+                <li><?php echo htmlspecialchars($e); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
 
-    <?php if ($success): ?>
-        <div style="color:green;"><?php echo htmlspecialchars($success); ?></div>
-    <?php endif; ?>
+<?php if ($success): ?>
+    <div style="color:green;"><?php echo htmlspecialchars($success); ?></div>
+<?php endif; ?>
 
-    <form method="post">
-        <label>
-            Name:<br>
-            <input type="text" name="name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>">
-        </label><br><br>
+<form method="post">
+    <label>
+        Name:<br>
+        <input type="text" name="name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>">
+    </label><br><br>
 
-        <label>
-            E-Mail:<br>
-            <input type="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
-        </label><br><br>
+    <label>
+        E-Mail:<br>
+        <input type="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
+    </label><br><br>
 
-        <label>
-            Passwort:<br>
-            <input type="password" name="password">
-        </label><br><br>
+    <label>
+        Passwort:<br>
+        <input type="password" name="password">
+    </label><br><br>
 
-        <button type="submit">Registrieren</button>
-    </form>
+    <button type="submit">Registrieren</button>
+</form>
 
-    <p>Schon registriert? <a href="login">Zum Login</a></p>
-</body>
-</html>
+<p>Schon registriert? <a href="login">Zum Login</a></p>
+</div>

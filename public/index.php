@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/model/room.php';
@@ -13,15 +12,15 @@ session_start();
 // $z = $y;
 // $x = 2;
 // echo ("x: $x, y: $y, z: $z<br>");
-session_unset();         
+// session_unset();         
 if (!isset($_SESSION["history"])) {
     $_SESSION["history"] = [];
     $_SESSION["map"] = new Room("hall");
     $_SESSION["curRoom"] = &$_SESSION["map"];
     $_SESSION["map"]->path = ["hall"];
-    $_SESSION["map"]->doors["library"] = new Room("library");
-    $_SESSION["map"]->doors["armory"] = new Room("armory");
-    $_SESSION["map"]->doors["passage"] = new Room("passage");
+    $_SESSION["map"]->doors["library"] = new Room( "library");
+    $_SESSION["map"]->doors["armory"] = new Room( "armory");
+    $_SESSION["map"]->doors["passage"] = new Room(name: "passage");
     $_SESSION["map"]->doors["passage"]->doors["staircase"] = new Room(name: "staircase", path: $_SESSION["map"]-> doors["passage"]-> path);
 
     $_SESSION["map"]->items["manaPotion.exe"] = new Item(
@@ -45,14 +44,12 @@ if (!isset($_SESSION["history"])) {
         "This is a test scroll content. It is used to demonstrate the scroll functionality in the" .
             " game. You can read this scroll to gain knowledge and power."
     );
-    $_SESSION["user"] = new User();
+    $_SESSION["maxMana"] = 100;
+    $_SESSION["curMana"] = 100;
     $_SESSION["openedScroll"] = new Scroll("", "");
 }
 
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->safeLoad();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
     switch ($_POST["action"]) {
         case "enterCommand": {
                 require __DIR__ . "/../src/logic/terminal.php";
@@ -64,26 +61,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
     }
 }
-
-
 $routes = [
-    '' => 'templates/main.php',
-    'login' => 'templates/login.php',
-    'authentication' => 'templates/authentication.php',
-    'profile' => 'templates/profile.php',
-    'notfound' => 'templates/notfound.php'  
+    '' => 'main.php',
+    'login' => 'login.php',
+    'register' => 'authentication.php',
+    'profile' => 'profile.php',
+    'notfound' => 'notfound.php'  
 ];
+
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = trim($path, '/');
-?>
-<?php
+
 if (isset($routes[$path])) {
-    require __DIR__ . '/' . $routes[$path];
+    require __DIR__ . '/templates//' . $routes[$path];
 } else {
-    require __DIR__ . '/' . $routes['notfound'];
+    require __DIR__ . '/templates//' . $routes['notfound'];
 }
 
-require __DIR__ . '/assets/layout.php';
 require __DIR__ . '/assets/footer.php';
-
+require __DIR__ . '/assets/layout.php';
 ?>

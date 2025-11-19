@@ -1,6 +1,6 @@
 <?php
 $title = "Shell spell";
-$extraCss = 'main.css';
+$extraCss[] = 'main.css';
 $script = "main.js";
 ?>
 <div class="game-container">
@@ -45,7 +45,7 @@ $script = "main.js";
         <div class="mana-display-container">
             <div class="mana-bar" style="width:
             <?php
-            echo $_SESSION["user"]->curMana;
+            echo $_SESSION["curMana"] / $_SESSION["maxMana"]  * 100;
             ?>%;">
             </div>
             <h3 class="mana-text">

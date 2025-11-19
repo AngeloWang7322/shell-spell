@@ -1,2 +1,4 @@
 # Ignore environment files
 .env
+public/.htaccess
+sql_queries.mhtml

@@ -20,7 +20,7 @@ try {
                 if (count($inputArgs["path"]) == 0) {
                     throw new Exception("no path provided");
                 }
-                $_SESSION["user"]->curMana -= (count($inputArgs["path"]) - 1) * 2;
+                $_SESSION["curMana"] -= (count($inputArgs["path"]) - 1) * 2;
                 $_SESSION["curRoom"] = &getRoom($inputArgs["path"]);
                 break;
             }
@@ -29,7 +29,7 @@ try {
                     throw new Exception("no directory name provided");
                 }
                 $roomName = end($inputArgs["path"]);
-                $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, length: $inputPathlength - 1));
+                $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, count($inputArgs["path"]) - 1));
                 $tempRoom->doors[$roomName] = new Room($roomName);
                 break;
             }
@@ -192,8 +192,8 @@ function &getItem($path): Item
     } else {
         $tempRoom = &$_SESSION["curRoom"];
     }
-    echo "<br>path in getItem: " . json_encode($path); 
-    echo "<br>items: " . json_encode($tempRoom -> items); 
+    // echo "<br>path in getItem: " . json_encode($path); 
+    // echo "<br>items: " . json_encode($tempRoom -> items); 
 
     if (in_array(end($path), array_keys($tempRoom->items))) {
         return $tempRoom->items[$path[count($path) - 1]];
@@ -239,5 +239,5 @@ function updateItemPaths(&$room)
 }
 function editMana($amount)
 {
-    $_SESSION["user"]->curMana -= $amount;
+    $_SESSION["curMana"] -= $amount;
 }
