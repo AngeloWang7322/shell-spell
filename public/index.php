@@ -77,6 +77,7 @@ if (isset($routes[$path])) {
     require __DIR__ . '/templates//' . $routes['notfound'];
 }
 
+require __DIR__ . '/assets/header.php';
 require __DIR__ . '/assets/footer.php';
 require __DIR__ . '/assets/layout.php';
 ?>
