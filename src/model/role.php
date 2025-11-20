@@ -17,7 +17,7 @@ enum ROLE: string
             self::ROOT => 5,
         };
     }
-    public function isLowerThan($role): bool{
+    public function isLowerThan(Role $role): bool{
         return $this ->rank() < $role -> rank();
     }
 }

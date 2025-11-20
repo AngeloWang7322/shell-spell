@@ -9,23 +9,16 @@ require __DIR__ . '/../src/model/scroll.php';
 require_once __DIR__ . '/../src/model/role.php';
 
 session_start();
-if(ROLE::ARCHIVIST -> isLowerThan(role: ROLE::ROOT) )
-{
-    echo "archivist is lower than root";
-}
-else {
-    echo "is not lower";
-}
-// echo "<br>is larger?" . 1 < 2 ? "is" : "not";
+
 // session_unset();         
 if (!isset($_SESSION["history"])) {
     $_SESSION["history"] = [];
     $_SESSION["map"] = new Room("hall");
     $_SESSION["curRoom"] = &$_SESSION["map"];
     $_SESSION["map"]->path = ["hall"];
-    $_SESSION["map"]->doors["library"] = new Room( "library", requiredRole: ROLE::ROOT);
-    $_SESSION["map"]->doors["armory"] = new Room( "armory", requiredRole: ROLE::ROOT);
-    $_SESSION["map"]->doors["passage"] = new Room("passage", requiredRole: ROLE::ROOT);
+    $_SESSION["map"]->doors["library"] = new Room( "library", requiredRole: ROLE::APPRENTICE);
+    $_SESSION["map"]->doors["armory"] = new Room( "armory", requiredRole: ROLE::ARCHIVIST);
+    $_SESSION["map"]->doors["passage"] = new Room("passage", requiredRole: ROLE::WANDERER);
     $_SESSION["map"]->doors["passage"]->doors["staircase"] = new Room(name: "staircase", path: $_SESSION["map"]-> doors["passage"]-> path, requiredRole: ROLE::ROOT);
     
     $_SESSION["map"]->items["manaPotion.exe"] = new Item(
@@ -66,8 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
                 break;
             }
     }
-    // header("Location: " . $_SERVER["REQUEST_URI"]);
-    // exit;
+    header("Location: " . $_SERVER["REQUEST_URI"]);
+    exit;
 }
 
 $routes = [
