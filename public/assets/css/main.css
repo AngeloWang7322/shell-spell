@@ -119,7 +119,25 @@
     flex-wrap: wrap;
     justify-content: center;
 }
+.element-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 12px 84px;
+    padding: 12px 18px;
+    height: fit-content;
+    min-width: 50px;    
 
+}       
+.element-name {
+    text-justify: center;
+    text-align: center;     
+}
+.alchemist{
+        color: tomato;
+
+}
 .element {
     display: flex;
     justify-content: center;
@@ -128,16 +146,37 @@
     padding: 12px 18px;
     height: 180px;
     min-width: 50px;
-    background-color: rgb(84, 31, 31);
+   text-align: center;
+
 
 }
-
+.door{
+      background-image: url("../images/door.png");
+    background-size: fit-content;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
 .item {
     font-size: 18px;
-    background-color: rgb(122, 109, 35);
-    height: 80px;
-}
+    background-color: rgb(122, 109, 35, 0);
+    height: 80px; 
 
+}
+.txt{
+    background-image: url("../images/scrollItem.png");
+    background-size: fit-content;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.exe{
+    background-image: url("../images/rune.png");
+    background-size: fit-content;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
 .header-wrapper {
     display: flex;
     width: 98vw;

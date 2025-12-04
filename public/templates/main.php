@@ -42,14 +42,14 @@ $script = "main.js";
         <div class="elements-wrapper">
             <?php
             foreach ($_SESSION["curRoom"]->doors as $door) {
-                echo "<div class='element'> <p>" . $door->name . "</p> </div>";
+                echo "<div class='element door'> <p>" . $door->name . "</p> </div>";
             }
             ?>
         </div>
         <div class="elements-wrapper">
             <?php
             foreach ($_SESSION["curRoom"]->items as $item) {
-                echo "<div class='element item'> <p>" . $item->name . "</p> </div>";
+                echo "<div class element-container><div class='element item " . $item->type->value ."'> </div><p class='element-name'>" . $item->name . "</p></div> ";
             }
             ?>
         </div>

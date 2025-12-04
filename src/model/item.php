@@ -14,7 +14,7 @@ class Item
         $this->rarity = $rarity;
         $this->content = $content;
 
-        $this->name = $name . match ($type) {
+        $this->name = $name . "." . match ($type) {
             ItemType::SCROLL => ItemType::SCROLL->value,
             ItemType::SPELL => ItemType::SPELL->value,
             ItemType::STATUE => ItemType::STATUE->value,
@@ -44,9 +44,9 @@ class Item
 
 enum ItemType: string
 {
-    case SCROLL = ".txt";
-    case SPELL = ".exe";
-    case STATUE = ".obj";
+    case SCROLL = "txt";
+    case SPELL = "exe";
+    case STATUE = "obj";
 }
 enum ActionType: string
 {
