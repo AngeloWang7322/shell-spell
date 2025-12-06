@@ -12,27 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
+    $dbHelper = new DBHelper(pdo: $pdo);
+
     if ($email === '' || $password === '') {
-        $errors[] = "Bitte alle Felder ausfüllen.";
+        $errors[] = "Bitte alle Felder ausfüllen.";        
+        exit();
     }
-
-    if (empty($errors)) {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
-        $stmt->execute([':email' => $email]);
-        $user = $stmt->fetch();
-            echo "<br> login.php query response: <br>" . json_encode($user) ."";
-
-        if ($user && password_verify($password, $user['password_hash'])) {
-            $_SESSION['user']["name"] = $user['username'];
-            $_SESSION["user"]["id"] = $user["id"];
-        } else {
-            $errors[] = "E-Mail oder Passwort ist falsch.";
-        }       
-        
-        $dbHelper = new DBHelper($pdo);
-
-        $dbHelper->loadUserData();            
+    
+    try {
+        $dbHelper->loginUser($password, $email);     
+        $dbHelper ->loadUserData();   
         header('Location: /');
+    } catch (Exception $e) {
+        $errors[] = $e->getMessage();
     }
 }
 ?>

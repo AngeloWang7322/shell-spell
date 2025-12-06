@@ -7,8 +7,9 @@ $script = "main.js";
 <div class="game-container">
     <div class="header-wrapper">
         <div class="header-group">
-            <div class="">
+            <div class="title-container">
                 Shell Spell
+                <img src="../assets/images/favicon-32x32.png">
             </div>
         </div>
         <div class="header-group">
@@ -42,14 +43,23 @@ $script = "main.js";
         <div class="elements-wrapper">
             <?php
             foreach ($_SESSION["curRoom"]->doors as $door) {
-                echo "<div class='element door'> <p>" . $door->name . "</p> </div>";
+                echo "
+                <div class='element-container'>
+                    <div class='element door'></div>                        
+                    <p class='element-name ". $door->requiredRole->value . "'>" . $door->name . "</p> 
+                </div>";
             }
             ?>
         </div>
         <div class="elements-wrapper">
             <?php
             foreach ($_SESSION["curRoom"]->items as $item) {
-                echo "<div class element-container><div class='element item " . $item->type->value ."'> </div><p class='element-name'>" . $item->name . "</p></div> ";
+                echo "
+                <div class='element-container'>
+                    <div class='element item " . $item->type->value . "'> </div>
+                    <p class='element-name " . $item->rarity->value . "'>" . $item->name . "</p>
+                </div> 
+                ";
             }
             ?>
         </div>
@@ -81,7 +91,7 @@ $script = "main.js";
         <div class="mana-display-container">
             <div class="mana-bar" style="width:
             <?php
-            echo $_SESSION["curMana"] / $_SESSION["maxMana"]  * 100;
+            echo $_SESSION["curMana"] / $_SESSION["maxMana"] * 100;
             ?>%;">
             </div>
             <h3 class="mana-text">

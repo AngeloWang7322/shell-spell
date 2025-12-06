@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = "Diese E-Mail ist bereits registriert.";
         } else {
             $dbHelper = new DBHelper($pdo);
-            $dbHelper->createUserRows($name, $email, $password);
+            $dbHelper->createUserRows($password, $email, $name);
             header('Location: /');
         }
     }

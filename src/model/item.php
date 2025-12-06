@@ -23,7 +23,7 @@ class Item
     public function executeAction()
     {
         $actionFunction = $this -> action -> value;
-        // echo "<br>executing: " . $actionFunction;
+        echo "<br>executing: " . $actionFunction;
         $this -> $actionFunction();
     }
     function getMana()

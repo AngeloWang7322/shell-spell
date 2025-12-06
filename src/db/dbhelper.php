@@ -10,21 +10,6 @@ class DBHelper
         $this->pdo = $pdo;
     }
 
-    public function fetchUserData()
-    {
-        $query = $this->pdo->prepare(
-            "SELECT * FROM users as u 
-                -- JOIN user_stats as us ON us.user_id = :userId
-                JOIN user_maps as um ON um.user_id = :userId
-                WHERE u.id = :userId;"
-        );
-
-        $query->execute([":userId" => $_SESSION["user"]["id"]]);
-        $response = $query->fetch();
-        echo "<br>response: " . json_encode($response);
-        $_SESSION["user"]["response"] = json_encode($response);
-    }
-
     public function updateUserMap()
     {
         $query = $this->pdo->prepare(
@@ -42,10 +27,15 @@ class DBHelper
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch();
-
+        echo "input hash: " . $password;
+        echo "response: " . json_encode($user);
+        
         if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['user']["name"] = $user['username'];
             $_SESSION["user"]["id"] = $user["id"];
+        }
+        else{
+            throw new Exception("Email oder Passwort falsch");
         }
     }
     public function createUserRows($password, $email, $name)
@@ -76,6 +66,7 @@ class DBHelper
                 INSERT INTO user_stats (user_id, curMana, xp) 
                 VALUES (:userid, :curMana, :xp)
             ");
+        echo "user id: " . json_encode($_SESSION["user"]["id"]);
         $statsInsert->execute([
             "userid" => $_SESSION["user"]["id"],
             "curMana" => 100,
@@ -89,7 +80,7 @@ class DBHelper
 
         $fetchUserStats = $this->pdo->prepare("
         SELECT * FROM user_stats us 
-            WHERE u.id = :userId
+            WHERE us.id = :userId
         ");
         $fetchUserStats->execute([
             "userId" => $userId
