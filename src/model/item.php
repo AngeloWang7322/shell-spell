@@ -15,7 +15,7 @@ class Item
         $this->action = $action;
         $this->rarity = $rarity;
         $this->content = $content;
-        if(!empty($name)){
+        if(empty($name)){
             $this->name = $baseName . "." . match ($type) {
                 ItemType::SCROLL => ItemType::SCROLL->value,
                 ItemType::SPELL => ItemType::SPELL->value,
