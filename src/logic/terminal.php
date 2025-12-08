@@ -20,8 +20,8 @@ try {
                 throw new Exception("no path provided");
             }
             for ($i = 1; $i <= count($inputArgs["path"]); $i++) {
-                if ( $_SESSION["user"]["role"]-> isLowerThan( getRoom(array_slice($inputArgs["path"], 0, $i))->requiredRole) ) {
-                    $response = "required rank: " . getRoom(array_slice($inputArgs["path"], 0, $i))->requiredRole-> value;
+                if ($_SESSION["user"]["role"]->isLowerThan(getRoom(array_slice($inputArgs["path"], 0, $i))->requiredRole)) {
+                    $response = "required rank: " . getRoom(array_slice($inputArgs["path"], 0, $i))->requiredRole->value;
                     break 2;
                 }
             }
@@ -34,8 +34,8 @@ try {
                 throw new Exception("no directory name provided");
             }
             $roomName = end($inputArgs["path"]);
-            $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, - 1));
-            $tempRoom->doors[$roomName] = new Room($roomName);
+            $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, -1));
+            $tempRoom->doors[$roomName] = new Room(name: $roomName, requiredRole: $_SESSION["user"]["role"]);
             break;
         }
         case "ls": {
@@ -81,12 +81,17 @@ try {
         }
         case "cat": {
             $catItem = &getItem($inputArgs["path"]);
-            $catItem->executeAction();
-            break;
+            if (is_a($catItem, "Scroll")) {
+                $catItem-> openScroll();
+                break;
+            } else {
+                throw new Exception("item not a scroll");
+            }
         }
         default: {
             if (strncmp($inputArgs["command"], "./", 2) == 0) {
-                $itemExec = &getItem(explode("/", substr($inputArgs["command"], 2)));
+                $itemExec= &getItem(explode("/", substr($inputArgs["command"], 2)));
+                switch($itemExec->type){}
                 $itemExec->executeAction();
                 break;
             } else {
@@ -184,7 +189,7 @@ function &getRoomRelative($path, $tempRoom = null): Room
     }
     return $tempRoom;
 }
-function &getItem($path): Item
+function &getItem($path)
 {
     if (count($path) > 1) {
         $tempRoom = &getRoom(array_splice($path, 0, count($path) - 2));

@@ -174,12 +174,22 @@
     background-repeat: no-repeat;
 }
 
-.exe {
+.sh {
     background-image: url("../images/rune.png");
     background-size: fit-content;
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
+}
+.exe {
+    background-image: url("../images/alter_active.png");
+    background-size: fit-content;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.inactive {
+    
 }
 
 .header-wrapper {

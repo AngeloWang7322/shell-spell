@@ -97,11 +97,11 @@ class DBHelper
         $userMap = $fetchUserMap->fetch();
 
         //assign userRole and maxMana by xp
-        for($i = 1; $i <= count(Role::cases()); $i++){
-            if ($userStats["xp"] <= $i * 100){
+        for ($i = 1; $i <= count(Role::cases()); $i++) {
+            if ($userStats["xp"] <= $i * 100) {
                 $_SESSION["maxMana"] = $i * 100;
-                foreach(Role::cases() as $role){
-                    if($i == 1){
+                foreach (Role::cases() as $role) {
+                    if ($i == 1) {
                         $_SESSION["user"]["role"] = $role;
                         break 2;
                     }
@@ -142,7 +142,7 @@ class DBHelper
             $items,
             $requiredRole
         );
-    }    
+    }
     public static function loadDefaultSession()
     {
         session_unset();
@@ -155,41 +155,50 @@ class DBHelper
         $_SESSION["map"]->doors["passage"] = new Room(name: "passage", requiredRole: ROLE::WANDERER);
         $_SESSION["map"]->doors["passage"]->doors["staircase"] = new Room(name: "staircase", path: $_SESSION["map"]->doors["passage"]->path, requiredRole: ROLE::ROOT);
 
-        $_SESSION["map"]->items["manaRune.exe"] = new Item(
+        $_SESSION["map"]->items["manaRune.sh"] = new Spell(
             name: "",
             baseName: "manaRune",
             type: ItemType::SPELL,
-            action: ActionType::MANA,
+            action: ActionType::GET_MANA,
             rarity: Rarity::COMMON
         );
-        $_SESSION["map"]->items["grimoire.txt"] = new Item(
-            name: "",
-            baseName: "grimoire",
-            type: ItemType::SCROLL,
-            action: ActionType::OPEN_SCROLL,
-            rarity: Rarity::COMMON,
-            content: "OPEN SCROLL: <br>'cat [scroll name]'<br>"
+        $_SESSION["map"]->items["grimoire.txt"] = new Scroll(
+            "",
+            "grimoire",
+            ItemType::SCROLL,
+            Rarity::COMMON,
+            "OPEN SCROLL: <br>'cat [scroll name]'<br>"
         );
-        $_SESSION["map"]->items["testScroll.txt"] = new Item(
-            name: "",
-            baseName: "testScroll",
-            type: ItemType::SCROLL,
-            action: ActionType::OPEN_SCROLL,
-            rarity: Rarity::COMMON,
-            content: "This is a test scroll content. It is used to demonstrate the scroll functionality in the" .
+        $_SESSION["map"]->items["testScroll.txt"] = new Scroll(
+            "",
+            "testScroll",
+            ItemType::SCROLL,
+            Rarity::COMMON,
+            "This is a test scroll content. It is used to demonstrate the scroll functionality in the" .
             " game. You can read this scroll to gain knowledge and power."
         );
-        $_SESSION["map"]->items["oldDiary.txt"] = new Item(
-            name: "",
-            baseName: "oldDiary",
-            type: ItemType::SCROLL,
-            action: ActionType::OPEN_SCROLL,
-            rarity: Rarity::RARE,
-            content: "some old diary text about hunting boar"
+        $_SESSION["map"]->items["oldDiary.txt"] = new Scroll(
+            "",
+            "oldDiary",
+            ItemType::SCROLL,
+            Rarity::RARE,
+            "some old diary text about hunting boar"
+        );
+        $_SESSION["map"]->items["ancientAlter.exe"] = new Alter(
+            "",
+            "ancientAlter",
+            ItemType::ALTER,
+            Rarity::EPIC,
+            "",
         );
         $_SESSION["maxMana"] = 100;
         $_SESSION["curMana"] = 100;
-        $_SESSION["openedScroll"] = new Scroll("", "");
+        $_SESSION["openedScroll"] = new Scroll(
+            "", 
+            "",
+            ItemType::SCROLL,
+            content: ""
+        );
         $_SESSION["user"]["role"] = ROLE::WANDERER;
     }
 }
