@@ -46,7 +46,7 @@ $script = "main.js";
                 echo "
                 <div class='element-container'>
                     <div class='element door'></div>                        
-                    <p class='element-name ". $door->requiredRole->value . "'>" . $door->name . "</p> 
+                    <p class='element-name " . $door->requiredRole->value . "'>" . $door->name . "</p> 
                 </div>";
             }
             ?>

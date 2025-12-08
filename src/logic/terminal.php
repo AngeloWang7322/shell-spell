@@ -34,7 +34,7 @@ try {
                 throw new Exception("no directory name provided");
             }
             $roomName = end($inputArgs["path"]);
-            $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, count($inputArgs["path"]) - 1));
+            $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, - 1));
             $tempRoom->doors[$roomName] = new Room($roomName);
             break;
         }
@@ -150,7 +150,7 @@ function &getRoom($path): Room
             while ($path[$index] == '..' && $index < count($path)) {
                 $index++;
             }
-            $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 0, count($tempRoom->path) - $index));
+            $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 0, -$index));
         }
         default: {
             if ($index == count($path)) {
@@ -204,7 +204,7 @@ function &getItem($path): Item
 function deleteElement($path)
 {
     if (count($path) > 1) {
-        $tempRoom = &getRoom(array_slice($path, 0, count($path) - 1));
+        $tempRoom = &getRoom(array_slice($path, 0, -1));
     } else {
         $tempRoom = &$_SESSION["curRoom"];
     }

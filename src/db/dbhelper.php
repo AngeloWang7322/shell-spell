@@ -29,12 +29,11 @@ class DBHelper
         $user = $stmt->fetch();
         echo "input hash: " . $password;
         echo "response: " . json_encode($user);
-        
+
         if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['user']["name"] = $user['username'];
             $_SESSION["user"]["id"] = $user["id"];
-        }
-        else{
+        } else {
             throw new Exception("Email oder Passwort falsch");
         }
     }
@@ -95,44 +94,87 @@ class DBHelper
         $fetchUserMap->execute([
             "userId" => $userId
         ]);
-
         $userMap = $fetchUserMap->fetch();
-        $_SESSION["map"] = json_decode($userMap["map_json"]);
+        echo "<br>userMap:<br>" . json_encode($userMap) . "<br><br>";
+        $_SESSION["map"] = self::fromArray(json_decode($userMap["map_json"]));
+        echo "userStats" . json_encode($userStats);
         $_SESSION["curMana"] = $userStats["curMana"];
-        $_SESSION["user"]["role"] = "Wanderer";
+        $_SESSION["user"]["role"] = Role::WANDERER;
         $_SESSION["maxMana"] = $userStats["xp"] / 10 + 1;
+        $_SESSION["curRoom"] =& $_SESSION["map"];
+        $_SESSION["history"] = [];
+
     }
-    public function loadDefaultSession()
+
+    public static function fromArray($data): Room
+    {
+        $doors = [];
+        foreach ($data->doors as $key => $roomData) {
+            $doors[$key] = self::fromArray($roomData);
+        }
+
+        $items = [];
+        foreach ($data->items as $key => $itemData) {
+            $items[$key] = Item::fromArray((array) $itemData);
+        }
+
+        $path = $data->path;
+        if (count($path) > 1) {
+            $path = array_slice($data->path, 0, -1);
+        }
+
+        $requiredRole = Role::from((string) $data->requiredRole);
+
+        return new Room(
+            $data->name,
+            $path,
+            $doors,
+            $items,
+            $requiredRole
+        );
+    }    
+    public static function loadDefaultSession()
     {
         $_SESSION["history"] = [];
         $_SESSION["map"] = new Room("hall");
         $_SESSION["curRoom"] = &$_SESSION["map"];
         $_SESSION["map"]->path = ["hall"];
-        $_SESSION["map"]->doors["library"] = new Room("library", requiredRole: ROLE::APPRENTICE);
-        $_SESSION["map"]->doors["armory"] = new Room("armory", requiredRole: ROLE::ARCHIVIST);
-        $_SESSION["map"]->doors["passage"] = new Room("passage", requiredRole: ROLE::WANDERER);
+        $_SESSION["map"]->doors["library"] = new Room(name: "library", requiredRole: ROLE::APPRENTICE);
+        $_SESSION["map"]->doors["armory"] = new Room(name: "armory", requiredRole: ROLE::ARCHIVIST);
+        $_SESSION["map"]->doors["passage"] = new Room(name: "passage", requiredRole: ROLE::WANDERER);
         $_SESSION["map"]->doors["passage"]->doors["staircase"] = new Room(name: "staircase", path: $_SESSION["map"]->doors["passage"]->path, requiredRole: ROLE::ROOT);
 
-        $_SESSION["map"]->items["manaPotion.exe"] = new Item(
-            "manaPotion",
-            ItemType::SPELL,
-            ActionType::MANA,
-            Rarity::COMMON
+        $_SESSION["map"]->items["manaRune.exe"] = new Item(
+            name: "",
+            baseName: "manaRune",
+            type: ItemType::SPELL,
+            action: ActionType::MANA,
+            rarity: Rarity::COMMON
         );
         $_SESSION["map"]->items["grimoire.txt"] = new Item(
-            "grimoire",
-            ItemType::SCROLL,
-            ActionType::OPEN_SCROLL,
-            Rarity::COMMON,
-            "OPEN SCROLL: <br>'cat [scroll name]'<br>"
+            name: "",
+            baseName: "grimoire",
+            type: ItemType::SCROLL,
+            action: ActionType::OPEN_SCROLL,
+            rarity: Rarity::COMMON,
+            content: "OPEN SCROLL: <br>'cat [scroll name]'<br>"
         );
         $_SESSION["map"]->items["testScroll.txt"] = new Item(
-            "testScroll",
-            ItemType::SCROLL,
-            ActionType::OPEN_SCROLL,
-            Rarity::COMMON,
-            "This is a test scroll content. It is used to demonstrate the scroll functionality in the" .
+            name: "",
+            baseName: "testScroll",
+            type: ItemType::SCROLL,
+            action: ActionType::OPEN_SCROLL,
+            rarity: Rarity::COMMON,
+            content: "This is a test scroll content. It is used to demonstrate the scroll functionality in the" .
             " game. You can read this scroll to gain knowledge and power."
+        );
+        $_SESSION["map"]->items["oldDiary.txt"] = new Item(
+            name: "",
+            baseName: "oldDiary",
+            type: ItemType::SCROLL,
+            action: ActionType::OPEN_SCROLL,
+            rarity: Rarity::RARE,
+            content: "some old diary text about hunting boar"
         );
         $_SESSION["maxMana"] = 100;
         $_SESSION["curMana"] = 100;
