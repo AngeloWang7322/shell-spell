@@ -11,7 +11,7 @@ require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/role.php';
 
 session_start();
-// session_unset();
+// session_unset();    
 
 if (!isset($_SESSION["history"])) {
     DBHelper::loadDefaultSession();

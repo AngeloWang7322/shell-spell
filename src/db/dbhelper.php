@@ -78,8 +78,8 @@ class DBHelper
         $userId = $_SESSION["user"]["id"];
 
         $fetchUserStats = $this->pdo->prepare("
-        SELECT * FROM user_stats us 
-            WHERE us.id = :userId
+        SELECT * FROM user_stats
+            WHERE user_id = :userId
         ");
         $fetchUserStats->execute([
             "userId" => $userId
@@ -95,15 +95,25 @@ class DBHelper
             "userId" => $userId
         ]);
         $userMap = $fetchUserMap->fetch();
-        echo "<br>userMap:<br>" . json_encode($userMap) . "<br><br>";
+
+        //assign userRole and maxMana by xp
+        for($i = 1; $i <= count(Role::cases()); $i++){
+            if ($userStats["xp"] <= $i * 100){
+                $_SESSION["maxMana"] = $i * 100;
+                foreach(Role::cases() as $role){
+                    if($i == 1){
+                        $_SESSION["user"]["role"] = $role;
+                        break 2;
+                    }
+                    $i--;
+                }
+            }
+        }
+
         $_SESSION["map"] = self::fromArray(json_decode($userMap["map_json"]));
-        echo "userStats" . json_encode($userStats);
         $_SESSION["curMana"] = $userStats["curMana"];
-        $_SESSION["user"]["role"] = Role::WANDERER;
-        $_SESSION["maxMana"] = $userStats["xp"] / 10 + 1;
         $_SESSION["curRoom"] =& $_SESSION["map"];
         $_SESSION["history"] = [];
-
     }
 
     public static function fromArray($data): Room
@@ -135,6 +145,7 @@ class DBHelper
     }    
     public static function loadDefaultSession()
     {
+        session_unset();
         $_SESSION["history"] = [];
         $_SESSION["map"] = new Room("hall");
         $_SESSION["curRoom"] = &$_SESSION["map"];
