@@ -4,13 +4,13 @@ class Item
     public string $name;
     public string $baseName;
     public ItemType $type;
-    public Rarity $rarity;
-    public function __construct($name, $baseName, $type, $rarity = Rarity::COMMON)
+    public Role $requiredRole;
+    public function __construct($name, $baseName, $type, $requiredRole = Role::WANDERER)
     {
         $this->name = $name;
         $this->baseName = $baseName;
         $this->type = $type;
-        $this->rarity = $rarity;
+        $this->requiredRole = $requiredRole;
         if (empty($name)) {
             $this->name = $baseName . "." . match ($type) {
                 ItemType::SCROLL => ItemType::SCROLL->value,
@@ -24,12 +24,12 @@ class Item
     public static function fromArray(array $data)
     {
         $type = ItemType::from($data["type"]);
-        $rarity = Rarity::from($data["rarity"]);
+        $requiredRole = Role::from($data["requiredRole"]);
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
             type: $type,
-            rarity: $rarity,
+            requiredRole: $requiredRole,
         );
     }
 }
@@ -37,12 +37,12 @@ class Scroll extends Item
 {
     public bool $isOpen = false;
     public string $content;
-    public function __construct($name, $baseName, $type, $rarity = Rarity::COMMON, string $content = "")
+    public function __construct($name, $baseName, $type, $requiredRole = Role::WANDERER, string $content = "")
     {
         $this->name = $name;
         $this->baseName = $baseName;
         $this->type = $type;
-        $this->rarity = $rarity;
+        $this->requiredRole = $requiredRole;
         $this->content = $content;
         if (empty($name)) {
             $this->name = $baseName . "." . ItemType::SCROLL->value;
@@ -51,12 +51,12 @@ class Scroll extends Item
     public static function fromArray(array $data)
     {
         $type = ItemType::from($data["type"]);
-        $rarity = Rarity::from($data["rarity"]);
+        $requiredRole = ROLE::from($data["requiredRole"]);
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
             type: $type,
-            rarity: $rarity,
+            requiredRole: $requiredRole,
             content: $data['content']
         );
     }
@@ -74,12 +74,12 @@ class Alter extends Item
     public string $spellReward;
     public int $xpReward;
 
-    public function __construct($name, $baseName, $type, $rarity = Rarity::COMMON, $newDoor = "", $isActive = true, $spellReward = "", $xpReward = 0)
+    public function __construct($name, $baseName, $type, $requiredRole = Role::WANDERER, $newDoor = "", $isActive = true, $spellReward = "", $xpReward = 0)
     {
         $this->name = $name;
         $this->baseName = $baseName;
         $this->type = $type;
-        $this->rarity = $rarity;
+        $this->requiredRole = $requiredRole;
         $this->newDoor = $newDoor;
         $this->isActive = $isActive;
         $this->spellReward = $spellReward;
@@ -96,12 +96,12 @@ class Alter extends Item
     public static function fromArray(array $data)
     {
         $type = ItemType::from($data["type"]);
-        $rarity = Rarity::from($data["rarity"]);
+        $requiredRole = ROLE::from($data["requiredRole"]);
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
             type: $type,
-            rarity: $rarity,
+            requiredRole: $requiredRole,
             newDoor: $data["newDoor"],
             isActive: $data["isActive"],
             spellReward: $data["spellReward"],
@@ -112,13 +112,13 @@ class Alter extends Item
 class Spell extends Item
 {
     public ActionType $action;
-    public function __construct($name, $baseName, $type, $action = null, $rarity = Rarity::COMMON, )
+    public function __construct($name, $baseName, $type, $action = null, $requiredRole = Role::WANDERER, )
     {
         $this->name = $name;
         $this->baseName = $baseName;
         $this->type = $type;
         $this->action = $action;
-        $this->rarity = $rarity;
+        $this->requiredRole = $requiredRole;
         if (empty($name)) {
             $this->name = $baseName . "." . ItemType::SPELL->value;
         }
@@ -130,23 +130,25 @@ class Spell extends Item
     }
     function getMana()
     {
-        match ($this->rarity) {
-            Rarity::COMMON => $_SESSION["curMana"] += 10,
-            Rarity::RARE => $_SESSION["curMana"] += 25,
-            Rarity::EPIC => $_SESSION["curMana"] += 50
+        match ($this->requiredRole) {
+            ROLE::WANDERER => $_SESSION["curMana"] += 10,
+            ROLE::APPRENTICE => $_SESSION["curMana"] += 20,
+            ROLE::ARCHIVIST => $_SESSION["curMana"] += 30,
+            ROLE::CONJURER => $_SESSION["curMana"] += 40,
+            ROLE::ROOT => $_SESSION["curMana"] += 50,
         };
     }
     public static function fromArray(array $data)
     {
         $type = ItemType::from($data["type"]);
-        $rarity = Rarity::from($data["rarity"]);
+        $requiredRole = ROLE::from($data["requiredRole"]);
         $action = ActionType::from($data["action"]);
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
             type: $type,
             action: $action,
-            rarity: $rarity,
+            requiredRole: $requiredRole,
         );
     }
 }

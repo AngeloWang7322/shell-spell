@@ -91,7 +91,7 @@
     background-image: url("../images/scroll.png");
     background-position: center;
     background-size: cover;
-    background-repeat: no-repeat;    
+    background-repeat: no-repeat;
     color: black;
 }
 
@@ -152,8 +152,8 @@
 }
 
 .door {
-    height: 300px;
-    width: 200px;
+    height: 200px;
+    width: 180px;
     background-image: url("../images/door.png");
     background-size: fit-content;
     background-position: center;
@@ -164,7 +164,7 @@
 .item {
     font-size: 18px;
     background-color: rgb(122, 109, 35, 0);
-    height: 100px;
+    height: 76px;
 }
 
 .txt {
@@ -182,6 +182,7 @@
     background-size: contain;
     background-repeat: no-repeat;
 }
+
 .exe {
     background-image: url("../images/alter_active.png");
     background-size: fit-content;
@@ -189,8 +190,13 @@
     background-size: contain;
     background-repeat: no-repeat;
 }
-.inactive {
-    
+
+.inactive-alter {
+    background-image: url("../images/alter_inactive.png");
+    background-size: fit-content;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .header-wrapper {
@@ -236,19 +242,24 @@ a {
     color: white;
     text-decoration: none;
 }
-.apprentice, .rare{
-    color: gold;
+
+.apprentice {
+    color: rgb(235, 206, 42);
 }
-.archivist, .epic {
+
+.archivist {
     color: tomato;
 }
+
 .conjurer {
-    color:aqua
+    color: rgb(48, 181, 199)
 }
+
 .root {
-    color: purple
+    color: rgb(150, 48, 218)
 }
-.title-container{
+
+.title-container {
     display: flex;
     flex-direction: row;
     align-items: center;

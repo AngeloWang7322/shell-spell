@@ -34,9 +34,3 @@ enum ActionType: string
     case OPEN_SCROLL = "openScroll";
     case CREATE_DOOR = "createDoor";
 }
-enum Rarity: string
-{
-    case COMMON = "common";
-    case RARE = "rare";
-    case EPIC = "epic";
-}

@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-$response = "";
-$inputDirectory = implode("/", $_SESSION["curRoom"]->path);
+if (empty($_POST["command"])) {
+    return;
+}
 
 try {
-    if (empty($_POST["command"])) {
-        return;
-    }
+    $response = "";
+    $userRole = $_SESSION["user"]["role"];
+    $inputDirectory = implode("/", $_SESSION["curRoom"]->path);
     $inputArgs = organizeInput(explode(" ", $_POST["command"]));
     $inputPathLength = count(value: $inputArgs["path"]);
-    // echo "<br>" . json_encode($inputArgs) . "<br>";
+
     switch ($inputArgs["command"]) {
         case "cd": {
             if (count($inputArgs["path"]) == 0) {
@@ -39,10 +40,11 @@ try {
         case "ls": {
             $lsArray = [];
 
-            $tempRoom = getRoom($inputArgs["path"]);
-            foreach ($tempRoom->doors as $door) {
-                $lsArray[] = $door->name;
-            }
+            $tempRoom = getRoom($inputArgs["path"], true);
+            if (roleIsHigherThanRoomRecursive($userRole, $tempRoom))
+                foreach ($tempRoom->doors as $door) {
+                    $lsArray[] = $door->name;
+                }
             foreach ($tempRoom->items as $element) {
                 $lsArray[] = $element->name;
             }
@@ -132,7 +134,7 @@ function organizeInput(array $inputArray)
     }
     return $inputArgs;
 }
-function &getRoom($path): Room
+function &getRoom($path, $rankRestrictive = false): Room
 {
     $index = 0;
     $tempRoom = &$_SESSION["curRoom"];
@@ -152,7 +154,7 @@ function &getRoom($path): Room
             while ($path[$index] == '..' && $index < count($path)) {
                 $index++;
             }
-            $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 0, -$index));
+            $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 0, -$index), $rankRestrictive);
         }
         default: {
             if ($index == count($path)) {
@@ -162,11 +164,14 @@ function &getRoom($path): Room
         }
     }
 }
-function &getRoomAbsolute($path): Room
+function &getRoomAbsolute($path, $rankRestrictive = false): Room
 {
     $tempRoom = &$_SESSION["map"];
     for ($i = 1; $i < count($path); $i++) {
         if (in_array($path[$i], array_keys($tempRoom->doors))) {
+            if ($rankRestrictive && $_SESSION["user"]["role"]->isLowerThan($tempRoom->doors[$path[$i]]->requiredRole)) {
+                throw (new Exception("rank too low"));
+            }
             $tempRoom = &$tempRoom->doors[$path[$i]];
         } else {
             throw (new Exception("path not found absolute"));
@@ -174,13 +179,15 @@ function &getRoomAbsolute($path): Room
     }
     return $tempRoom;
 }
-function &getRoomRelative($path, $tempRoom = null): Room
+function &getRoomRelative($path, $rankRestrictive = false): Room
 {
-    if ($tempRoom == null) {
-        $tempRoom = &$_SESSION["curRoom"];
-    }
+    $tempRoom = &$_SESSION["curRoom"];
+
     for ($i = 0; $i < count($path); $i++) {
         if (in_array($path[$i], array_keys($tempRoom->doors))) {
+            if ($rankRestrictive && $_SESSION["user"]["role"]->isLowerThan($tempRoom->doors[$path[$i]]->requiredRole)) {
+                throw (new Exception("rank too low"));
+            }
             $tempRoom = &$tempRoom->doors[$path[$i]];
         } else {
             throw (new Exception("path not found relative"));
@@ -216,7 +223,13 @@ function deleteElement($path)
             throw new Exception("rank too low");
         }
         unset($tempRoom->doors[end($path)]);
-    } else if (in_array(end($path), array_keys($tempRoom->items))) {
+    } else if (
+        in_array(end($path), array_keys($tempRoom->items))
+
+    ) {
+        if ($_SESSION["user"]["role"]->isLowerThan($tempRoom->items[end($path)]->requiredRole)) {
+            throw new Exception("rank too low");
+        }
         unset($tempRoom->items[end($path)]);
     } else {
         throw new Exception("element not found");

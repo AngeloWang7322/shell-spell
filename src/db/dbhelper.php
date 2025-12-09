@@ -164,35 +164,27 @@ class DBHelper
             baseName: "manaRune",
             type: ItemType::SPELL,
             action: ActionType::GET_MANA,
-            rarity: Rarity::COMMON
+            requiredRole: ROLE::WANDERER
         );
         $_SESSION["map"]->items["grimoire.txt"] = new Scroll(
             "",
             "grimoire",
             ItemType::SCROLL,
-            Rarity::COMMON,
+            Role::ROOT,
             "OPEN SCROLL: <br>'cat [scroll name]'<br>"
-        );
-        $_SESSION["map"]->items["testScroll.txt"] = new Scroll(
-            "",
-            "testScroll",
-            ItemType::SCROLL,
-            Rarity::COMMON,
-            "This is a test scroll content. It is used to demonstrate the scroll functionality in the" .
-            " game. You can read this scroll to gain knowledge and power."
         );
         $_SESSION["map"]->items["oldDiary.txt"] = new Scroll(
             "",
             "oldDiary",
             ItemType::SCROLL,
-            Rarity::RARE,
+            Role::WANDERER,
             "some old diary text about hunting boar"
         );
         $_SESSION["map"]->items["ancientAlter.exe"] = new Alter(
             "",
             "ancientAlter",
             ItemType::ALTER,
-            Rarity::EPIC,
+            Role::CONJURER,
             "",
         );
         $_SESSION["maxMana"] = 100;

@@ -57,7 +57,7 @@ $script = "main.js";
                 echo "
                 <div class='element-container'>
                     <div class='element item " . $item->type->value . "'> </div>
-                    <p class='element-name " . $item->rarity->value . "'>" . $item->name . "</p>
+                    <p class='element-name " . $item->requiredRole->value . "'>" . $item->name . "</p>
                 </div> 
                 ";
             }
