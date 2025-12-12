@@ -15,17 +15,28 @@ try {
 
     switch ($inputArgs["command"]) {
         case "cd": {
-            if (count($inputArgs["path"]) == 0) {
-                throw new Exception("no path provided");
-            }
-            for ($i = 1; $i <= count($inputArgs["path"]); $i++) {
-                if ($_SESSION["user"]["role"]->isLowerThan(getRoom(array_slice($inputArgs["path"], 0, $i))->requiredRole)) {
-                    $response = "required rank: " . getRoom(array_slice($inputArgs["path"], 0, $i))->requiredRole->value;
-                    break 2;
+            switch ($_POST["command"][3]) {
+                case "/": {
+                    $_SESSION["curRoom"] =& $_SESSION["map"];
+                    pushNewLastPath($_SESSION["curRoom"]->path);
+                    break;
+                }
+                case "-": {
+                    $_SESSION["curRoom"] =& getRoom(array_pop($_SESSION["lastPath"]));
+                    break;
+                }
+                default: {
+                    if (count($inputArgs["path"]) == 0) {
+                        throw new Exception("no path provided");
+                    }
+
+                    pushNewLastPath($_SESSION["curRoom"]->path);
+                    
+                    $_SESSION["curMana"] -= (count($inputArgs["path"]) - 1) * 2;
+                    $_SESSION["curRoom"] = &getRoom($inputArgs["path"], true);
+                    break;
                 }
             }
-            $_SESSION["curMana"] -= (count($inputArgs["path"]) - 1) * 2;
-            $_SESSION["curRoom"] = &getRoom($inputArgs["path"]);
             break;
         }
         case "mkdir": {
@@ -38,16 +49,8 @@ try {
             break;
         }
         case "ls": {
-            $lsArray = [];
-
             $tempRoom = getRoom($inputArgs["path"], true);
-            if (roleIsHigherThanRoomRecursive($userRole, $tempRoom))
-                foreach ($tempRoom->doors as $door) {
-                    $lsArray[] = $door->name;
-                }
-            foreach ($tempRoom->items as $element) {
-                $lsArray[] = $element->name;
-            }
+            $lsArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
             $response = "- " . implode(", ", $lsArray);
             break;
         }
@@ -100,10 +103,12 @@ try {
             }
         }
     }
+
 } catch (Exception $e) {
     editMana(amount: 10);
     $response = $e->getMessage();
 }
+
 $_SESSION["history"][] =
     [
         "directory" => $inputDirectory,
@@ -269,4 +274,16 @@ function updateItemPaths(&$room)
 function editMana($amount)
 {
     $_SESSION["curMana"] -= $amount;
+}
+function pushNewLastPath(array $newPath)
+{
+    $lastPathCount = count($_SESSION["lastPath"]);
+    if ($lastPathCount > 10) {
+        for ($i = 0; $i < $lastPathCount - 1; $i++) {
+            $_SESSION["lastPath"][$i] = $_SESSION["lastPath"][$i + 1];
+        }
+        array_pop($_SESSION["lastPath"]);
+    }
+
+    array_push($_SESSION["lastPath"], $newPath);
 }
