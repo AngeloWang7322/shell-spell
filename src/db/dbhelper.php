@@ -196,5 +196,6 @@ class DBHelper
             content: ""
         );
         $_SESSION["user"]["role"] = ROLE::WANDERER;
+        $_SESSION["lastPath"][] = $_SESSION["curRoom"]->path;
     }
 }
