@@ -10,13 +10,16 @@ require_once  __DIR__ . '/../src/db/db.php';
 require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
 
+$dbHelper = new DBHelper($pdo);
 session_start();
 // session_unset();    
 
 if (!isset($_SESSION["history"])) {
     DBHelper::loadDefaultSession();
 }
+// echo json_encode($_SESSION["map"]);
 
+$_SESSION["curRoom"];
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
     switch ($_POST["action"]) {
         case "enterCommand": {
@@ -36,6 +39,7 @@ $routes = [
     'login' => 'login.php',
     'register' => 'authentication.php',
     'profile' => 'profile.php',
+    'selection' => 'gameStateSelection',
     'notfound' => 'notfound.php'
 ];
 

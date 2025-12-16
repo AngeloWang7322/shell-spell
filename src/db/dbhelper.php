@@ -54,53 +54,34 @@ class DBHelper
 
         self::loginUser($password, $email);
 
-        $mapInsert = $this->pdo->prepare(" 
-                INSERT INTO user_maps (user_id, map_json) 
-                VALUES (:userid, :map_json)
-            ");
-        $mapInsert->execute(params: [
-            "userid" => $_SESSION["user"]["id"],
-            "map_json" => json_encode($_SESSION["map"])
+        //remaining columns get set via defaults
+        $gameStateInsert = $this->pdo->prepare("
+            INSERT INTO game_states ( user_id, map_json)
+            VALUES (:userId, :mapJson)
+        ");
+        $gameStateInsert->execute(params:[
+            "userId" => $_SESSION["user"]["id"],
+            "mapJson" => json_encode($_SESSION["map"])
         ]);
-
-        $statsInsert = $this->pdo->prepare("
-                INSERT INTO user_stats (user_id, curMana, xp) 
-                VALUES (:userid, :curMana, :xp)
-            ");
-        echo "user id: " . json_encode($_SESSION["user"]["id"]);
-        $statsInsert->execute([
-            "userid" => $_SESSION["user"]["id"],
-            "curMana" => 100,
-            "xp" => 0,
-        ]);
-        self::loadUserData();
     }
-    public function loadUserData()
+    public function getGameState($stateName)
     {
         $userId = $_SESSION["user"]["id"];
 
-        $fetchUserStats = $this->pdo->prepare("
-        SELECT * FROM user_stats
-            WHERE user_id = :userId
+        $fetchGameState = $this->pdo->prepare("
+            SELECT * FROM game_states 
+                WHERE user_id = :userId 
+                AND state_name = :stateName
         ");
-        $fetchUserStats->execute([
-            "userId" => $userId
+        $fetchGameState->execute([
+            "userId" => $userId,
+            "stateName" => $stateName
         ]);
-        $userStats = $fetchUserStats->fetch();
-
-        $fetchUserMap = $this->pdo->prepare(" 
-            SELECT map_json
-            FROM user_maps
-            WHERE user_id = :userId
-        ");
-        $fetchUserMap->execute([
-            "userId" => $userId
-        ]);
-        $userMap = $fetchUserMap->fetch();
+        $gameState = $fetchGameState->fetch();
 
         //assign userRole and maxMana by xp
         for ($i = 1; $i <= count(Role::cases()); $i++) {
-            if ($userStats["xp"] <= $i * 100) {
+            if ($gameState["xp"] <= $i * 100) {
                 $_SESSION["maxMana"] = $i * 100;
                 foreach (Role::cases() as $role) {
                     if ($i == 1) {
@@ -112,12 +93,25 @@ class DBHelper
             }
         }
 
-        $_SESSION["map"] = Room::fromArray(json_decode($userMap["map_json"]));
-        $_SESSION["curMana"] = $userStats["curMana"];
+        $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
+        $_SESSION["curMana"] = $gameState["curMana"];
         $_SESSION["curRoom"] =& $_SESSION["map"];
         $_SESSION["history"] = [];
     }
-
+    public function getGameStateOptions(){
+        $fetchStatesData = $this->pdo->prepare("
+            SELECT state_name, xp FROM game_states 
+                WHERE user_id = :userId 
+        ");
+        $fetchStatesData->execute([
+            "userId" => $_SESSION["user"]["id"]
+        ]);
+        $statesData=[];
+        foreach($fetchStatesData->fetch() as $data){
+            $statesData[$data["state_name"]] = $data["role"];
+        }
+        return $statesData;
+    }
     public static function loadDefaultSession()
     {
         session_unset();
@@ -176,6 +170,7 @@ class DBHelper
             content: ""
         );
         $_SESSION["user"]["role"] = ROLE::WANDERER;
+        $_SESSION["user"]["username"] = "guest";
         $_SESSION["lastPath"] =[];
     }
 }

@@ -23,9 +23,14 @@
 .history-container {
     display: flex;
     flex-direction: column;
+    word-break:break-all;
 }
-
+.base-string{
+    text-wrap-mode: nowrap;
+    width: fit-content;
+}
 .input-line {
+
     display: flex;
     flex-direction: row;
     align-items: end;
