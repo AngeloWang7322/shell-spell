@@ -15,94 +15,95 @@ try {
 
     switch ($inputArgs["command"]) {
         case "cd": {
-            switch ($_POST["command"][3]) {
-                case "/": {
-                    $_SESSION["curRoom"] =& $_SESSION["map"];
-                    pushNewLastPath($_SESSION["curRoom"]->path);
-                    break;
+                switch ($_POST["command"][3]) {
+                    case "/": {
+                            $_SESSION["curRoom"] = &$_SESSION["map"];
+                            pushNewLastPath($_SESSION["curRoom"]->path);
+                            break;
+                        }
+                    case "-": {
+                            $_SESSION["curRoom"] = &getRoom(array_pop($_SESSION["lastPath"]));
+                            break;
+                        }
+                    default: {
+                            if (count($inputArgs["path"]) == 0) {
+                                throw new Exception("no path provided");
+                            }
+                            pushNewLastPath($_SESSION["curRoom"]->path);
+
+                            $_SESSION["curMana"] -= (count($inputArgs["path"]) - 1) * 2;
+                            $_SESSION["curRoom"] = &getRoom($inputArgs["path"], true);
+                            break;
+                        }
                 }
-                case "-": {
-                    $_SESSION["curRoom"] =& getRoom(array_pop($_SESSION["lastPath"]));
-                    break;
-                }
-                default: {
-                    if (count($inputArgs["path"]) == 0) {
-                        throw new Exception("no path provided");
-                    }
-                    pushNewLastPath($_SESSION["curRoom"]->path);
-                    
-                    $_SESSION["curMana"] -= (count($inputArgs["path"]) - 1) * 2;
-                    $_SESSION["curRoom"] = &getRoom($inputArgs["path"], true);
-                    break;
-                }
+                break;
             }
-            break;
-        }
         case "mkdir": {
-            if (empty($inputArgs["path"]) || end($inputArgs["path"]) == "") {
-                throw new Exception("no directory name provided");
-            }
-            $roomName = end($inputArgs["path"]);
-            $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, -1));
-            $tempRoom->doors[$roomName] = new Room(name: $roomName, requiredRole: $_SESSION["user"]["role"]);
-            break;
-        }
-        case "ls": {
-            $tempRoom = getRoom($inputArgs["path"], true);
-            $lsArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-            $response = "- " . implode(", ", $lsArray);
-            break;
-        }
-        case "pwd": {
-            $response = implode("/", $_SESSION["curRoom"]->path);
-            break;
-        }
-        case "rm": {
-            deleteElement($inputArgs["path"]);
-            break;
-        }
-        case "mv": {
-            $destinationRoom = &getRoom($inputArgs["path_2"]);
-            if (empty($inputArgs["path_2"])) {
-                throw new Exception("no source path provided");
-            } else if ($inputArgs["path"][0] == $inputArgs["path_2"][0]) {
-                throw new Exception("cannot move room into itsself");
-            }
-
-            if (stristr(end($inputArgs["path"]), '.')) {
-                $tempItem = &getItem($inputArgs["path"]);
-                $destinationRoom->items[$tempItem->name] = $tempItem;
-                updateItemPaths($destinationRoom);
-            } else {
-                $tempRoom = &getRoom($inputArgs["path"]);
-                $destinationRoom->doors[$tempRoom->name] = $tempRoom;
-                updatePathsAfterMv($destinationRoom);
-            }
-            deleteElement($inputArgs["path"], false);
-            break;
-        }
-        case "cat": {
-            $catItem = &getItem($inputArgs["path"]);
-            if (is_a($catItem, "Scroll")) {
-                $catItem->openScroll();
-                break;
-            } else {
-                throw new Exception("item not a scroll");
-            }
-        }
-        default: {
-            if (strncmp($inputArgs["command"], "./", 2) == 0) {
-                $itemExec = &getItem(explode("/", substr($inputArgs["command"], 2)));
-                switch ($itemExec->type) {
+                if (empty($inputArgs["path"]) || end($inputArgs["path"]) == "") {
+                    throw new Exception("no directory name provided");
                 }
-                $itemExec->executeAction();
+                $roomName = end($inputArgs["path"]);
+                $tempRoom = &getRoom(array_slice($inputArgs["path"], 0, -1));
+                $tempRoom->doors[$roomName] = new Room(name: $roomName, requiredRole: $_SESSION["user"]["role"]);
                 break;
-            } else {
-                throw new Exception("invalid command");
             }
-        }
-    }
+        case "ls": {
+                $tempRoom = getRoom($inputArgs["path"], true);
+                $lsArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
+                $response = "- " . implode(", ", $lsArray);
+                break;
+            }
+        case "pwd": {
+                $response = implode("/", $_SESSION["curRoom"]->path);
+                break;
+            }
+        case "rm": {
+                deleteElement($inputArgs["path"]);
+                break;
+            }
+        case "mv": {
+                $destinationRoom = &getRoom($inputArgs["path_2"]);
+                if (empty($inputArgs["path_2"])) {
+                    throw new Exception("no source path provided");
+                } else if ($inputArgs["path"][0] == $inputArgs["path_2"][0]) {
+                    throw new Exception("cannot move room into itsself");
+                }
 
+                if (stristr(end($inputArgs["path"]), '.')) {
+                    $tempItem = &getItem($inputArgs["path"]);
+                    $destinationRoom->items[$tempItem->name] = $tempItem;
+                    updateItemPaths($destinationRoom);
+                } else {
+                    $tempRoom = &getRoom($inputArgs["path"]);
+                    $destinationRoom->doors[$tempRoom->name] = $tempRoom;
+                    updatePathsAfterMv($destinationRoom);
+                }
+                deleteElement($inputArgs["path"], false);
+                break;
+            }
+        case "cat": {
+                $catItem = &getItem($inputArgs["path"]);
+                if (is_a($catItem, Scroll::class)) {
+                    $catItem->openScroll();
+                    break;
+                } else {
+                    throw new Exception("item not readable");
+                }
+            }
+        default: {
+                if (strncmp($inputArgs["command"], "./", 2) == 0) {
+                    $itemExec = &getItem(explode("/", substr($inputArgs["command"], 2)));
+                    if (is_a($itemExec, Alter::class) || is_a($itemExec, Spell::class)) {
+                        $itemExec->executeAction();
+                    } else {
+                        throw new Exception("item not executable");
+                    }
+                    break;
+                } else {
+                    throw new Exception("invalid command");
+                }
+            }
+    }
 } catch (Exception $e) {
     editMana(amount: 10);
     $response = $e->getMessage();
@@ -149,23 +150,23 @@ function &getRoom($path, $rankRestrictive = false): Room
 
     switch ($path[0]) {
         case "hall": {
-            return getRoomAbsolute($path);
-        }
+                return getRoomAbsolute($path);
+            }
         case '..': {
-            if ($_SESSION["curRoom"]->name == "hall") {
-                throw new Exception("invalid path");
+                if ($_SESSION["curRoom"]->name == "hall") {
+                    throw new Exception("invalid path");
+                }
+                while ($path[$index] == '..' && $index < count($path)) {
+                    $index++;
+                }
+                $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 0, -$index), $rankRestrictive);
             }
-            while ($path[$index] == '..' && $index < count($path)) {
-                $index++;
-            }
-            $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 0, -$index), $rankRestrictive);
-        }
         default: {
-            if ($index == count($path)) {
-                return $tempRoom;
+                if ($index == count($path)) {
+                    return $tempRoom;
+                }
+                return getRoomRelative(array_slice($path, $index), $tempRoom);
             }
-            return getRoomRelative(array_slice($path, $index), $tempRoom);
-        }
     }
 }
 function &getRoomAbsolute($path, $rankRestrictive = false): Room
@@ -202,7 +203,7 @@ function &getRoomRelative($path, $rankRestrictive = false): Room
 function &getItem($path)
 {
     if (count($path) > 1) {
-        $tempRoom = &getRoom(array_splice($path, 0, count($path) - 2));
+        $tempRoom = &getRoom(array_slice($path, 0, count($path) - 1));
     } else {
         $tempRoom = &$_SESSION["curRoom"];
     }

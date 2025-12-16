@@ -155,7 +155,7 @@ class DBHelper
             "",
             "ancientAlter",
             ItemType::ALTER,
-            Role::CONJURER,
+            Role::ROOT,
             true,
             ["dusty_key.txt"],
             new Room("rewardRoom"),

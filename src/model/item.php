@@ -27,13 +27,11 @@ class Item
     }
     public static function fromArray(array $data)
     {
-        $type = ItemType::from($data["type"]);
-        $requiredRole = Role::from($data["requiredRole"]);
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
-            type: $type,
-            requiredRole: $requiredRole,
+            type: ItemType::from($data["type"]),
+            requiredRole: Role::from($data["requiredRole"]),
         );
     }
 }
@@ -116,7 +114,7 @@ class Alter extends Item
         }
         foreach ($this->requiredElements as $element) {
 
-            if (!array_key_exists($element, $_SESSION["curRoom"]->items) || $_SESSION["curRoom"]->items[$element]->requiredRole != Role::ROOT) {
+            if (!array_key_exists($element, $_SESSION["curRoom"]->items) || $_SESSION["curRoom"]->items[$element]->requiredRole != $this->requiredRole) {
                 throw new Exception("conditions demanded by the alter not met.");
 
             }
