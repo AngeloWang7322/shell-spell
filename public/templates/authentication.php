@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $dbHelper = new DBHelper($pdo);
             $dbHelper->createUserRows($password, $email, $name);
-            header('Location: /');
+            header('Location: selection');
         }
     }
 }

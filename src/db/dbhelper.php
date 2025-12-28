@@ -59,10 +59,11 @@ class DBHelper
             INSERT INTO game_states ( user_id, map_json)
             VALUES (:userId, :mapJson)
         ");
-        $gameStateInsert->execute(params:[
+        $gameStateInsert->execute( [
             "userId" => $_SESSION["user"]["id"],
             "mapJson" => json_encode($_SESSION["map"])
         ]);
+        echo json_encode($gameStateInsert->fetch());
     }
     public function getGameState($stateName)
     {
@@ -98,17 +99,19 @@ class DBHelper
         $_SESSION["curRoom"] =& $_SESSION["map"];
         $_SESSION["history"] = [];
     }
-    public function getGameStateOptions(){
+    public function getGameStateOptions()
+    {
         $fetchStatesData = $this->pdo->prepare("
-            SELECT state_name, xp FROM game_states 
+            SELECT name, xp FROM game_states 
                 WHERE user_id = :userId 
         ");
         $fetchStatesData->execute([
             "userId" => $_SESSION["user"]["id"]
         ]);
-        $statesData=[];
-        foreach($fetchStatesData->fetch() as $data){
-            $statesData[$data["state_name"]] = $data["role"];
+        $statesData = [];
+        echo json_encode($fetchStatesData->fetch());
+        foreach ($fetchStatesData->fetch() as $data) {
+            $statesData[$data["name"]] = calcRankByXp($data["xp"]);
         }
         return $statesData;
     }
@@ -171,6 +174,20 @@ class DBHelper
         );
         $_SESSION["user"]["role"] = ROLE::WANDERER;
         $_SESSION["user"]["username"] = "guest";
-        $_SESSION["lastPath"] =[];
+        $_SESSION["lastPath"] = [];
     }
+}
+function calcRankByXp($xp): string
+{
+    for ($i = 1; $i <= count(Role::cases()); $i++) {
+        if ($xp <= $i * 100) {
+            foreach (Role::cases() as $role) {
+                if ($i == 1) {
+                    return $role->value;
+                }
+                $i--;
+            }
+        }
+    }
+    throw new Exception("role not found?");
 }

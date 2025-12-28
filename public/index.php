@@ -39,7 +39,7 @@ $routes = [
     'login' => 'login.php',
     'register' => 'authentication.php',
     'profile' => 'profile.php',
-    'selection' => 'gameStateSelection',
+    'selection' => 'gameStateSelection.php',
     'notfound' => 'notfound.php'
 ];
 

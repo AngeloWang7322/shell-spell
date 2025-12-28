@@ -21,8 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     try {
         $dbHelper->loginUser($password, $email);     
-        $dbHelper ->loadUserData();   
-        header('Location: /');
+        header('Location: selection');
     } catch (Exception $e) {
         $errors[] = $e->getMessage();
     }
