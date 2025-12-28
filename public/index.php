@@ -9,6 +9,8 @@ require __DIR__ . '/../src/model/scroll.php';
 require_once  __DIR__ . '/../src/db/db.php';
 require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
+require __DIR__ . '/../src/logic/upload.php';
+
 
 session_start();
 // session_unset();    
@@ -31,6 +33,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
     header("Location: " . $_SERVER["REQUEST_URI"]);
     exit;
 }
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+
+    if ($path === "profile" && isset($_POST["upload_profile_pic"])) {
+        handleProfilePicUpload();     
+        header("Location: /profile"); 
+        exit;
+    }
+}
+
 $routes = [
     '' => 'main.php',
     'login' => 'login.php',
