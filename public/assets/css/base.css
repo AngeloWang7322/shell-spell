@@ -8,10 +8,12 @@
     min-height: 100vh;
     padding: 0;
 }
+
 body {
     padding: 0;
     margin: 0;
 }
+
 main {
     max-width: 800px;
     min-height: 100vh;
@@ -21,20 +23,90 @@ main {
 button {
     padding: .6rem 1rem;
 }
+
 .page-content {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    min-height: 100vh; 
+    min-height: 100vh;
     padding-top: 32px;
 }
-.icon-small{
-    width: 18px; 
+
+.icon-small {
+    width: 18px;
 }
+
 .icon-medium {
     width: 24px;
 }
-.icon-large{
+
+.icon-large {
     width: 36px;
+}
+
+.center-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.apprentice {
+    color: rgb(235, 206, 42);
+}
+
+.archivist {
+    color: rgb(48, 181, 199);
+}
+
+.conjurer {
+    color: rgb(150, 48, 218);
+}
+
+.root {
+    color: tomato;
+}
+
+.page-title {
+    z-index: 9999;
+    position: fixed;
+    top: 7vh;
+    font-size: 42px;
+}
+
+.hidden-button {
+    background-color: rgba(0, 0, 0, 0);
+    width: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    display: inherit;
+    color: white;
+    text-decoration: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+form {
+    font-family:
+        "Pixelify Sans"
+    ;
+}
+button{
+        font-family:
+        "Pixelify Sans"
+    ;
+    color: white;
+}
+input {
+    font-family:
+        "Pixelify Sans"
+    ;
+    font-size: 22px;
 }

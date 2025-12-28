@@ -21,8 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     try {
         $dbHelper->loginUser($password, $email);     
-        $dbHelper ->loadUserData();   
-        header('Location: /');
+        header('Location: selection');
     } catch (Exception $e) {
         $errors[] = $e->getMessage();
     }
@@ -50,7 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>
             Passwort:<br>
             <input type="password" name="password">
-        </label><br><br>
+        </label>
+        <br><br>
 
         <button type="submit">Einloggen</button>
     </form>

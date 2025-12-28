@@ -81,11 +81,12 @@ $script = "main.js";
                 ?>
             </div>
             <div class="input-line">
-                <?php
-                $type = gettype($_SESSION["curRoom"]->path);
-                $tempPathString = implode("/", $_SESSION["curRoom"]->path);
-                echo $tempPathString . ">";
-                ?>
+                <div class="base-string">
+                    <?php
+                    $baseString = $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . ">";
+                    echo $baseString;
+                    ?>
+                </div>
                 <form class="command-input" method="post">
                     <input type="hidden" value="enterCommand" name="action">
                     <input name="command" class="command-input" type="text" autocomplete="off" autofocus>
@@ -114,7 +115,6 @@ $script = "main.js";
         <div class="header-container">
             <h1 class="scroll-header">
                 <?php echo $_SESSION["openedScroll"]->header; ?>
-
             </h1>
         </div>
         <div class="scroll-content">

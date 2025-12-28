@@ -6,27 +6,44 @@ require __DIR__ . '/../src/model/room.php';
 require __DIR__ . '/../src/model/user.php';
 require __DIR__ . '/../src/model/item.php';
 require __DIR__ . '/../src/model/scroll.php';
-require_once  __DIR__ . '/../src/db/db.php';
+require_once __DIR__ . '/../src/db/db.php';
 require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
 require __DIR__ . '/../src/logic/upload.php';
 
 
+$dbHelper = new DBHelper($pdo);
 session_start();
 // session_unset();    
 
 if (!isset($_SESSION["history"])) {
     DBHelper::loadDefaultSession();
 }
+// echo json_encode($_SESSION["user"]);
 
+$_SESSION["curRoom"];
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
     switch ($_POST["action"]) {
         case "enterCommand": {
             require __DIR__ . "/../src/logic/terminal.php";
             break;
         }
+        case "loadMap": {
+            $dbHelper->loadGameState($_POST["mapId"]);
+            header("Location: /");
+            exit;
+        }
         case "closeScroll": {
             require __DIR__ . "/../src/logic/game.php";
+            break;
+        }
+        case "newMap": {
+            $dbHelper->createGameState($_POST["newMapName"]);
+            header("Location: /");
+            exit;
+        }
+        case "deleteMap": {
+            $dbHelper->deleteGameState($_POST["mapId"]);
             break;
         }
     }
@@ -49,7 +66,9 @@ $routes = [
     'login' => 'login.php',
     'register' => 'authentication.php',
     'profile' => 'profile.php',
-    'notfound' => 'notfound.php'
+    'selection' => 'gameStateSelection.php',
+    'notfound' => 'notfound.php',
+    'newgame' => 'createNewGame.php',
 ];
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

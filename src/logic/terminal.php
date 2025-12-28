@@ -9,7 +9,7 @@ if (empty($_POST["command"])) {
 try {
     $response = "";
     $userRole = $_SESSION["user"]["role"];
-    $inputDirectory = implode("/", $_SESSION["curRoom"]->path);
+    $inputBaseString = $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . ">";
     $inputArgs = organizeInput(explode(" ", $_POST["command"]));
     $inputPathLength = count(value: $inputArgs["path"]);
 
@@ -58,7 +58,7 @@ try {
                 break;
             }
         case "rm": {
-                deleteElement($inputArgs["path"]);
+                deleteElement($inputArgs[" path"]);
                 break;
             }
         case "mv": {
@@ -111,7 +111,7 @@ try {
 
 $_SESSION["history"][] =
     [
-        "directory" => $inputDirectory,
+        "directory" => $inputBaseString,
         "command" => $_POST["command"],
         "response" => $response
     ];
