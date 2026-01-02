@@ -11,7 +11,9 @@ $options = [
 ];
 
 try {
+    $_SESSION["hasDbConnection"]= true;
     $pdo = new PDO($dsn, $dbuser, $dbpass, $options);
 } catch (PDOException $e) {
+    $_SESSION["hasDbConnection"]= false;
     echo "Datenbank-Verbindung fehlgeschlagen: " . $e->getMessage();
 }

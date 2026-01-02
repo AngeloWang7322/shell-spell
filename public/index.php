@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -10,9 +11,11 @@ require_once __DIR__ . '/../src/db/db.php';
 require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
 
-$dbHelper = new DBHelper($pdo);
+if ($_SESSION["hasDbConnection"]) {
+    $dbHelper = new DBHelper($pdo);
+}
 session_start();
-// session_unset();    
+// session_unset();
 
 if (!isset($_SESSION["history"])) {
     DBHelper::loadDefaultSession();
@@ -23,27 +26,27 @@ $_SESSION["curRoom"];
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
     switch ($_POST["action"]) {
         case "enterCommand": {
-            require __DIR__ . "/../src/logic/terminal.php";
-            break;
-        }
+                require __DIR__ . "/../src/logic/terminal.php";
+                break;
+            }
         case "loadMap": {
-            $dbHelper->loadGameState($_POST["mapId"]);
-            header("Location: /");
-            exit;
-        }
+                $dbHelper->loadGameState($_POST["mapId"]);
+                header("Location: /");
+                exit;
+            }
         case "closeScroll": {
-            require __DIR__ . "/../src/logic/game.php";
-            break;
-        }
+                require __DIR__ . "/../src/logic/game.php";
+                break;
+            }
         case "newMap": {
-            $dbHelper->createGameState($_POST["newMapName"]);
-            header("Location: /");
-            exit;
-        }
+                $dbHelper->createGameState($_POST["newMapName"]);
+                header("Location: /");
+                exit;
+            }
         case "deleteMap": {
-            $dbHelper->deleteGameState($_POST["mapId"]);
-            break;
-        }
+                $dbHelper->deleteGameState($_POST["mapId"]);
+                break;
+            }
     }
     header("Location: " . $_SERVER["REQUEST_URI"]);
     exit;
@@ -69,4 +72,3 @@ if (isset($routes[$path])) {
 
 require __DIR__ . '/assets/footer.php';
 require __DIR__ . '/assets/layout.php';
-?>
