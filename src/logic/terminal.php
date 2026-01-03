@@ -11,7 +11,7 @@ try
 {
     $response = "";
     $userRole = $_SESSION["user"]["role"];
-    $inputBaseString = $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path);
+    $inputBaseString ="[ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$&nbsp";
     $inputArgs = organizeInput(explode(" ", $_POST["command"]));
 
     switch ($inputArgs["command"])
@@ -127,13 +127,12 @@ try
             {
                 $grepElement = &getRoomOrItem($inputArgs["path"][0]);
                 $matchingLines;
-                $cond = $inputArgs["strings"][0];
-                echo var_dump($cond);
+                
                 if (is_a($grepElement, Room::class))
                 {
                     $matchingLines = grepRecursive(
                         $grepElement,
-                        $cond
+                        $inputArgs["strings"][0]
                     );
                 }
                 else
@@ -143,10 +142,10 @@ try
                         $inputArgs["strings"][0]
                     );
                 }
-                echo "<br> result: " . json_encode($matchingLines);
+
                 foreach ($matchingLines as $key => $line)
                 {
-                    $response = $key . " " . $line;
+                    $response = $response . $key . " " . $line;
                 }
                 break;
             }
@@ -212,14 +211,6 @@ function organizeInput(array $inputArray)
         else
         {
             array_push($inputArgs["path"], explode("/", $inputArray[$i]));
-            // if (!empty($inputArgs["path"]))
-            // {
-            //     $inputArgs["path_2"] = explode("/", $inputArray[$i]);
-            // }
-            // else
-            // {
-            //     $inputArgs["path"] = explode("/", $inputArray[$i]);
-            // }
         }
     }
     return $inputArgs;
@@ -345,7 +336,6 @@ function deleteElement($path, $rankRestrictive = true)
     }
     else if (
         in_array(end($path), array_keys($tempRoom->items))
-
     )
     {
         if ($_SESSION["user"]["role"]->isLowerThan($tempRoom->items[end($path)]->requiredRole) && $rankRestrictive)
@@ -416,19 +406,18 @@ function pushNewLastPath(array $newPath)
 }
 function grepRecursive($room, $condition)
 {
-    echo "<br> condition: " . $condition;
     $grepOutput = [];
+
     foreach ($room->items as $item)
     {
-
-        array_merge($grepOutput, grepItem($item, $condition));
-        echo "<br>matches from item: " . $item->name . json_encode($grepOutput);
+        $grepOutput = array_merge($grepOutput, grepItem($item, $condition));
+        // echo "<br>matches from item: " . $item->name . json_encode($grepOutput);
     }
     foreach ($room->doors as $door)
     {
         array_merge($grepOutput, grepRecursive($door, $grepOutput, $condition));
     }
-    echo "<br>matches: " . json_encode($grepOutput);
+    
     return $grepOutput;
 }
 function grepItem($item, string $condition)
@@ -445,25 +434,22 @@ function grepItem($item, string $condition)
 
             if (stristr($tempLine, (string)$condition))
             {
-                $matchingLines[implode('/', $item->path) . "::" . $lineCounter] = $tempLine . "<br>";
+                $matchingLines[implode('/', $item->path) . "&nbsp" . $lineCounter. ":"] = $tempLine . "<br>";
             }
 
             $strOffset = $i + 1;
             $lineCounter++;
         }
     }
-    echo "<br>matches: " . json_encode($matchingLines);
     return $matchingLines;
 }
 function getRoomOrItem($path, $tempRoom = null): mixed
 {
-    echo "<br>path: " . json_encode($path);
     if ($tempRoom == null)
     {
         $tempRoom = &getRoom(array_slice($path, 0, -1));
     }
 
-    echo "<br>end: " . json_encode(end($path));
     if (key_exists(end($path), $tempRoom->doors))
     {
         return $tempRoom->doors[end($path)];

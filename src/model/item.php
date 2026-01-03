@@ -19,7 +19,6 @@ class Item
         $this->requiredRole = $requiredRole;
         $this->path = $path;
 
-
         if (empty($name))
         {
             $this->name = $baseName . "." . $this->type->value;
@@ -30,14 +29,6 @@ class Item
         }
         array_push($this->path, $this->name);
     }
-    // public static function fromArray(array $data)
-    // {
-    //     return new self(
-    //         name: $data['name'],
-    //         baseName: $data["baseName"],
-    //         requiredRole: Role::from($data["requiredRole"]),
-    //     );
-    // }
 }
 class Scroll extends Item
 {

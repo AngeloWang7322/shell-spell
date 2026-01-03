@@ -74,7 +74,7 @@ $script = "main.js";
                 <?php
                 for ($i = 0; $i < count($_SESSION["history"]); $i++)
                     echo "<p class='prev-command'>"
-                        . $_SESSION["history"][$i]["directory"] . ">"
+                        . $_SESSION["history"][$i]["directory"]
                         . $_SESSION["history"][$i]["command"] . "<br>"
                         . $_SESSION["history"][$i]["response"]
                         . "</p>";
@@ -83,7 +83,7 @@ $script = "main.js";
             <div class="input-line">
                 <div class="base-string">
                     <?php
-                    $baseString = $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . ">";
+                    $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp";
                     echo $baseString;
                     ?>
                 </div>
