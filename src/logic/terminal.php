@@ -57,6 +57,7 @@ try
                 $tempRoom = &getRoom(array_slice($inputArgs["path"][0], 0, -1));
                 $tempRoom->doors[$roomName] = new Room(
                     name: $roomName, 
+                    path: $tempRoom->path,
                     requiredRole: $_SESSION["user"]["role"]
                 );
                 break;
@@ -378,7 +379,7 @@ function updatePathsAfterMv(&$room)
         $door->path = array_merge($path, array($door->name));
         updatePathsAfterMv($door);
     }
-}
+}   
 function updateItemPaths(&$room)
 {
     foreach ($room->items as $item)
