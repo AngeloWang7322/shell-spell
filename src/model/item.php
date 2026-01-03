@@ -5,35 +5,39 @@ class Item
     public string $baseName;
     public ItemType $type;
     public Role $requiredRole;
+    public array $path;
+
     public function __construct(
         $name,
         $baseName,
-        $type,
-        $requiredRole = Role::WANDERER
-    ) {
+        $path,
+        $requiredRole = Role::WANDERER,
+    )
+    {
         $this->name = $name;
         $this->baseName = $baseName;
-        $this->type = $type;
         $this->requiredRole = $requiredRole;
-        if (empty($name)) {
-            $this->name = $baseName . "." . match ($type) {
-                ItemType::SCROLL => ItemType::SCROLL->value,
-                ItemType::SPELL => ItemType::SPELL->value,
-                ItemType::ALTER => ItemType::ALTER->value,
-            };
-        } else {
+        $this->path = $path;
+
+
+        if (empty($name))
+        {
+            $this->name = $baseName . "." . $this->type->value;
+        }
+        else
+        {
             $this->name = $name;
         }
+        array_push($this->path, $this->name);
     }
-    public static function fromArray(array $data)
-    {
-        return new self(
-            name: $data['name'],
-            baseName: $data["baseName"],
-            type: ItemType::from($data["type"]),
-            requiredRole: Role::from($data["requiredRole"]),
-        );
-    }
+    // public static function fromArray(array $data)
+    // {
+    //     return new self(
+    //         name: $data['name'],
+    //         baseName: $data["baseName"],
+    //         requiredRole: Role::from($data["requiredRole"]),
+    //     );
+    // }
 }
 class Scroll extends Item
 {
@@ -42,27 +46,29 @@ class Scroll extends Item
     public function __construct(
         $name,
         $baseName,
-        $type,
+        array $path = [],
         $requiredRole = Role::WANDERER,
         string $content = ""
-    ) {
-        $this->name = $name;
-        $this->baseName = $baseName;
-        $this->type = $type;
-        $this->requiredRole = $requiredRole;
+    )
+    {
+        $this->type = ItemType::SCROLL;
         $this->content = $content;
-        if (empty($name)) {
-            $this->name = $baseName . "." . ItemType::SCROLL->value;
-        }
+
+        parent::__construct(
+            $name,
+            $baseName,
+            $path,
+            $requiredRole,
+            $path
+        );
     }
     public static function fromArray(array $data)
     {
-        $type = ItemType::from($data["type"]);
         $requiredRole = ROLE::from($data["requiredRole"]);
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
-            type: $type,
+            path: pathFromArray($data["path"]),
             requiredRole: $requiredRole,
             content: $data['content']
         );
@@ -85,49 +91,53 @@ class Alter extends Item
     public function __construct(
         $name,
         $baseName,
-        $type,
+        array $path = [],
         $requiredRole = Role::WANDERER,
         $isActive = true,
         $requiredElements = [],
         $newDoor,
         $spellReward = "",
         $xpReward = 0
-    ) {
-        $this->name = $name;
-        $this->baseName = $baseName;
-        $this->type = $type;
-        $this->requiredRole = $requiredRole;
+    )
+    {
+        $this->type = ItemType::ALTER;
         $this->isActive = $isActive;
         $this->requiredElements = $requiredElements;
         $this->newDoor = $newDoor;
         $this->spellReward = $spellReward;
         $this->xpReward = $xpReward;
 
-        if (empty($name)) {
-            $this->name = $baseName . "." . ItemType::ALTER->value;
-        }
+        parent::__construct(
+            $name,
+            $baseName,
+            $path,
+            $requiredRole,
+            $path
+        );
     }
     public function executeAction()
     {
-        if (!$this->isActive) {
+        if (!$this->isActive)
+        {
             return;
         }
-        foreach ($this->requiredElements as $element) {
+        foreach ($this->requiredElements as $element)
+        {
 
-            if (!array_key_exists($element, $_SESSION["curRoom"]->items) || $_SESSION["curRoom"]->items[$element]->requiredRole != $this->requiredRole) {
+            if (!array_key_exists($element, $_SESSION["curRoom"]->items) || $_SESSION["curRoom"]->items[$element]->requiredRole != $this->requiredRole)
+            {
                 throw new Exception("conditions demanded by the alter not met.");
-
             }
         }
 
         $_SESSION["curRoom"]->doors[$this->newDoor->name] = $this->newDoor;
         $this->isActive = false;
 
-        if (!empty($this->spellReward)) {
-
+        if (!empty($this->spellReward))
+        {
         }
-        if (!empty($this->xpReward)) {
-
+        if (!empty($this->xpReward))
+        {
         }
     }
     public static function fromArray(array $data)
@@ -135,7 +145,7 @@ class Alter extends Item
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
-            type: ItemType::from($data["type"]),
+            path: pathFromArray($data["path"]),
             requiredRole: ROLE::from($data["requiredRole"]),
             isActive: $data["isActive"],
             requiredElements: $data["requiredElements"],
@@ -151,18 +161,20 @@ class Spell extends Item
     public function __construct(
         $name,
         $baseName,
-        $type,
+        $path,
         $action = null,
         $requiredRole = Role::WANDERER
-    ) {
-        $this->name = $name;
-        $this->baseName = $baseName;
-        $this->type = $type;
+    )
+    {
         $this->action = $action;
-        $this->requiredRole = $requiredRole;
-        if (empty($name)) {
-            $this->name = $baseName . "." . ItemType::SPELL->value;
-        }
+        $this->type = ItemType::SPELL;
+
+        parent::__construct(
+            $name,
+            $baseName,
+            $path,
+            $requiredRole
+        );
     }
     public function executeAction()
     {
@@ -171,7 +183,8 @@ class Spell extends Item
     }
     function getMana()
     {
-        match ($this->requiredRole) {
+        match ($this->requiredRole)
+        {
             ROLE::WANDERER => $_SESSION["curMana"] += 10,
             ROLE::APPRENTICE => $_SESSION["curMana"] += 20,
             ROLE::ARCHIVIST => $_SESSION["curMana"] += 30,
@@ -187,9 +200,39 @@ class Spell extends Item
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
-            type: $type,
+            path: pathFromArray($data["path"]),
             action: $action,
             requiredRole: $requiredRole,
         );
     }
+}
+class Log extends Item
+{
+    public string $content;
+
+    public function __construct(
+        $name,
+        $baseName,
+        $requiredRole = Role::WANDERER,
+        string $content,
+    )
+    {
+        $this->name = $name;
+        $this->baseName = $baseName;
+        $this->requiredRole = $requiredRole;
+        $this->content = $content;
+        $this->type = ItemType::LOG;
+        if (empty($name))
+        {
+            $this->name = $baseName . "." . ItemType::SPELL->value;
+        }
+    }
+}
+function pathFromArray($path)
+{
+    if (count($path) > 1)
+    {
+        $path = array_slice($path, 0, -1);
+    }
+    return $path;
 }

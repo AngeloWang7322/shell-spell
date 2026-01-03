@@ -24,6 +24,11 @@
     display: flex;
     flex-direction: column;
     word-break:break-all;
+    overflow-y: scroll;
+    text-wrap-mode: wrap;
+    justify-content: end;
+    width: 100%;
+    height: 100%;
 }
 .base-string{
     text-wrap-mode: nowrap;

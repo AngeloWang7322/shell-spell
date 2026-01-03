@@ -5,7 +5,6 @@ class Room
     public array $path = [];
 
     /** @var Room[] $doors */
-
     public array $doors;
 
 
@@ -15,18 +14,20 @@ class Room
     public ROLE $requiredRole;
 
     function __construct(
-        $name, 
-        array $path = [], 
-        $doors = [], 
-        $items = [], 
-        $requiredRole = ROLE::WANDERER)
+        $name,
+        array $path = [],
+        $doors = [],
+        $items = [],
+        $requiredRole = ROLE::WANDERER
+    )
     {
         $this->name = $name;
         $this->path = $path;
         $this->doors = $doors;
         $this->items = $items;
         //if statement nur im development noetig
-        if ($name != "hall") {
+        if ($name != "hall")
+        {
             $this->path = empty($path) ? $_SESSION["curRoom"]->path : $path;
 
             array_push($this->path, $name);
@@ -36,13 +37,16 @@ class Room
     public static function fromArray($data): Room
     {
         $doors = [];
-        foreach ($data->doors as $key => $roomData) {
+        foreach ($data->doors as $key => $roomData)
+        {
             $doors[$key] = self::fromArray($roomData);
         }
 
         $items = [];
-        foreach ($data->items as $key => $itemData) {
-            $items[$key] = match ($itemData->type) {
+        foreach ($data->items as $key => $itemData)
+        {
+            $items[$key] = match ($itemData->type)
+            {
                 ItemType::SCROLL->value => Scroll::fromArray((array) $itemData),
                 ItemType::SPELL->value => Spell::fromArray((array) $itemData),
                 ItemType::ALTER->value => Alter::fromArray((array) $itemData),
@@ -50,7 +54,8 @@ class Room
         }
 
         $path = $data->path;
-        if (count($path) > 1) {
+        if (count($path) > 1)
+        {
             $path = array_slice($data->path, 0, -1);
         }
 

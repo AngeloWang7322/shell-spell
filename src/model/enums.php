@@ -1,5 +1,5 @@
 <?php
-enum ROLE: string
+enum Role: string
 {
     case WANDERER = "wanderer";
     case APPRENTICE = "apprentice";
@@ -27,6 +27,7 @@ enum ItemType: string
     case SCROLL = "txt";
     case SPELL = "sh";
     case ALTER = "exe";
+    case LOG = "log";
 }
 enum ActionType: string
 {

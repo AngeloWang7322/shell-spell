@@ -48,8 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
                 break;
             }
     }
-    header("Location: " . $_SERVER["REQUEST_URI"]);
-    exit;
+    // header("Location: " . $_SERVER["REQUEST_URI"]);
+    // exit;
 }
 $routes = [
     '' => 'main.php',
