@@ -7,7 +7,7 @@ function initiateTerminalLogic()
 {
     try
     {
-        organizeInput(explode(" ", trim($_POST["command"])));
+        $_SESSION["context"]["inputArgs"] = organizeInput(explode(" ", trim($_POST["command"])));
         validateInput();
         ("execute" . $_SESSION["context"]["inputArgs"]["command"])();
     }
@@ -63,6 +63,7 @@ function executeLs()
 {
     $tempRoom = getRoom($_SESSION["context"]["inputArgs"]["path"][0], true);
     $lsArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
+    $_SESSION["stdin"] = $lsArray;
     $_SESSION["context"]["response"] = "- " . implode(", ", $lsArray);
 }
 
@@ -193,4 +194,9 @@ function executeExecutable()
     {
         throw new Exception("invalid command");
     }
+}
+
+function executeEcho(){
+    $_SESSION["stdin"] = $_SESSION["context"]["inputArgs"]["command"];
+    $_SESSION["context"]["response"] = substr($_POST["command"], 5 );
 }

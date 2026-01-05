@@ -28,6 +28,7 @@ function validateInput()
 
     $paths = $_SESSION["context"]["inputArgs"]["path"];
     $command = $_SESSION["context"]["inputArgs"]["command"];
+
     switch ($command)
     {
         case "mkdir":
@@ -75,6 +76,13 @@ function validateInput()
                 }
                 break;
             }
+        case "echo":
+            {
+                if (strlen($_POST["command"]) < 6)
+                {
+                    throw new Exception("no argument given");
+                }
+            }
     }
     return;
 }
@@ -115,7 +123,7 @@ function organizeInput(array $inputArray)
             array_push($inputArgs["path"], explode("/", $inputArray[$i]));
         }
     }
-    $_SESSION["context"]["inputArgs"] = $inputArgs;
+    return $inputArgs;
 }
 
 function getRoomOrItem($path, $tempRoom = null): mixed
