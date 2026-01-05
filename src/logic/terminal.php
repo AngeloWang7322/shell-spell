@@ -125,21 +125,16 @@ try
             }
         case "grep":
             {
-                $isInverted = false;
-                $searchMatching = false;
+                $searchMatching = true;
                 $searchRecursive = false;
+                $caseInsensitive = false;
 
                 foreach ($inputArgs["flags"] as $flag)
                 {
-                    echo "<br> flag: " . $flag;
+                    echo "<br>Flag: " . $flag;
                     switch ($flag)
                     {
                         case "-v":
-                            {
-                                $isInverted = true;
-                                break;
-                            }
-                        case "-i":
                             {
                                 $searchMatching = false;
                                 break;
@@ -147,6 +142,11 @@ try
                         case "-r":
                             {
                                 $searchRecursive = true;
+                                break;
+                            }
+                        case "-i":
+                            {
+                                $caseInsensitive = true;
                                 break;
                             }
                         default:
@@ -163,9 +163,9 @@ try
                     $matchingLines = grepDirectory(
                         room: $grepElement,
                         condition: $inputArgs["strings"][0],
-                        isInverted: $isInverted,
                         searchMatching: $searchMatching,
-                        searchRecursive: $searchRecursive
+                        searchRecursive: $searchRecursive,
+                        caseInsensitive: $caseInsensitive,
                     );
                 }
                 else
@@ -441,61 +441,105 @@ function pushNewLastPath(array $newPath)
 function grepDirectory(
     $room,
     $condition,
-    $isInverted = false,
     $searchMatching = true,
-    $searchRecursive = false
+    $searchRecursive = false,
+    $caseInsensitive = false,
 )
 {
     $grepOutput = [];
 
     foreach ($room->items as $item)
     {
-        $grepOutput = array_merge($grepOutput, grepItem($item, $condition));
-        // echo "<br>matches from item: " . $item->name . json_encode($grepOutput);
+        $grepOutput = array_merge($grepOutput, grepItem(
+            $item,
+            $condition,
+            $searchMatching,
+            $caseInsensitive
+        ));
     }
     if ($searchRecursive)
     {
         foreach ($room->doors as $door)
         {
-            array_merge($grepOutput, grepDirectory(
+            echo "<br> is searching recursive;";
+            $grepOutput = array_merge($grepOutput, grepDirectory(
                 room: $door,
                 condition: $condition,
-                isInverted: $isInverted,
                 searchMatching: $searchMatching,
                 searchRecursive: $searchRecursive,
+                caseInsensitive: $caseInsensitive,
             ));
         }
     }
     return $grepOutput;
 }
-function grepItem($item, string $condition, $searchMatching = true)
+function grepItem(
+    $item,
+    string $condition,
+    $searchMatching = true,
+    $caseInsensitive = false,
+)
 {
     $matchingLines = [];
+    $contentLen = strlen($item->content);
     $lineCounter = 0;
     $strOffset = -1;
-    (string)$tempLine = "";
-    for ($i = 0; $i < strlen($item->content); $i++)
+
+    for ($i = 0; $i < $contentLen; $i++)
     {
-        if ($item->content[$i] == ".")
+        if ($item->content[$i] == "." || $i == $contentLen - 1)
         {
-            $tempLine = substr($item->content, $strOffset + 1, $i - $strOffset);
-
-            if (stristr($tempLine, (string)$condition) == $searchMatching)
-            {
-                $matchingLines[implode('/', $item->path) . "&nbsp" . $lineCounter . ":"] = $tempLine . "<br>";
-            }
-
-            $strOffset = $i + 1;
-            $lineCounter++;
+            grepLine(
+                $item,
+                $condition,
+                $caseInsensitive,
+                $matchingLines,
+                $i,
+                $strOffset,
+                $lineCounter,
+                $searchMatching,
+            );
         }
     }
+
     return $matchingLines;
+}
+function grepLine(
+    $item,
+    $condition,
+    $caseInsensitive = false,
+    &$matchingLines,
+    $lineStart,
+    &$strOffset,
+    &$lineCounter,
+    $searchMatching
+)
+{
+    $tempLine = substr($item->content, $strOffset + 1, $lineStart - $strOffset);
+
+    if ($caseInsensitive)
+    {
+        if ((bool)stristr($tempLine, (string)$condition) == $searchMatching)
+        {
+            $matchingLines[implode('/', $item->path) . "&nbsp" . $lineCounter . ":"] = $tempLine . "<br>";
+        }
+    }
+    else
+    {
+        if ((bool)strstr($tempLine, (string)$condition) == $searchMatching)
+        {
+            $matchingLines[implode('/', $item->path) . "&nbsp" . $lineCounter . ":"] = $tempLine . "<br>";
+        }
+    }
+
+    $strOffset = $lineStart + 1;
+    $lineCounter++;
 }
 function getRoomOrItem($path, $tempRoom = null): mixed
 {
     try
     {
-        $tempRoom =& getRoom($path);
+        $tempRoom = &getRoom($path);
         return $tempRoom;
     }
     catch (Exception $e)
@@ -503,23 +547,4 @@ function getRoomOrItem($path, $tempRoom = null): mixed
         echo "<br> caught! searching for item;";
         return getItem($path);
     }
-    // if ($tempRoom == null)
-    // {
-    //     if(count($path) > 1){
-    //         $tempRoom = &getRoom(array_slice($path, 0, -1));
-    //     }
-    // }
-
-    // if (key_exists(end($path), $tempRoom->doors))
-    // {
-    //     return $tempRoom->doors[end($path)];
-    // }
-    // else if (key_exists(end($path), $tempRoom->items))
-    // {
-    //     return $tempRoom->items[end($path)];
-    // }
-    // else
-    // {
-    //     throw new Exception("incorrect path");
-    // }
 }

@@ -45,7 +45,6 @@ class Scroll extends Item
     )
     {
         $this->type = ItemType::SCROLL;
-        $this->content = $content;
 
         parent::__construct(
             $name,
