@@ -5,19 +5,11 @@ require __DIR__ . "/terminalHelper.php";
 
 function initiateTerminalLogic()
 {
-    $_SESSION["context"]["response"] = "";
-    $_SESSION["context"]["inputArgs"] = [];
-
-    if (empty($_POST["command"]))
-    {
-        return;
-    }
-
     try
     {
-        $_SESSION["context"]["inputArgs"] = organizeInput(explode(" ", $_POST["command"]));
-        $commandFunction = "execute" . $_SESSION["context"]["inputArgs"]["command"];
-        $commandFunction();
+        organizeInput(explode(" ", trim($_POST["command"])));
+        validateInput();
+        ("execute" . $_SESSION["context"]["inputArgs"]["command"])();
     }
     catch (Exception $e)
     {
@@ -49,10 +41,6 @@ function executeCd()
             }
         default:
             {
-                if (count($_SESSION["context"]["inputArgs"]["path"][0]) == 0)
-                {
-                    throw new Exception("no path provided");
-                }
                 pushNewLastPath($_SESSION["curRoom"]->path);
 
                 $_SESSION["curMana"] -= (count($_SESSION["context"]["inputArgs"]["path"][0]) - 1) * 2;
@@ -63,10 +51,6 @@ function executeCd()
 }
 function executeMkdir()
 {
-    if (empty($_SESSION["context"]["inputArgs"]["path"][0]))
-    {
-        throw new Exception("no directory name provided");
-    }
     $roomName = end($_SESSION["context"]["inputArgs"]["path"][0]);
     $tempRoom = &getRoom(array_slice($_SESSION["context"]["inputArgs"]["path"][0], 0, -1));
     $tempRoom->doors[$roomName] = new Room(
@@ -94,30 +78,18 @@ function executeRm()
 
 function executeCp()
 {
+    $destinationRoom = getRoom($_SESSION["context"]["inputArgs"]["path"][1]);
+    $cpItem = getRoomOrItem($_SESSION["context"]["inputArgs"]["path"][0]);
 
-    if (count($_SESSION["context"]["inputArgs"]["path"]) != 2)
+    if (is_a($cpItem, Room::class))
     {
-        throw new Exception("no source path provided");
-    }
-
-    if ($_SESSION["context"]["inputArgs"]["command"] == "mv" && $_SESSION["context"]["inputArgs"]["path"][0][0] == $_SESSION["context"]["inputArgs"]["path"][1][0])
-    {
-        throw new Exception("cannot move room into itsself");
-    }
-    $destinationRoom = &getRoom($_SESSION["context"]["inputArgs"]["path"][1]);
-    $cpItem = &getRoomOrItem($_SESSION["context"]["inputArgs"]["path"][0]);
-
-    if (stristr(end($_SESSION["context"]["inputArgs"]["path"][0]), '.'))
-    {
-        $tempItem = &getItem($_SESSION["context"]["inputArgs"]["path"][0]);
-        $destinationRoom->items[$tempItem->name] = $tempItem;
-        updateItemPaths($destinationRoom);
+        $destinationRoom->doors[$cpItem->name] = $cpItem;
+        updatePathsAfterMv($destinationRoom);
     }
     else
     {
-        $tempRoom = &getRoom($_SESSION["context"]["inputArgs"]["path"][0]);
-        $destinationRoom->doors[$tempRoom->name] = $tempRoom;
-        updatePathsAfterMv($destinationRoom);
+        $destinationRoom->items[$cpItem->name] = $cpItem;
+        updateItemPaths($destinationRoom);
     }
 }
 

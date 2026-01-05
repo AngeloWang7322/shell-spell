@@ -1,13 +1,92 @@
 <?php
 
 declare(strict_types=1);
+function validateInput()
+{
+    /*
+    PATHS:
+        mkdir:  0-1
+        ls:     0-1
+        rm:     1 
+        cd:     1
+        grep:   1
+        cat:    1
+        exe:    1
+        cp:     2
+        mv:     2
+    FLAGS:
+        mkdir:  
+        ls:     
+        rm:      
+        cd:     
+        grep:   -r, -i, -v
+        cat:    
+        exe:    
+        cp:     
+        mv:     
+    */
 
+    $paths = $_SESSION["context"]["inputArgs"]["path"];
+    $command = $_SESSION["context"]["inputArgs"]["command"];
+    switch ($command)
+    {
+        case "mkdir":
+        case "ls":
+            {
+                if (countNotEmpty($paths) > 1)
+                {
+                    throw new Exception("incorrect number of paths");
+                }
+                break;
+            }
+        case "rm":
+        case "cd":
+        case "grep":
+        case "cat":
+            {
+                if (countNotEmpty($paths) != 1)
+                {
+                    throw new Exception("incorrect number of paths");
+                }
+                break;
+            }
+        case "mv":
+        case "cp":
+            {
+                if (countNotEmpty($paths) != 2)
+                {
+                    throw new Exception("incorrect number of paths");
+                }
+
+                if ($command == "mv")
+                {
+                    $tempPath1 = getRoom($_SESSION["context"]["inputArgs"]["path"][0])->path;
+                    $tempPath2 = getRoom($_SESSION["context"]["inputArgs"]["path"][1])->path;
+
+                    if (
+                        count(array_diff(
+                            $tempPath1,
+                            array_intersect($tempPath1, $tempPath2)
+                        )) == 0
+                    )
+                    {
+                        throw new Exception("cannot move room into itsself");
+                    }
+                }
+                break;
+            }
+    }
+    return;
+}
 function organizeInput(array $inputArray)
 {
-    if (empty($inputArray))
+    if (countNotEmpty($inputArray) == 0)
     {
-        throw new Exception("no command entered");
+        throw new Exception("", 0);
     }
+
+    $_SESSION["context"]["response"] = "";
+
     $inputArgs = [
         "command" => $inputArray[0],
         "path" => [],
@@ -36,8 +115,22 @@ function organizeInput(array $inputArray)
             array_push($inputArgs["path"], explode("/", $inputArray[$i]));
         }
     }
-    return $inputArgs;
+    $_SESSION["context"]["inputArgs"] = $inputArgs;
 }
+
+function getRoomOrItem($path, $tempRoom = null): mixed
+{
+    try
+    {
+        $tempRoom = &getRoom($path);
+        return $tempRoom;
+    }
+    catch (Exception $e)
+    {
+        return getItem($path);
+    }
+}
+
 function &getRoom($path, $rankRestrictive = false): Room
 {
     $index = 0;
@@ -324,16 +417,15 @@ function grepLine(
     $strOffset = $lineStart + 1;
     $lineCounter++;
 }
-function getRoomOrItem($path, $tempRoom = null): mixed
+function countNotEmpty($array)
 {
-    try
+    $counter = 0;
+    foreach ($array as $element)
     {
-        $tempRoom = &getRoom($path);
-        return $tempRoom;
+        if (!empty($element))
+        {
+            $counter++;
+        }
     }
-    catch (Exception $e)
-    {
-        echo "<br> caught! searching for item;";
-        return getItem($path);
-    }
+    return $counter;
 }
