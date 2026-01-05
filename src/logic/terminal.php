@@ -92,9 +92,8 @@ function executeRm()
     deleteElement($_SESSION["context"]["inputArgs"]["path"][0]);
 }
 
-function executeMv()
-{
-    $destinationRoom = &getRoom($_SESSION["context"]["inputArgs"]["path"][1]);
+function executeCp(){
+        $destinationRoom = &getRoom($_SESSION["context"]["inputArgs"]["path"][1]);
 
     if (empty($_SESSION["context"]["inputArgs"]["path"][1]))
     {
@@ -117,6 +116,11 @@ function executeMv()
         $destinationRoom->doors[$tempRoom->name] = $tempRoom;
         updatePathsAfterMv($destinationRoom);
     }
+}
+
+function executeMv()
+{
+    executeCp();
 
     deleteElement($_SESSION["context"]["inputArgs"]["path"][0], false);
 }
