@@ -6,18 +6,21 @@ class Item
     public ItemType $type;
     public Role $requiredRole;
     public array $path;
+    public string $content;
 
     public function __construct(
         $name,
         $baseName,
         $path,
         $requiredRole = Role::WANDERER,
+        $content = "gibberish",
     )
     {
         $this->name = $name;
         $this->baseName = $baseName;
         $this->requiredRole = $requiredRole;
         $this->path = $path;
+        $this->content = $content;
 
         if (empty($name))
         {
@@ -33,7 +36,6 @@ class Item
 class Scroll extends Item
 {
     public bool $isOpen = false;
-    public string $content;
     public function __construct(
         $name,
         $baseName,
@@ -50,7 +52,7 @@ class Scroll extends Item
             $baseName,
             $path,
             $requiredRole,
-            $path
+            $content
         );
     }
     public static function fromArray(array $data)
@@ -102,8 +104,7 @@ class Alter extends Item
             $name,
             $baseName,
             $path,
-            $requiredRole,
-            $path
+            $requiredRole,  
         );
     }
     public function executeAction()
@@ -199,7 +200,6 @@ class Spell extends Item
 }
 class Log extends Item
 {
-    public string $content;
 
     public function __construct(
         $name,

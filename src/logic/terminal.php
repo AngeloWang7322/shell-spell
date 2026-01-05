@@ -11,7 +11,7 @@ try
 {
     $response = "";
     $userRole = $_SESSION["user"]["role"];
-    $inputBaseString ="[ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$&nbsp";
+    $inputBaseString = "[ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$&nbsp";
     $inputArgs = organizeInput(explode(" ", $_POST["command"]));
 
     switch ($inputArgs["command"])
@@ -48,15 +48,14 @@ try
             }
         case "mkdir":
             {
-                if (empty($inputArgs["path"][0])
-                )
+                if (empty($inputArgs["path"][0]))
                 {
                     throw new Exception("no directory name provided");
                 }
                 $roomName = end($inputArgs["path"][0]);
                 $tempRoom = &getRoom(array_slice($inputArgs["path"][0], 0, -1));
                 $tempRoom->doors[$roomName] = new Room(
-                    name: $roomName, 
+                    name: $roomName,
                     path: $tempRoom->path,
                     requiredRole: $_SESSION["user"]["role"]
                 );
@@ -126,14 +125,47 @@ try
             }
         case "grep":
             {
+                $isInverted = false;
+                $searchMatching = false;
+                $searchRecursive = false;
+
+                foreach ($inputArgs["flags"] as $flag)
+                {
+                    echo "<br> flag: " . $flag;
+                    switch ($flag)
+                    {
+                        case "-v":
+                            {
+                                $isInverted = true;
+                                break;
+                            }
+                        case "-i":
+                            {
+                                $searchMatching = false;
+                                break;
+                            }
+                        case "-r":
+                            {
+                                $searchRecursive = true;
+                                break;
+                            }
+                        default:
+                            {
+                                throw new Exception("invalid flag");
+                            }
+                    }
+                }
                 $grepElement = &getRoomOrItem($inputArgs["path"][0]);
                 $matchingLines;
-                
+
                 if (is_a($grepElement, Room::class))
                 {
-                    $matchingLines = grepRecursive(
-                        $grepElement,
-                        $inputArgs["strings"][0]
+                    $matchingLines = grepDirectory(
+                        room: $grepElement,
+                        condition: $inputArgs["strings"][0],
+                        isInverted: $isInverted,
+                        searchMatching: $searchMatching,
+                        searchRecursive: $searchRecursive
                     );
                 }
                 else
@@ -214,6 +246,7 @@ function organizeInput(array $inputArray)
             array_push($inputArgs["path"], explode("/", $inputArray[$i]));
         }
     }
+    // echo "<br>inputArgs: ". json_encode($inputArgs);
     return $inputArgs;
 }
 function &getRoom($path, $rankRestrictive = false): Room
@@ -379,7 +412,7 @@ function updatePathsAfterMv(&$room)
         $door->path = array_merge($path, array($door->name));
         updatePathsAfterMv($door);
     }
-}   
+}
 function updateItemPaths(&$room)
 {
     foreach ($room->items as $item)
@@ -405,7 +438,13 @@ function pushNewLastPath(array $newPath)
 
     array_push($_SESSION["lastPath"], $newPath);
 }
-function grepRecursive($room, $condition)
+function grepDirectory(
+    $room,
+    $condition,
+    $isInverted = false,
+    $searchMatching = true,
+    $searchRecursive = false
+)
 {
     $grepOutput = [];
 
@@ -414,14 +453,22 @@ function grepRecursive($room, $condition)
         $grepOutput = array_merge($grepOutput, grepItem($item, $condition));
         // echo "<br>matches from item: " . $item->name . json_encode($grepOutput);
     }
-    foreach ($room->doors as $door)
+    if ($searchRecursive)
     {
-        array_merge($grepOutput, grepRecursive($door, $grepOutput, $condition));
+        foreach ($room->doors as $door)
+        {
+            array_merge($grepOutput, grepDirectory(
+                room: $door,
+                condition: $condition,
+                isInverted: $isInverted,
+                searchMatching: $searchMatching,
+                searchRecursive: $searchRecursive,
+            ));
+        }
     }
-    
     return $grepOutput;
 }
-function grepItem($item, string $condition)
+function grepItem($item, string $condition, $searchMatching = true)
 {
     $matchingLines = [];
     $lineCounter = 0;
@@ -433,9 +480,9 @@ function grepItem($item, string $condition)
         {
             $tempLine = substr($item->content, $strOffset + 1, $i - $strOffset);
 
-            if (stristr($tempLine, (string)$condition))
+            if (stristr($tempLine, (string)$condition) == $searchMatching)
             {
-                $matchingLines[implode('/', $item->path) . "&nbsp" . $lineCounter. ":"] = $tempLine . "<br>";
+                $matchingLines[implode('/', $item->path) . "&nbsp" . $lineCounter . ":"] = $tempLine . "<br>";
             }
 
             $strOffset = $i + 1;
@@ -446,21 +493,33 @@ function grepItem($item, string $condition)
 }
 function getRoomOrItem($path, $tempRoom = null): mixed
 {
-    if ($tempRoom == null)
+    try
     {
-        $tempRoom = &getRoom(array_slice($path, 0, -1));
+        $tempRoom =& getRoom($path);
+        return $tempRoom;
     }
+    catch (Exception $e)
+    {
+        echo "<br> caught! searching for item;";
+        return getItem($path);
+    }
+    // if ($tempRoom == null)
+    // {
+    //     if(count($path) > 1){
+    //         $tempRoom = &getRoom(array_slice($path, 0, -1));
+    //     }
+    // }
 
-    if (key_exists(end($path), $tempRoom->doors))
-    {
-        return $tempRoom->doors[end($path)];
-    }
-    else if (key_exists(end($path), $tempRoom->items))
-    {
-        return $tempRoom->items[end($path)];
-    }
-    else
-    {
-        throw new Exception("incorrect path");
-    }
+    // if (key_exists(end($path), $tempRoom->doors))
+    // {
+    //     return $tempRoom->doors[end($path)];
+    // }
+    // else if (key_exists(end($path), $tempRoom->items))
+    // {
+    //     return $tempRoom->items[end($path)];
+    // }
+    // else
+    // {
+    //     throw new Exception("incorrect path");
+    // }
 }

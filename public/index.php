@@ -15,12 +15,11 @@ if ($_SESSION["hasDbConnection"]) {
     $dbHelper = new DBHelper($pdo);
 }
 session_start();
-// session_unset();
+// session_unset();        
 
 if (!isset($_SESSION["history"])) {
     DBHelper::loadDefaultSession();
 }
-// echo json_encode($_SESSION["user"]);
 
 $_SESSION["curRoom"];
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
