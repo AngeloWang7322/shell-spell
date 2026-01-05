@@ -2,6 +2,8 @@
 $title = "Shell spell";
 $extraCss[] = 'main.css';
 $script = "main.js";
+
+$baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp";
 ?>
 
 <div class="game-container">
@@ -14,7 +16,8 @@ $script = "main.js";
         </div>
         <div class="header-group">
             <?php
-            if (!isset($_SESSION["user"]["id"])) {
+            if (!isset($_SESSION["user"]["id"]))
+            {
                 echo '            <a href="register">
                 <div class="header-element">
                     Register
@@ -27,7 +30,9 @@ $script = "main.js";
                     <img class="icon" src="../assets/images/icon_profile_white.png" alt="profile_icon">
                 </div>
             </a>';
-            } else {
+            }
+            else
+            {
                 echo '
             <a href="profile">
                 <div class="header-element">
@@ -42,7 +47,8 @@ $script = "main.js";
     <div class="elements-container">
         <div class="elements-wrapper">
             <?php
-            foreach ($_SESSION["curRoom"]->doors as $door) {
+            foreach ($_SESSION["curRoom"]->doors as $door)
+            {
                 echo "
                 <div class='element-container'>
                     <div class='element door'></div>                        
@@ -53,9 +59,11 @@ $script = "main.js";
         </div>
         <div class="elements-wrapper">
             <?php
-            foreach ($_SESSION["curRoom"]->items as $item) {
+            foreach ($_SESSION["curRoom"]->items as $item)
+            {
                 $itemClasses = $item->type->value;
-                if ($item->type == ItemType::ALTER && !$item->isActive) {
+                if ($item->type == ItemType::ALTER && !$item->isActive)
+                {
                     $itemClasses .= " alter-inactive";
                 }
                 echo "
@@ -83,12 +91,12 @@ $script = "main.js";
             <div class="input-line">
                 <div class="base-string">
                     <?php
-                    $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp";
                     echo $baseString;
                     ?>
                 </div>
                 <form class="command-input" method="post">
                     <input type="hidden" value="enterCommand" name="action">
+                    <input type="hidden" value=<?php echo '"' . $baseString . '"' ?> name="baseString">
                     <input name="command" class="command-input" type="text" autocomplete="off" autofocus>
                 </form>
             </div>
@@ -106,9 +114,12 @@ $script = "main.js";
     </div>
     <div class="scroll-container" style="visibility: 
     <?php
-    if ($_SESSION["openedScroll"]->isOpen) {
+    if ($_SESSION["openedScroll"]->isOpen)
+    {
         echo "visible";
-    } else {
+    }
+    else
+    {
         echo "hidden";
     }
     ?>;">
