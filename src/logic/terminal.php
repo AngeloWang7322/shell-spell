@@ -83,12 +83,12 @@ function executeCp()
 
     if (is_a($cpItem, Room::class))
     {
-        $destinationRoom->doors[$cpItem->name] = $cpItem;
+        $destinationRoom->doors[$cpItem->name] = clone $cpItem;
         updatePathsAfterMv($destinationRoom);
     }
     else
     {
-        $destinationRoom->items[$cpItem->name] = $cpItem;
+        $destinationRoom->items[$cpItem->name] = clone $cpItem;
         updateItemPaths($destinationRoom);
     }
 }

@@ -70,3 +70,6 @@ class Room
         );
     }
 }
+function copyRoom(Room $room){
+
+}
