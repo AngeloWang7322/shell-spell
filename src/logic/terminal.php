@@ -92,17 +92,20 @@ function executeRm()
     deleteElement($_SESSION["context"]["inputArgs"]["path"][0]);
 }
 
-function executeCp(){
-        $destinationRoom = &getRoom($_SESSION["context"]["inputArgs"]["path"][1]);
+function executeCp()
+{
 
-    if (empty($_SESSION["context"]["inputArgs"]["path"][1]))
+    if (count($_SESSION["context"]["inputArgs"]["path"]) != 2)
     {
         throw new Exception("no source path provided");
     }
-    else if ($_SESSION["context"]["inputArgs"]["path"][0][0] == $_SESSION["context"]["inputArgs"]["path"][1][0])
+
+    if ($_SESSION["context"]["inputArgs"]["command"] == "mv" && $_SESSION["context"]["inputArgs"]["path"][0][0] == $_SESSION["context"]["inputArgs"]["path"][1][0])
     {
         throw new Exception("cannot move room into itsself");
     }
+    $destinationRoom = &getRoom($_SESSION["context"]["inputArgs"]["path"][1]);
+    $cpItem = &getRoomOrItem($_SESSION["context"]["inputArgs"]["path"][0]);
 
     if (stristr(end($_SESSION["context"]["inputArgs"]["path"][0]), '.'))
     {
@@ -121,7 +124,6 @@ function executeCp(){
 function executeMv()
 {
     executeCp();
-
     deleteElement($_SESSION["context"]["inputArgs"]["path"][0], false);
 }
 
