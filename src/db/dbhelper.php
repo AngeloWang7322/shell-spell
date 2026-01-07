@@ -134,7 +134,6 @@ class DBHelper
         $_SESSION["openedScroll"] = new Scroll(
             "",
             "",
-            ItemType::SCROLL,
             content: ""
         );
         $_SESSION["user"]["role"] = ROLE::WANDERER;
@@ -154,28 +153,28 @@ class DBHelper
         $tempMap->items["manaRune.sh"] = new Spell(
             name: "",
             baseName: "manaRune",
-            type: ItemType::SPELL,
+            path: [],
             action: ActionType::GET_MANA,
             requiredRole: ROLE::WANDERER
         );
         $tempMap->items["grimoire.txt"] = new Scroll(
             "",
             "grimoire",
-            ItemType::SCROLL,
+            [],
             Role::CONJURER,
             "OPEN SCROLL: <br>'cat [scroll name]'<br>"
         );
         $tempMap->items["oldDiary.txt"] = new Scroll(
             "",
             "oldDiary",
-            ItemType::SCROLL,
+            [],
             Role::WANDERER,
             "some old diary text about hunting boar"
         );
         $tempMap->items["ancientAlter.exe"] = new Alter(
             "",
             "ancientAlter",
-            ItemType::ALTER,
+            [],
             Role::ROOT,
             true,
             ["dusty_key.txt"],
@@ -184,7 +183,14 @@ class DBHelper
         $tempMap->doors["passage"]->items["dusty_key.txt"] = new Scroll(
             "",
             "dusty_key",
-            ItemType::SCROLL,
+            ["hall", "passage"],
+            Role::ROOT,
+            "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
+        );
+        $tempMap->doors["passage"]->items["recipe.txt"] = new Scroll(
+            "",
+            "recipe",
+            ["hall", "passage"],
             Role::ROOT,
             "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
         );

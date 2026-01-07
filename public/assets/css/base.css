@@ -110,3 +110,7 @@ input {
     ;
     font-size: 22px;
 }
+::-webkit-scrollbar{
+    width: 4px;
+    background-color: gray;
+}

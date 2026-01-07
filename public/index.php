@@ -1,31 +1,32 @@
 <?php
+
 declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/model/room.php';
 require __DIR__ . '/../src/model/user.php';
-require __DIR__ . '/../src/model/item.php';
-require __DIR__ . '/../src/model/scroll.php';
+require __DIR__ . '/../src/model/items.php';
 require_once __DIR__ . '/../src/db/db.php';
 require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
 require __DIR__ . '/../src/logic/upload.php';
+require_once __DIR__ . "/../src/logic/terminal.php";
 
-
-$dbHelper = new DBHelper($pdo);
+if ($_SESSION["hasDbConnection"]) {
+    $dbHelper = new DBHelper($pdo);
+}
 session_start();
-// session_unset();    
+// session_unset();        
 
 if (!isset($_SESSION["history"])) {
     DBHelper::loadDefaultSession();
 }
-// echo json_encode($_SESSION["user"]);
 
 $_SESSION["curRoom"];
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
     switch ($_POST["action"]) {
         case "enterCommand": {
-            require __DIR__ . "/../src/logic/terminal.php";
+            initiateTerminalLogic();
             break;
         }
         case "loadMap": {
@@ -49,17 +50,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
         case "uploadFile": {
 
         }
+            $dbHelper->deleteGameState($_POST["mapId"]);
+            break;
     }
-    header("Location: " . $_SERVER["REQUEST_URI"]);
-    exit;
+
+    // header("Location: " . $_SERVER["REQUEST_URI"]);
+    // exit;
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
     if ($path === "profile" && isset($_POST["upload_profile_pic"])) {
-        handleProfilePicUpload();     
-        header("Location: /profile"); 
+        handleProfilePicUpload();
+        header("Location: /profile");
         exit;
     }
 }
@@ -85,4 +89,3 @@ if (isset($routes[$path])) {
 
 require __DIR__ . '/assets/footer.php';
 require __DIR__ . '/assets/layout.php';
-?>
