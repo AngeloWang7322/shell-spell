@@ -90,6 +90,87 @@ try {
                     throw new Exception("item not readable");
                 }
             }
+        case "man": {
+                if (empty($inputArgs["path"])) {
+                    $response =
+                    "CLI-Game Manual\n\n" .
+                    "USAGE:\n" .
+                    "  man command\n\n" .
+                    "AVAILABLE COMMANDS:\n" .
+                    "  cd, ls, mkdir, pwd, rm, mv, cat, man\n\n";
+                break;
+                }
+            
+                $command_to_define = strtolower($inputArgs["path"][0]);
+
+                switch($command_to_define) {
+
+                    case "cd": {
+                        $response =
+                        "cd - change current room\n\n".
+                        "USAGE:\n". 
+                        "  cd (path)\n". 
+                        "  cd /\n".
+                        "  cd -\n". 
+                        "  cd ..\n". 
+                        "DESCRIPTION:\n". 
+                        "  you can switch into different rooms";
+                    break;
+                    }
+                    case "ls": {
+                        $response =
+                        "ls - list all items/rooms\n\n". 
+                        "USAGE:\n". 
+                        "  ls \n". 
+                        "  ls (path)\n";
+                    break;
+                    }
+                    case "mkdir": {
+                        $response =
+                        "mkdir - create a new room\n\n". 
+                        "USAGE:\n". 
+                        "  mkdir (path)";
+                    break;
+                    }
+                    case "pwd": {
+                        $response = 
+                        "pwd - print current room path";
+                    break;
+                    }
+                    case "rm": {
+                        $response = 
+                        "rm - remove room or item\n\n". 
+                        "WARNING:\n". 
+                        "  This operation is irreversible";
+                    break;
+                    }
+                    case "mv": {
+                        $response = 
+                        "mv - move room/item\n\n". 
+                        "USAGE:\n". 
+                        "  mv (source) (destination)";
+                    break;
+                    }
+                    case "cat": {
+                        $response = 
+                        "cat - read a scroll\n\n". 
+                        "USAGE:\n". 
+                        "  cat (scroll)";
+                    break;
+                    }
+                    case "man": {
+                        $response = 
+                        "man - show manual pages\n\n". 
+                        "USAGE:\n". 
+                        "  man (command)";
+                    break;
+                    }
+                    default:
+                        $response = "No manual entry for: " . $command_to_define;
+                     break;
+                }
+                break;
+            }
         default: {
                 if (strncmp($inputArgs["command"], "./", 2) == 0) {
                     $itemExec = &getItem(explode("/", substr($inputArgs["command"], 2)));

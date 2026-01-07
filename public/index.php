@@ -46,6 +46,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
             $dbHelper->deleteGameState($_POST["mapId"]);
             break;
         }
+        case "uploadFile": {
+
+        }
     }
     header("Location: " . $_SERVER["REQUEST_URI"]);
     exit;

@@ -23,7 +23,7 @@ $extraCss[] = "profile.css";
             $default = "/uploads/profile_pics/default.png";
             $pic = $_SESSION["profile_pic"] ?? $default;
         ?>
-        <img src="<?= htmlspecialchars($pic) ?>" class="profile-picture" alt="profile picture">
+        <img src="<?= htmlspecialchars($pic) ?>" class="profile-picture">
 
         <form class="profile-upload-form" method="post" enctype="multipart/form-data" action="/profile">
             <input type="file" name="profile_pic" accept="image/png,image/jpeg,image/webp" required>
