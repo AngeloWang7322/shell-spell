@@ -19,7 +19,7 @@ function startCommandExecution()
         $_SESSION["inputCommand"] = explode(" ", trim($_POST["command"]));
 
         $command = getCommand($_SESSION["tokens"]["command"]);
-        $command->validateInput(explode(" ", trim($_POST["command"])));
+        $command->interpretInput(explode(" ", trim($_POST["command"])));
 
         echo "<br>tokens: " . json_encode($_SESSION["tokens"]);
 
@@ -169,7 +169,7 @@ function executeGrep()
                 }
         }
     }
-    $grepElement = &getRoomOrItem($_SESSION["tokens"]["path"][0]);
+    $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
     $matchingLines = [];
 
     if (is_a($grepElement, Room::class))

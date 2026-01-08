@@ -51,11 +51,11 @@ enum Commands: string
     case MAN = "man";
 }
 
-enum TokenType
+enum TokenType: string
 {
-    case COMMAND;
-    case OPTION;
-    case PATH;
-    case STRING;
-    case MISC;
+    case COMMAND = "command";
+    case OPTION = "option";
+    case PATH = "path";
+    case STRING = "string";
+    case MISC = "misc";
 }

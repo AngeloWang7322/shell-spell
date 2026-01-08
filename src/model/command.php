@@ -5,35 +5,35 @@ class Command
     public array $tokenSyntax;
     public array $validOptions;
     public string $description;
-    public string $commandValidator;
-    public string $pathValidator;
-    public string $stringValidator;
-    public string $miscValidator;
-    public string $optionValidator;
+    public string $commandInterpreter;
+    public string $pathInterpreter;
+    public string $stringInterpreter;
+    public string $miscInterpreter;
+    public string $optionInterpreter;
 
     public function __construct(
         $commandName,
         $tokenSyntax,
         $validOptions,
         $description,
-        $commandValidator = "validateCommand",
-        $pathValidator = "validatePath",
-        $stringValidator = "validateString",
-        $miscValidator = "valiateMisc",
-        $optionValidator = "validateOption",
+        $commandInterpreter = "interpretCommand",
+        $pathInterpreter = "interpretPath",
+        $stringInterpreter = "interpretString",
+        $miscInterpreter = "valiateMisc",
+        $optionInterpreter = "interpretOption",
     )
     {
         $this->commandName = $commandName;
         $this->tokenSyntax = $tokenSyntax;
         $this->validOptions = $validOptions;
         $this->description = $description;
-        $this->commandValidator = $commandValidator;
-        $this->pathValidator = $pathValidator;
-        $this->stringValidator =  $stringValidator;
-        $this->miscValidator =  $miscValidator;
-        $this->optionValidator = $optionValidator;
+        $this->commandInterpreter = $commandInterpreter;
+        $this->pathInterpreter = $pathInterpreter;
+        $this->stringInterpreter =  $stringInterpreter;
+        $this->miscInterpreter =  $miscInterpreter;
+        $this->optionInterpreter = $optionInterpreter;
     }
-    public function validateInput(array $inputArgs)
+    public function interpretInput(array $inputArgs)
     {
         $syntaxArray = array_merge([TokenType::COMMAND], $this->tokenSyntax);
         $tokens = self::createTokens();
@@ -42,35 +42,37 @@ class Command
         for ($i = 0; $i < count($tokens); $i++)
         {
             $arg = $tokens[$i];
+                echo "<br>syntax: " . current($syntaxArray)->value;
+                echo "<br>word: " . $arg;
             switch (current($syntaxArray))
             {
                 case TokenType::COMMAND:
                     {
-                        $function = $this->commandValidator;
+                        $function = $this->commandInterpreter;
                         $_SESSION["tokens"]["command"] = self::$function($arg);
                         break;
                     }
                 case TokenType::OPTION:
                     {
-                        $function = $this->optionValidator;
+                        $function = $this->optionInterpreter;
                         self::$function($arg, $syntaxArray, $i);
                         break;
                     }
                 case TokenType::PATH:
                     {
-                        $function = $this->pathValidator;
+                        $function = $this->pathInterpreter;
                         $_SESSION["tokens"]["path"][] = self::$function(explode("/", $arg));
                         break;
                     }
                 case TokenType::STRING:
                     {
-                        $function = $this->stringValidator;
+                        $function = $this->stringInterpreter;
                         $_SESSION["tokens"]["strings"][] = self::$function($arg);
                         break;
                     }
                 case TokenType::MISC:
                     {
-                        $function = $this->miscValidator;
+                        $function = $this->miscInterpreter;
                         $_SESSION["tokens"]["misc"] = self::$function($arg);
                         break;
                     }
@@ -141,7 +143,7 @@ class Command
         return $tokens;
         //fix multi word string arguments
     }
-    public function validateCommand($arg)
+    public function interpretCommand($arg)
     {
         if (Commands::tryFrom($arg) != NULL)
         {
@@ -159,7 +161,7 @@ class Command
             }
         }
     }
-    public function validatePath($arg)
+    public function interpretPath($arg)
     {
         $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors + $_SESSION["curRoom"]->items), ["hall", "/", "-", ".."]);
         if (in_array($arg[0], $validPathArgs))
@@ -172,7 +174,7 @@ class Command
             throw new Exception("invalid path provided");
         }
     }
-    public function validateString($arg): string
+    public function interpretString($arg): string
     {
         $firstAndLast = [substr($arg, 0, 1), substr($arg, -1, 1)];
 
@@ -192,7 +194,7 @@ class Command
             throw new Exception("empty string given");
         }
     }
-    public function validateMisc($arg)
+    public function interpretMisc($arg)
     {
         switch ($_SESSION["tokens"]["command"])
         {
@@ -209,7 +211,7 @@ class Command
                 }
         }
     }
-    public function validateOption($arg, $syntaxArray, &$argIndex)
+    public function interpretOption($arg, &$syntaxArray, &$argIndex)
     {
         if (substr($arg, 0, 1) == '-')
         {
@@ -217,13 +219,14 @@ class Command
             {
                $_SESSION["tokens"]["options"][] = $arg;
             }
+            echo "<br>in interpret: " . json_encode( prev($syntaxArray));
         }
         else
         {
             $argIndex--;
         }
     }
-    public function mkdirPathValidator($mkdirPath)
+    public function mkdirPathInterpreter($mkdirPath)
     {
         if (count($mkdirPath) <= 1)
         {
@@ -231,7 +234,7 @@ class Command
         }
         else
         {
-            return self::validatePath(array_slice($mkdirPath, 0, -1));
+            return self::interpretPath(array_slice($mkdirPath, 0, -1));
         }
     }
 }
@@ -254,7 +257,7 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             [],
             "",
-            pathValidator: "mkdirPathValidator"
+            pathInterpreter: "mkdirPathInterpreter"
         ),
         "rm" == $command
         => new Command(
