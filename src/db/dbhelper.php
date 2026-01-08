@@ -138,6 +138,7 @@ class DBHelper
         $_SESSION["validCommands"] = ["cd", "cat"];
         $_SESSION["history"] = [];
         $_SESSION["isPrompt"] = false;
+        $_SESSION["prompt"] = [];
         $_SESSION["tokens"] = [];
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["curRoom"] = &$_SESSION["map"];

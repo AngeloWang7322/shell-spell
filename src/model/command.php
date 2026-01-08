@@ -24,7 +24,7 @@ class Command
     )
     {
         $this->commandName = $commandName;
-        $this->tokenSyntax = $tokenSyntax;
+        $this->tokenSyntax = array_merge([TokenType::COMMAND], $tokenSyntax);
         $this->validOptions = $validOptions;
         $this->description = $description;
         $this->commandInterpreter = $commandInterpreter;
@@ -83,7 +83,7 @@ class Command
     public function createTokens(): array
     {
         $inputStr = $_POST["command"];
-        $tokens = [];
+        $tokens = [$this->commandName];
 
         $tempToken = "";
         $quoteCount = substr_count($inputStr, '"');
@@ -325,6 +325,6 @@ function getCommand($command)
             [],
             "",
         ),
-        default => throw new Exception("unknown command!!")
+        default => throw new Exception("unknown command")
     };
 }

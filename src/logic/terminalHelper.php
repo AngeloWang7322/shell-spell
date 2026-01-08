@@ -3,53 +3,72 @@
 declare(strict_types=1);
 function checkAndHandlePrompt()
 {
+    $response = $_POST["command"];
     if ($_SESSION["isPrompt"])
     {
-        if (in_array($_POST["command"], ["y", "Y", ""]))
+        switch (true)
         {
-            echo "<br> executing from promptHandler YES";
-            executeCommand();
-            $_SESSION["isPrompt"] = false;
-            throw new Exception("", 0);
-        }
-        else if (in_array($_POST["command"], ["n", "N"]))
-        {
-            echo "<br> executing from promptHandler NO";
-            $_SESSION["isPrompt"] = false;
-
-            throw new Exception("", 0);
+            case (in_array($_POST["command"], [$_SESSION["prompt"]["options"][0], ""])):
+                {
+                    executeCommand();
+                    $response = "y";
+                }
+            case (in_array($_POST["command"], ["n", "N"])):
+                {
+                    $_SESSION["isPrompt"] = false;
+                    $_SESSION["preserveState"] = true;
+                    addToPreviousHistory("<br> " . $response);
+                    throw new Exception("", 0);
+                }
+            default:
+                {
+                    addToPreviousHistory("<br>" . $_POST["command"] . "<br>" . implode("/", $_SESSION["prompt"]["options"]));
+                    $_SESSION["isPrompt"] = true;
+                    $_SESSION["preserveState"] = true;
+                    throw new Exception("", 0);
+                }
         }
     }
 }
 function prepareCommandExecution()
 {
-    if ($_SESSION["isPrompt"]) return;
     if ($_POST["command"] == "") header("Location: " . $_SERVER["REQUEST_URI"]);
 
-    $_SESSION["tokens"]["command"] = explode(" ", trim($_POST["command"]))[0];
-    echo "<br>Tokens: " . json_encode($_SESSION["tokens"]);
-    getCommand($_SESSION["tokens"]["command"])->interpretInput();
+    getCommand(explode(" ", trim($_POST["command"]))[0])->interpretInput();
 }
 
 function executeCommand()
 {
     ("execute" . $_SESSION["tokens"]["command"])();
 }
-
-function pushNewHistory()
+function addToPreviousHistory($string)
 {
-    $_SESSION["history"][] = [
-        "directory" => $_POST["baseString"],
-        "command" => $_POST["command"],
-        "response" => $_SESSION["response"]
-    ];
+    $lastHistoryEntry = end($_SESSION["history"]);
+    $lastHistoryEntry["response"] .=  $string;
+    array_pop($_SESSION["history"]);
+    array_push($_SESSION["history"], $lastHistoryEntry);
+}
+function writeResponse()
+{
+    if ($_SESSION["preserveState"])
+    {
+        addToPreviousHistory($_SESSION["response"]);
+    }
+    else
+    {
+        $_SESSION["history"][] = [
+            "directory" => $_POST["baseString"],
+            "command" => $_POST["command"],
+            "response" => $_SESSION["response"]
+        ];
+    }
 }
 function cleanUp()
 {
     if ($_SESSION["isPrompt"]) return;
 
     $_SESSION["tokens"] = [];
-    $_SESSION["prompt"] = "";
+    $_SESSION["prompt"] = [];
     $_SESSION["response"] = "";
 }
 
@@ -62,7 +81,6 @@ function getRoomOrItem($path, $tempRoom = null): mixed
     }
     catch (Exception $e)
     {
-        echo "<br>trying to get item";
         return getItem($path);
     }
 }
@@ -383,9 +401,9 @@ function createPrompt($prompt, $validAnswers = ["y", "n"])
 {
     $_SESSION["isPrompt"] = true;
     $_SESSION["prompt"] = [];
-    $_SESSION["prompt"]["text"] = $prompt;
-    $_SESSION["prompt"]["validAnswers"] = $validAnswers;
-    $_SESSION["response"] = $prompt;    
+    $_SESSION["prompt"]["text"] = $prompt . "&nbsp - &nbsp DEFAULT: " . $validAnswers[0];
+    $_SESSION["prompt"]["options"] = ["y", "n"];
+    $_SESSION["response"] = $prompt . "&nbsp - &nbsp DEFAULT: " . $validAnswers[0];
 
     throw new Exception($prompt, 0);
 }

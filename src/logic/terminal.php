@@ -6,7 +6,7 @@ function startCommandExecution()
 {
     try
     {
-        echo "<br> isPrompt: " . json_encode($_SESSION["isPrompt"]);
+        $_SESSION["preserveState"] = false;
         checkAndHandlePrompt();
         prepareCommandExecution();
         executeCommand();
@@ -16,8 +16,8 @@ function startCommandExecution()
         editMana($e->getCode());
         $_SESSION["response"] = $e->getMessage();
     }
-
-    pushNewHistory();
+    if ($_SESSION["preserveState"]) return;
+    writeResponse();
     cleanUp();
 }
 
@@ -51,7 +51,7 @@ function executeMkdir()
 
     if (in_array($roomName, array_keys($tempRoom->doors)) && !$_SESSION["isPrompt"])
     {
-        createPrompt($roomName . " exists, are you sure you want to replace it?<br> y/n");
+        createPrompt($roomName . " exists, are you sure you want to replace it?<br>y/n");
     }
     $tempRoom->doors[$roomName] = new Room(
         name: $roomName,
