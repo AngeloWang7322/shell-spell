@@ -1,48 +1,29 @@
 <?php
 
 declare(strict_types=1);
-require __DIR__ . "/terminalHelper.php";
 
 function startCommandExecution()
 {
     try
     {
-        //TODO: y/n prompt
-        if (!empty($_SESSION["prompt"]))
-        {
-            if ($_POST["command"] == "y")
-            {
-            }
-        }
-        $_SESSION["response"] = "";
-        $_SESSION["tokens"]["command"] = explode(" ", trim($_POST["command"]))[0];
-        $_SESSION["inputCommand"] = explode(" ", trim($_POST["command"]));
-
-        $command = getCommand($_SESSION["tokens"]["command"]);
-        $command->interpretInput(explode(" ", trim($_POST["command"])));
-
-        echo "<br>tokens: " . json_encode($_SESSION["tokens"]);
-
-        ("execute" . $_SESSION["tokens"]["command"])($command);
+        echo "<br> isPrompt: " . json_encode($_SESSION["isPrompt"]);
+        checkAndHandlePrompt();
+        prepareCommandExecution();
+        executeCommand();
     }
     catch (Exception $e)
     {
-        editMana(amount: 10);
+        editMana($e->getCode());
         $_SESSION["response"] = $e->getMessage();
     }
 
-    echo "<br>response: " . json_encode($_SESSION["response"]);
-    $_SESSION["history"][] = [
-        "directory" => $_POST["baseString"],
-        "command" => $_POST["command"],
-        "response" => $_SESSION["response"]
-    ];
-    unset($_SESSION["tokens"], $_SESSION["response"]);
+    pushNewHistory();
+    cleanUp();
 }
 
 function executeCd()
 {
-    switch ($_POST["command"][3])
+    switch ($_SESSION["tokens"]["path"][0][0])
     {
         case "/":
             {
@@ -58,8 +39,6 @@ function executeCd()
         default:
             {
                 pushNewLastPath($_SESSION["curRoom"]->path);
-
-                // $_SESSION["curMana"] -= count($_SESSION["tokens"]["path"][0]) * 2;
                 $_SESSION["curRoom"] = &getRoom($_SESSION["tokens"]["path"][0], true);
                 break;
             }
@@ -69,6 +48,11 @@ function executeMkdir()
 {
     $roomName = end($_SESSION["tokens"]["path"][0]);
     $tempRoom = &getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1));
+
+    if (in_array($roomName, array_keys($tempRoom->doors)) && !$_SESSION["isPrompt"])
+    {
+        createPrompt($roomName . " exists, are you sure you want to replace it?<br> y/n");
+    }
     $tempRoom->doors[$roomName] = new Room(
         name: $roomName,
         path: $tempRoom->path,
@@ -135,42 +119,21 @@ function executeCat()
 
 function executeGrep()
 {
+    $matchingLines = [];
+    $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
     $searchMatching = true;
     $searchRecursive = false;
     $caseInsensitive = false;
 
     foreach ($_SESSION["tokens"]["options"] as $flag)
     {
-        echo "<br>Flag: " . $flag;
-        switch ($flag)
+        match ($flag)
         {
-            case "-v":
-                {
-                    $searchMatching = false;
-                    break;
-                }
-            case "-r":
-                {
-                    $searchRecursive = true;
-                    break;
-                }
-            case "-i":
-                {
-                    $caseInsensitive = true;
-                    break;
-                }
-            case NULL;
-                {
-                    break;
-                }
-            default:
-                {
-                    throw new Exception("invalid flag");
-                }
-        }
+            "-v" => $searchMatching = false,
+            "-r" => $searchRecursive = true,
+            "-i" => $caseInsensitive = true,
+        };
     }
-    $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
-    $matchingLines = [];
 
     if (is_a($grepElement, Room::class))
     {
@@ -191,9 +154,7 @@ function executeGrep()
     }
 
     foreach ($matchingLines as $key => $line)
-    {
-        $_SESSION["response"] = $_SESSION["response"] . $key . " " . $line;
-    }
+        $_SESSION["response"] .= $key . " " . $line;
 }
 
 function executeExecute()

@@ -33,17 +33,14 @@ class Command
         $this->miscInterpreter =  $miscInterpreter;
         $this->optionInterpreter = $optionInterpreter;
     }
-    public function interpretInput(array $inputArgs)
-    {
-        $syntaxArray = array_merge([TokenType::COMMAND], $this->tokenSyntax);
+    public function interpretInput()
+    {   
+        $syntaxArray = $this->tokenSyntax;
         $tokens = self::createTokens();
-        echo "<br> token output: " . json_encode($tokens);
 
         for ($i = 0; $i < count($tokens); $i++)
         {
             $arg = $tokens[$i];
-                echo "<br>syntax: " . current($syntaxArray)->value;
-                echo "<br>word: " . $arg;
             switch (current($syntaxArray))
             {
                 case TokenType::COMMAND:
@@ -79,7 +76,6 @@ class Command
             }
             if (next($syntaxArray) == NULL)
             {
-                echo "<br> syntax Element is null " . current($syntaxArray);
                 prev($syntaxArray);
             }
         }
@@ -87,7 +83,7 @@ class Command
     public function createTokens(): array
     {
         $inputStr = $_POST["command"];
-        $tokens = [$this->commandName];
+        $tokens = [];
 
         $tempToken = "";
         $quoteCount = substr_count($inputStr, '"');
@@ -115,7 +111,7 @@ class Command
                     }
                     else
                     {
-                        throw new Exception("incorrect string usage IF");
+                        throw new Exception("incorrect string usage");
                     }
                 }
             }
@@ -123,28 +119,28 @@ class Command
             {
                 if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']))
                 {
-                    $tempToken = $tempToken . " " . $word;
+                    $tempToken .= " " . $word;
                 }
                 else
                 {
                     if (in_array($last, ["'", '"']))
                     {
-                        $tempToken = $tempToken . " " . $word;
+                        $tempToken .= " " . $word;
                         array_push($tokens, $tempToken);
                         $tempToken = "";
                     }
                     else
                     {
-                        throw new Exception("incorrect string usage IF");
+                        throw new Exception("incorrect string usage");
                     }
                 }
             }
         }
         return $tokens;
-        //fix multi word string arguments
     }
-    public function interpretCommand($arg)
+    static public function interpretCommand($arg)
     {
+        echo "<br>arg:" . $arg;
         if (Commands::tryFrom($arg) != NULL)
         {
             return $arg;
@@ -157,7 +153,7 @@ class Command
             }
             else
             {
-                throw new Exception("unknown command");
+                throw new Exception("unknown commandasdasd");
             }
         }
     }
@@ -206,7 +202,7 @@ class Command
                     }
                     else
                     {
-                        throw new Exception("unknown command");
+                        throw new Exception("unknown misc");
                     }
                 }
         }
@@ -328,6 +324,7 @@ function getCommand($command)
             [TokenTYPE::MISC],
             [],
             "",
-        )
+        ),
+        default => throw new Exception("unknown command!!")
     };
 }

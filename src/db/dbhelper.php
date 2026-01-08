@@ -30,10 +30,13 @@ class DBHelper
         // echo "input hash: " . $password;
         // echo "response: " . json_encode($user);
 
-        if ($user && password_verify($password, $user['password_hash'])) {
+        if ($user && password_verify($password, $user['password_hash']))
+        {
             $_SESSION['user']["name"] = $user['username'];
             $_SESSION["user"]["id"] = $user["id"];
-        } else {
+        }
+        else
+        {
             throw new Exception("Email oder Passwort falsch");
         }
     }
@@ -65,22 +68,26 @@ class DBHelper
         ]);
         $gameState = $fetchGameState->fetch();
         //assign userRole and maxMana by xp
-        for ($i = 1; $i <= count(Role::cases()); $i++) {
-            if ($gameState["xp"] <= $i * 100) {
+        for ($i = 1; $i <= count(Role::cases()); $i++)
+        {
+            if ($gameState["xp"] <= $i * 100)
+            {
                 $_SESSION["maxMana"] = $i * 100;
-                foreach (Role::cases() as $role) {
-                    if ($i == 1) {
+                foreach (Role::cases() as $role)
+                {
+                    if ($i == 1)
+                    {
                         $_SESSION["user"]["role"] = $role;
                         break 2;
                     }
                     $i--;
                 }
             }
-        }        
+        }
 
         $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
         $_SESSION["curMana"] = $gameState["curMana"];
-        $_SESSION["curRoom"] =& $_SESSION["map"];
+        $_SESSION["curRoom"] = &$_SESSION["map"];
         $_SESSION["history"] = [];
     }
     public function getGameStates()
@@ -94,7 +101,8 @@ class DBHelper
         ]);
         $statesData = [];
         $response = (array) $fetchStatesData->fetchAll();
-        foreach ($response as $data) {
+        foreach ($response as $data)
+        {
             $statesData[$data["id"]]["name"] = $data["name"];
             $statesData[$data["id"]]["rank"] = getRankFromXp($data["xp"])->value;
         }
@@ -114,7 +122,8 @@ class DBHelper
         ]);
         $this->loadGameState($this->pdo->lastInsertId());
     }
-    public function deleteGameState($stateId){
+    public function deleteGameState($stateId)
+    {
         $deleteGameState = $this->pdo->prepare("
             DELETE FROM game_states
             WHERE id = :stateId
@@ -128,6 +137,8 @@ class DBHelper
         session_unset();
         $_SESSION["validCommands"] = ["cd", "cat"];
         $_SESSION["history"] = [];
+        $_SESSION["isPrompt"] = false;
+        $_SESSION["tokens"] = [];
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["curRoom"] = &$_SESSION["map"];
         $_SESSION["maxMana"] = 100;
@@ -201,10 +212,14 @@ class DBHelper
 }
 function getRankFromXp($xp): Role
 {
-    for ($i = 1; $i <= count(Role::cases()); $i++) {
-        if ($xp <= $i * 100) {
-            foreach (Role::cases() as $role) {
-                if ($i == 1) {
+    for ($i = 1; $i <= count(Role::cases()); $i++)
+    {
+        if ($xp <= $i * 100)
+        {
+            foreach (Role::cases() as $role)
+            {
+                if ($i == 1)
+                {
                     return $role;
                 }
                 $i--;

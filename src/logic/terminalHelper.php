@@ -1,129 +1,56 @@
 <?php
 
 declare(strict_types=1);
-function validateInput()
+function checkAndHandlePrompt()
 {
-    /*
-    PATHS:
-        mkdir:  0-1
-        ls:     0-1
-        rm:     1 
-        cd:     1
-        grep:   1
-        cat:    1
-        exe:    1
-        cp:     2
-        mv:     2
-    FLAGS:
-        mkdir:  
-        ls:     
-        rm:      
-        cd:     
-        grep:   -r, -i, -v
-        cat:    
-        exe:    
-        cp:     
-        mv:     
-    */
-
-    $paths = $_SESSION["tokens"]["path"];
-    $command = $_SESSION["tokens"]["command"];
-
-    switch ($command)
+    if ($_SESSION["isPrompt"])
     {
-        case "mkdir":
-        case "ls":
-            {
-                if (countNotEmpty($paths) > 1)
-                {
-                    throw new Exception("incorrect number of paths");
-                }
-                break;
-            }
-        case "rm":
-        case "cd":
-        case "grep":
-        case "cat":
-            {
-                if (countNotEmpty($paths) != 1)
-                {
-                    throw new Exception("incorrect number of paths");
-                }
-                break;
-            }
-        case "mv":
-        case "cp":
-            {
-                if (countNotEmpty($paths) != 2)
-                {
-                    throw new Exception("incorrect number of paths");
-                }
+        if (in_array($_POST["command"], ["y", "Y", ""]))
+        {
+            echo "<br> executing from promptHandler YES";
+            executeCommand();
+            $_SESSION["isPrompt"] = false;
+            throw new Exception("", 0);
+        }
+        else if (in_array($_POST["command"], ["n", "N"]))
+        {
+            echo "<br> executing from promptHandler NO";
+            $_SESSION["isPrompt"] = false;
 
-                if ($command == "mv")
-                {
-                    $tempPath1 = getRoom($_SESSION["tokens"]["path"][0])->path;
-                    $tempPath2 = getRoom($_SESSION["tokens"]["path"][1])->path;
-
-                    if (
-                        count(array_diff(
-                            $tempPath1,
-                            array_intersect($tempPath1, $tempPath2)
-                        )) == 0
-                    )
-                    {
-                        throw new Exception("cannot move room into itsself");
-                    }
-                }
-                break;
-            }
-        case "echo":
-            {
-                if (strlen($_POST["command"]) < 6)
-                {
-                    throw new Exception("no argument given");
-                }
-            }
+            throw new Exception("", 0);
+        }
     }
-    return;
 }
-function organizeInput(array $inputArray)
+function prepareCommandExecution()
 {
-    if (countNotEmpty($inputArray) == 0)
-    {
-        throw new Exception("", 0);
-    }
-    $_SESSION["inputArray"] = $inputArray;
-    $_SESSION["response"] = "";
-    
-    $tokens = [
-        "command" => $inputArray[0],
-        "path" => [],
-        "strings" => [],
-        "flags" => [],
+    if ($_SESSION["isPrompt"]) return;
+    if ($_POST["command"] == "") header("Location: " . $_SERVER["REQUEST_URI"]);
+
+    $_SESSION["tokens"]["command"] = explode(" ", trim($_POST["command"]))[0];
+    echo "<br>Tokens: " . json_encode($_SESSION["tokens"]);
+    getCommand($_SESSION["tokens"]["command"])->interpretInput();
+}
+
+function executeCommand()
+{
+    ("execute" . $_SESSION["tokens"]["command"])();
+}
+
+function pushNewHistory()
+{
+    $_SESSION["history"][] = [
+        "directory" => $_POST["baseString"],
+        "command" => $_POST["command"],
+        "response" => $_SESSION["response"]
     ];
-    if (substr($inputArray[0], 0, 2) == "./")
-    {
-        $tokens["command"] = "Executable";
-    }
-    for ($i = 1; $i < count($inputArray); $i++)
-    {
-        if ($inputArray[$i][0] == '-')
-        {
-            $tokens["flags"][] = $inputArray[$i];
-        }
-        else if (
-            ($inputArray[$i][0] == "'" && substr($inputArray[$i], -1) == "'") ||
-            ($inputArray[$i][0] == '"' && substr($inputArray[$i], -1) == '"')
-        )
-        {
-            array_push($tokens["strings"], substr($inputArray[$i], 1, -1));
-        }
-        else
-        {
-            array_push($tokens["path"], explode("/", $inputArray[$i]));
-        }
-    }
-    return $tokens;
+}
+function cleanUp()
+{
+    if ($_SESSION["isPrompt"]) return;
+
+    $_SESSION["tokens"] = [];
+    $_SESSION["prompt"] = "";
+    $_SESSION["response"] = "";
 }
 
 function getRoomOrItem($path, $tempRoom = null): mixed
@@ -352,7 +279,6 @@ function grepDirectory(
     {
         foreach ($room->doors as $door)
         {
-            echo "<br> is searching recursive;";
             $grepOutput = array_merge($grepOutput, grepDirectory(
                 room: $door,
                 condition: $condition,
@@ -437,4 +363,29 @@ function countNotEmpty($array)
         }
     }
     return $counter;
+}
+
+function checkIfNamesExists(array $names, $hayStack): bool
+{
+    echo "<br>CHECKING";
+    foreach ($names as $name)
+    {
+        echo "<br>checking name: " . $name;
+        if (array_key_exists($name, $hayStack));
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+function createPrompt($prompt, $validAnswers = ["y", "n"])
+{
+    $_SESSION["isPrompt"] = true;
+    $_SESSION["prompt"] = [];
+    $_SESSION["prompt"]["text"] = $prompt;
+    $_SESSION["prompt"]["validAnswers"] = $validAnswers;
+    $_SESSION["response"] = $prompt;    
+
+    throw new Exception($prompt, 0);
 }
