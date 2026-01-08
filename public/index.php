@@ -12,6 +12,7 @@ require_once __DIR__ . '/../src/db/db.php';
 require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
 require_once __DIR__ . "/../src/logic/terminal.php";
+require_once __DIR__ . "/../src/logic/terminalHelper.php";
 
 if ($_SESSION["hasDbConnection"]) {
     $dbHelper = new DBHelper($pdo);

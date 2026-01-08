@@ -7,14 +7,23 @@ function startCommandExecution()
 {
     try
     {
-
+        //TODO: y/n prompt
+        if (!empty($_SESSION["prompt"]))
+        {
+            if ($_POST["command"] == "y")
+            {
+            }
+        }
+        $_SESSION["response"] = "";
         $_SESSION["tokens"]["command"] = explode(" ", trim($_POST["command"]))[0];
-        $commandClass = createCommand($_SESSION["tokens"]["command"]);
-        $commandClass->validateInput(explode(" ", trim($_POST["command"])));
+        $_SESSION["inputCommand"] = explode(" ", trim($_POST["command"]));
+
+        $command = getCommand($_SESSION["tokens"]["command"]);
+        $command->validateInput(explode(" ", trim($_POST["command"])));
 
         echo "<br>tokens: " . json_encode($_SESSION["tokens"]);
 
-        ("execute" . $_SESSION["tokens"]["command"])();
+        ("execute" . $_SESSION["tokens"]["command"])($command);
     }
     catch (Exception $e)
     {
@@ -50,7 +59,7 @@ function executeCd()
             {
                 pushNewLastPath($_SESSION["curRoom"]->path);
 
-                $_SESSION["curMana"] -= (count($_SESSION["tokens"]["path"][0]) - 1) * 2;
+                // $_SESSION["curMana"] -= count($_SESSION["tokens"]["path"][0]) * 2;
                 $_SESSION["curRoom"] = &getRoom($_SESSION["tokens"]["path"][0], true);
                 break;
             }
@@ -150,6 +159,10 @@ function executeGrep()
                     $caseInsensitive = true;
                     break;
                 }
+            case NULL;
+                {
+                    break;
+                }
             default:
                 {
                     throw new Exception("invalid flag");
@@ -203,11 +216,13 @@ function executeExecute()
     }
 }
 
-function executeEcho(){
+function executeEcho()
+{
     $_SESSION["stdin"] = $_SESSION["tokens"]["command"];
-    $_SESSION["response"] = substr($_POST["command"], 5 );
+    $_SESSION["response"] = substr($_POST["command"], 5);
 }
 
-function executeFind(){
+function executeFind()
+{
     // $_SESSION =
 }

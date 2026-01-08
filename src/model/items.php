@@ -6,7 +6,7 @@ class Item
     public ItemType $type;
     public Role $requiredRole;
     public array $path;
-    public string $content;
+    public string $content = "";
 
     public function __construct(
         $name,
@@ -103,7 +103,7 @@ class Alter extends Item
             $name,
             $baseName,
             $path,
-            $requiredRole,  
+            $requiredRole,
         );
     }
     public function executeAction()

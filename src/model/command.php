@@ -1,163 +1,244 @@
 <?php
 class Command
 {
-    public static $commandName;
-    public static array $tokenStructure;
-    public static array $validOptions;
-    public static string $description;
+    public $commandName;
+    public array $tokenSyntax;
+    public array $validOptions;
+    public string $description;
+    public string $commandValidator;
+    public string $pathValidator;
+    public string $stringValidator;
+    public string $miscValidator;
+    public string $optionValidator;
 
-    public function __construct($commandName, $tokenStructure, $validOptions, $description)
+    public function __construct(
+        $commandName,
+        $tokenSyntax,
+        $validOptions,
+        $description,
+        $commandValidator = "validateCommand",
+        $pathValidator = "validatePath",
+        $stringValidator = "validateString",
+        $miscValidator = "valiateMisc",
+        $optionValidator = "validateOption",
+    )
     {
         $this->commandName = $commandName;
-        $this->tokenStructure = $tokenStructure;
+        $this->tokenSyntax = $tokenSyntax;
         $this->validOptions = $validOptions;
         $this->description = $description;
+        $this->commandValidator = $commandValidator;
+        $this->pathValidator = $pathValidator;
+        $this->stringValidator =  $stringValidator;
+        $this->miscValidator =  $miscValidator;
+        $this->optionValidator = $optionValidator;
     }
     public function validateInput(array $inputArgs)
     {
-        echo "<br>commandName: " . $this->commandName;
-        $structure = array_merge([TokenType::COMMAND], $this->tokenStructure);
-        $tokens = self::createTokens($inputArgs);
+        $syntaxArray = array_merge([TokenType::COMMAND], $this->tokenSyntax);
+        $tokens = self::createTokens();
+        echo "<br> token output: " . json_encode($tokens);
+
         for ($i = 0; $i < count($tokens); $i++)
         {
             $arg = $tokens[$i];
-            // echo "<br>current Arg: " . $arg;
-            // echo "<br>current TokenType: " . json_encode(var_dump(current($structure)));
-
-            switch (current($structure))
+            switch (current($syntaxArray))
             {
                 case TokenType::COMMAND:
                     {
-                        if (Commands::tryFrom($arg) != NULL)
-                        {
-                            $_SESSION["tokens"]["command"] = $arg;
-                        }
-                        else
-                        {
-                            if (in_array($arg, Commands::cases()))
-                            {
-                                throw new Exception("command not unlocked yet");
-                            }
-                            else
-                            {
-                                throw new Exception("unknown command");
-                            }
-                        }
+                        $function = $this->commandValidator;
+                        $_SESSION["tokens"]["command"] = self::$function($arg);
                         break;
                     }
                 case TokenType::OPTION:
                     {
-                        if ($arg[0] == '-')
-                        {
-                            if (in_array($arg, $this->validOptions))
-                            {
-                                $_SESSION["tokens"]["options"][] = $arg;
-                            }
-                        }
-                        else
-                        {
-                            // echo "<br>No options";
-                            // next($structure);
-                            $i--;
-                        }
+                        $function = $this->optionValidator;
+                        self::$function($arg, $syntaxArray, $i);
                         break;
                     }
                 case TokenType::PATH:
                     {
-                        $validArgs = array_merge(array_keys($_SESSION["curRoom"]->doors + $_SESSION["curRoom"]->items), ["hall", "/", ""]);
-
-                        if (in_array(explode("/", $arg)[0], $validArgs))
-                        {
-                            // echo "<br>path: " . json_encode($arg);
-                            $_SESSION["tokens"]["path"][] = explode("/", $arg);
-                        }
+                        $function = $this->pathValidator;
+                        $_SESSION["tokens"]["path"][] = self::$function(explode("/", $arg));
                         break;
                     }
                 case TokenType::STRING:
                     {
-                        $firstAndLast = [substr($arg, 0, 1), substr($arg, -1, 1)];
-
-                        if (
-                            (in_array("'", $firstAndLast) || in_array('"', $firstAndLast))
-                            && $firstAndLast[0] == $firstAndLast[1]
-                        )
-                        {
-                            if (strlen($arg) <= 2)
-                            {
-                                throw new Exception("empty string given");
-                            }
-                            $_SESSION["tokens"]["strings"][] = substr($arg, 1, -1);
-                        }
+                        $function = $this->stringValidator;
+                        $_SESSION["tokens"]["strings"][] = self::$function($arg);
                         break;
                     }
                 case TokenType::MISC:
                     {
-                        switch ($_SESSION["tokens"]["command"])
-                        {
-                            case "man":
-                                {
-                                    if (in_array($arg, Commands::cases()))
-                                    {
-                                        $_SESSION["tokens"]["manCommand"] = $arg;
-                                    }
-                                    else
-                                    {
-                                        throw new Exception("unknown command");
-                                    }
-                                }
-                        }
+                        $function = $this->miscValidator;
+                        $_SESSION["tokens"]["misc"] = self::$function($arg);
                         break;
                     }
             }
-            if (next($structure) == NULL)
+            if (next($syntaxArray) == NULL)
             {
-                echo "<br> is null? " . current($structure);
-                prev($structure);
+                echo "<br> syntax Element is null " . current($syntaxArray);
+                prev($syntaxArray);
             }
         }
     }
-    public function createTokens($inputArgs): array
+    public function createTokens(): array
     {
         $inputStr = $_POST["command"];
-        $inputLen = strlen($inputStr);
         $tokens = [$this->commandName];
 
-        $inStr = "";
         $tempToken = "";
+        $quoteCount = substr_count($inputStr, '"');
+        if ($quoteCount % 2 == 1)
+        {
+            throw new Exception("incorrect string usage");
+        }
 
-        foreach (array_slice(explode(" ", $inputStr), 1) as $word);
+        foreach (array_slice(explode(" ", $inputStr), 1) as $word)
         {
             $first = substr($word, 0, 1);
             $last = substr($word, -1, 1);
-            echo "<br> first" . $first . "<br>last: " . $last;
-            if (in_array($first, ["'", '"']) && $first != $last)
-            {
-                echo "<br> in if: " . $word;
-                if ($tempToken != "") throw new Exception("incorrect string usage");
 
-                $tempToken = $word;
-            }
-            else if (in_array($last, ["'", '"']))
+            if ($tempToken == "")
             {
-                echo "<br>in else if: " . $word;
-                if (empty($tempToken)) throw new Exception("incorrect string usage");
-
-                array_push($tokens, (array)($tempToken . $word));
-                $tempToken = "";
+                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']) || $first == $last)
+                {
+                    array_push($tokens, $word);
+                }
+                else
+                {
+                    if (in_array($first, ["'", '"']))
+                    {
+                        $tempToken = $word;
+                    }
+                    else
+                    {
+                        throw new Exception("incorrect string usage IF");
+                    }
+                }
             }
             else
             {
-                array_push($tokens, $tempToken);
+                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']))
+                {
+                    $tempToken = $tempToken . " " . $word;
+                }
+                else
+                {
+                    if (in_array($last, ["'", '"']))
+                    {
+                        $tempToken = $tempToken . " " . $word;
+                        array_push($tokens, $tempToken);
+                        $tempToken = "";
+                    }
+                    else
+                    {
+                        throw new Exception("incorrect string usage IF");
+                    }
+                }
             }
         }
-        return [];
+        return $tokens;
         //fix multi word string arguments
-        //execute 
+    }
+    public function validateCommand($arg)
+    {
+        if (Commands::tryFrom($arg) != NULL)
+        {
+            return $arg;
+        }
+        else
+        {
+            if (in_array($arg, Commands::cases()))
+            {
+                throw new Exception("command not unlocked yet");
+            }
+            else
+            {
+                throw new Exception("unknown command");
+            }
+        }
+    }
+    public function validatePath($arg)
+    {
+        $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors + $_SESSION["curRoom"]->items), ["hall", "/", "-", ".."]);
+        if (in_array($arg[0], $validPathArgs))
+        {
+            echo "<br>path: " . json_encode($arg);
+            return $arg;
+        }
+        else
+        {
+            throw new Exception("invalid path provided");
+        }
+    }
+    public function validateString($arg): string
+    {
+        $firstAndLast = [substr($arg, 0, 1), substr($arg, -1, 1)];
+
+        if (
+            (in_array("'", $firstAndLast) || in_array('"', $firstAndLast))
+            && $firstAndLast[0] == $firstAndLast[1]
+        )
+        {
+            if (strlen($arg) <= 2)
+            {
+                throw new Exception("empty string given");
+            }
+            return substr($arg, 1, -1);
+        }
+        else
+        {
+            throw new Exception("empty string given");
+        }
+    }
+    public function validateMisc($arg)
+    {
+        switch ($_SESSION["tokens"]["command"])
+        {
+            case "man":
+                {
+                    if (in_array($arg, Commands::cases()))
+                    {
+                        return $arg;
+                    }
+                    else
+                    {
+                        throw new Exception("unknown command");
+                    }
+                }
+        }
+    }
+    public function validateOption($arg, $syntaxArray, &$argIndex)
+    {
+        if (substr($arg, 0, 1) == '-')
+        {
+            if (in_array($arg, $this->validOptions))
+            {
+               $_SESSION["tokens"]["options"][] = $arg;
+            }
+        }
+        else
+        {
+            $argIndex--;
+        }
+    }
+    public function mkdirPathValidator($mkdirPath)
+    {
+        if (count($mkdirPath) <= 1)
+        {
+            return $mkdirPath;
+        }
+        else
+        {
+            return self::validatePath(array_slice($mkdirPath, 0, -1));
+        }
     }
 }
 
-function createCommand($command)
+function getCommand($command)
 {
+
     return match (true)
     {
         "cd" == $command
@@ -173,6 +254,7 @@ function createCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             [],
             "",
+            pathValidator: "mkdirPathValidator"
         ),
         "rm" == $command
         => new Command(
