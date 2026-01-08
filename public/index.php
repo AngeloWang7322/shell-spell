@@ -6,6 +6,8 @@ require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/model/room.php';
 require __DIR__ . '/../src/model/user.php';
 require __DIR__ . '/../src/model/items.php';
+require __DIR__ . '/../src/model/exceptions.php';
+require __DIR__ . '/../src/model/command.php';
 require_once __DIR__ . '/../src/db/db.php';
 require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
@@ -25,7 +27,7 @@ $_SESSION["curRoom"];
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
     switch ($_POST["action"]) {
         case "enterCommand": {
-                initiateTerminalLogic();
+                startCommandExecution();
                 break;
             }
         case "loadMap": {

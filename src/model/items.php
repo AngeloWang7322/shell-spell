@@ -185,7 +185,6 @@ class Spell extends Item
     }
     public static function fromArray(array $data)
     {
-        $type = ItemType::from($data["type"]);
         $requiredRole = Role::from($data["requiredRole"]);
         $action = ActionType::from($data["action"]);
         return new self(

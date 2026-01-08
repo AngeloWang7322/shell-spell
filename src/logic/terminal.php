@@ -3,25 +3,32 @@
 declare(strict_types=1);
 require __DIR__ . "/terminalHelper.php";
 
-function initiateTerminalLogic()
+function startCommandExecution()
 {
     try
     {
-        $_SESSION["context"]["inputArgs"] = organizeInput(explode(" ", trim($_POST["command"])));
-        validateInput();
-        ("execute" . $_SESSION["context"]["inputArgs"]["command"])();
+
+        $_SESSION["tokens"]["command"] = explode(" ", trim($_POST["command"]))[0];
+        $commandClass = createCommand($_SESSION["tokens"]["command"]);
+        $commandClass->validateInput(explode(" ", trim($_POST["command"])));
+
+        echo "<br>tokens: " . json_encode($_SESSION["tokens"]);
+
+        ("execute" . $_SESSION["tokens"]["command"])();
     }
     catch (Exception $e)
     {
         editMana(amount: 10);
-        $_SESSION["context"]["response"] = $e->getMessage();
+        $_SESSION["response"] = $e->getMessage();
     }
 
+    echo "<br>response: " . json_encode($_SESSION["response"]);
     $_SESSION["history"][] = [
         "directory" => $_POST["baseString"],
         "command" => $_POST["command"],
-        "response" => $_SESSION["context"]["response"]
+        "response" => $_SESSION["response"]
     ];
+    unset($_SESSION["tokens"], $_SESSION["response"]);
 }
 
 function executeCd()
@@ -43,16 +50,16 @@ function executeCd()
             {
                 pushNewLastPath($_SESSION["curRoom"]->path);
 
-                $_SESSION["curMana"] -= (count($_SESSION["context"]["inputArgs"]["path"][0]) - 1) * 2;
-                $_SESSION["curRoom"] = &getRoom($_SESSION["context"]["inputArgs"]["path"][0], true);
+                $_SESSION["curMana"] -= (count($_SESSION["tokens"]["path"][0]) - 1) * 2;
+                $_SESSION["curRoom"] = &getRoom($_SESSION["tokens"]["path"][0], true);
                 break;
             }
     }
 }
 function executeMkdir()
 {
-    $roomName = end($_SESSION["context"]["inputArgs"]["path"][0]);
-    $tempRoom = &getRoom(array_slice($_SESSION["context"]["inputArgs"]["path"][0], 0, -1));
+    $roomName = end($_SESSION["tokens"]["path"][0]);
+    $tempRoom = &getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1));
     $tempRoom->doors[$roomName] = new Room(
         name: $roomName,
         path: $tempRoom->path,
@@ -61,26 +68,26 @@ function executeMkdir()
 }
 function executeLs()
 {
-    $tempRoom = getRoom($_SESSION["context"]["inputArgs"]["path"][0], true);
+    $tempRoom = getRoom($_SESSION["tokens"]["path"][0], true);
     $lsArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
     $_SESSION["stdin"] = $lsArray;
-    $_SESSION["context"]["response"] = "- " . implode(", ", $lsArray);
+    $_SESSION["response"] = "- " . implode(", ", $lsArray);
 }
 
 function executePwd()
 {
-    $_SESSION["context"]["response"] = implode("/", $_SESSION["curRoom"]->path);
+    $_SESSION["response"] = implode("/", $_SESSION["curRoom"]->path);
 }
 
 function executeRm()
 {
-    deleteElement($_SESSION["context"]["inputArgs"]["path"][0]);
+    deleteElement($_SESSION["tokens"]["path"][0]);
 }
 
 function executeCp()
 {
-    $destinationRoom = getRoom($_SESSION["context"]["inputArgs"]["path"][1]);
-    $cpItem = getRoomOrItem($_SESSION["context"]["inputArgs"]["path"][0]);
+    $destinationRoom = getRoom($_SESSION["tokens"]["path"][1]);
+    $cpItem = getRoomOrItem($_SESSION["tokens"]["path"][0]);
 
     if (is_a($cpItem, Room::class))
     {
@@ -97,19 +104,19 @@ function executeCp()
 function executeMv()
 {
     executeCp();
-    deleteElement($_SESSION["context"]["inputArgs"]["path"][0], false);
+    deleteElement($_SESSION["tokens"]["path"][0], false);
 }
 
 function executeCat()
 {
-    $catItem = &getItem($_SESSION["context"]["inputArgs"]["path"][0]);
+    $catItem = &getItem($_SESSION["tokens"]["path"][0]);
     if (is_a($catItem, SCROLL::class))
     {
         $catItem->openScroll();
     }
     else if (is_a($catItem, LOG::class))
     {
-        $_SESSION["context"]["response"] = $catItem->content;
+        $_SESSION["response"] = $catItem->content;
     }
     else
     {
@@ -123,7 +130,7 @@ function executeGrep()
     $searchRecursive = false;
     $caseInsensitive = false;
 
-    foreach ($_SESSION["context"]["inputArgs"]["flags"] as $flag)
+    foreach ($_SESSION["tokens"]["options"] as $flag)
     {
         echo "<br>Flag: " . $flag;
         switch ($flag)
@@ -149,14 +156,14 @@ function executeGrep()
                 }
         }
     }
-    $grepElement = &getRoomOrItem($_SESSION["context"]["inputArgs"]["path"][0]);
+    $grepElement = &getRoomOrItem($_SESSION["tokens"]["path"][0]);
     $matchingLines = [];
 
     if (is_a($grepElement, Room::class))
     {
         $matchingLines = grepDirectory(
             room: $grepElement,
-            condition: $_SESSION["context"]["inputArgs"]["strings"][0],
+            condition: $_SESSION["tokens"]["strings"][0],
             searchMatching: $searchMatching,
             searchRecursive: $searchRecursive,
             caseInsensitive: $caseInsensitive,
@@ -166,21 +173,21 @@ function executeGrep()
     {
         $matchingLines = grepItem(
             $grepElement,
-            $_SESSION["context"]["inputArgs"]["strings"][0]
+            $_SESSION["tokens"]["strings"][0]
         );
     }
 
     foreach ($matchingLines as $key => $line)
     {
-        $_SESSION["context"]["response"] = $_SESSION["context"]["response"] . $key . " " . $line;
+        $_SESSION["response"] = $_SESSION["response"] . $key . " " . $line;
     }
 }
 
-function executeExecutable()
+function executeExecute()
 {
-    if (strncmp($_SESSION["context"]["inputArgs"]["command"], "./", 2) == 0)
+    if (strncmp($_SESSION["tokens"]["command"], "./", 2) == 0)
     {
-        $itemExec = &getItem(explode("/", substr($_SESSION["context"]["inputArgs"]["command"], 2)));
+        $itemExec = &getItem(explode("/", substr($_SESSION["tokens"]["command"], 2)));
         if (is_a($itemExec, Alter::class) || is_a($itemExec, Spell::class))
         {
             $itemExec->executeAction();
@@ -197,6 +204,10 @@ function executeExecutable()
 }
 
 function executeEcho(){
-    $_SESSION["stdin"] = $_SESSION["context"]["inputArgs"]["command"];
-    $_SESSION["context"]["response"] = substr($_POST["command"], 5 );
+    $_SESSION["stdin"] = $_SESSION["tokens"]["command"];
+    $_SESSION["response"] = substr($_POST["command"], 5 );
+}
+
+function executeFind(){
+    // $_SESSION =
 }

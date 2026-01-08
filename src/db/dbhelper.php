@@ -126,6 +126,7 @@ class DBHelper
     public static function loadDefaultSession()
     {
         session_unset();
+        $_SESSION["validCommands"] = ["cd", "cat"];
         $_SESSION["history"] = [];
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["curRoom"] = &$_SESSION["map"];

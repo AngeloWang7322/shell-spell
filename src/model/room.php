@@ -7,7 +7,6 @@ class Room
     /** @var Room[] $doors */
     public array $doors;
 
-
     /** @var Item[] $items */
     public array $items = [];
 
@@ -69,6 +68,7 @@ class Room
             $requiredRole
         );
     }
+    
 }
 function copyRoom(Room $room){
 

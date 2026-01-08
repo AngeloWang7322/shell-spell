@@ -26,8 +26,8 @@ function validateInput()
         mv:     
     */
 
-    $paths = $_SESSION["context"]["inputArgs"]["path"];
-    $command = $_SESSION["context"]["inputArgs"]["command"];
+    $paths = $_SESSION["tokens"]["path"];
+    $command = $_SESSION["tokens"]["command"];
 
     switch ($command)
     {
@@ -61,8 +61,8 @@ function validateInput()
 
                 if ($command == "mv")
                 {
-                    $tempPath1 = getRoom($_SESSION["context"]["inputArgs"]["path"][0])->path;
-                    $tempPath2 = getRoom($_SESSION["context"]["inputArgs"]["path"][1])->path;
+                    $tempPath1 = getRoom($_SESSION["tokens"]["path"][0])->path;
+                    $tempPath2 = getRoom($_SESSION["tokens"]["path"][1])->path;
 
                     if (
                         count(array_diff(
@@ -92,10 +92,10 @@ function organizeInput(array $inputArray)
     {
         throw new Exception("", 0);
     }
-
-    $_SESSION["context"]["response"] = "";
-
-    $inputArgs = [
+    $_SESSION["inputArray"] = $inputArray;
+    $_SESSION["response"] = "";
+    
+    $tokens = [
         "command" => $inputArray[0],
         "path" => [],
         "strings" => [],
@@ -103,27 +103,27 @@ function organizeInput(array $inputArray)
     ];
     if (substr($inputArray[0], 0, 2) == "./")
     {
-        $inputArgs["command"] = "Executable";
+        $tokens["command"] = "Executable";
     }
     for ($i = 1; $i < count($inputArray); $i++)
     {
         if ($inputArray[$i][0] == '-')
         {
-            $inputArgs["flags"][] = $inputArray[$i];
+            $tokens["flags"][] = $inputArray[$i];
         }
         else if (
             ($inputArray[$i][0] == "'" && substr($inputArray[$i], -1) == "'") ||
             ($inputArray[$i][0] == '"' && substr($inputArray[$i], -1) == '"')
         )
         {
-            array_push($inputArgs["strings"], substr($inputArray[$i], 1, -1));
+            array_push($tokens["strings"], substr($inputArray[$i], 1, -1));
         }
         else
         {
-            array_push($inputArgs["path"], explode("/", $inputArray[$i]));
+            array_push($tokens["path"], explode("/", $inputArray[$i]));
         }
     }
-    return $inputArgs;
+    return $tokens;
 }
 
 function getRoomOrItem($path, $tempRoom = null): mixed
@@ -135,6 +135,7 @@ function getRoomOrItem($path, $tempRoom = null): mixed
     }
     catch (Exception $e)
     {
+        echo "<br>trying to get item";
         return getItem($path);
     }
 }

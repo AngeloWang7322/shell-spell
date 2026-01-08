@@ -9,7 +9,8 @@ enum Role: string
 
     public function rank(): int
     {
-        return match ($this) {
+        return match ($this)
+        {
             self::WANDERER => 1,
             self::APPRENTICE => 2,
             self::ARCHIVIST => 3,
@@ -35,24 +36,26 @@ enum ActionType: string
     case OPEN_SCROLL = "openScroll";
     case CREATE_DOOR = "createDoor";
 }
-enum Commmand: string {
+enum Commands: string
+{
     case CD = "cd";
-    case LS = "ls";
-    case PWD = "pwd";
     case MKDIR = "mkdir";
     case RM = "rm";
     case MV = "mv";
-    case CAT = "cat";
+    case PWD = "pwd";
+    case LS = "ls";
+    case CP = "cp";
+    case GREP = "grep";
+    case ECHO = "echo";
+    case EXECUTE = "execute";
+    case MAN = "man";
+}
 
-    public function getDescription(): string {
-        return match($this) {
-            self::CD => "cd [path]<br> -Change directory to the specified path.<br>",
-            self::LS => "ls <br> -List the contents of the current directory.",
-            self::PWD => "pwd <br> -Print the current working directory.",
-            self::MKDIR => "mkdir [optional path][door name]<br> -Create a new directory with the specified name.",
-            self::RM => "rm [optional path][element name]<br> -Remove a file or directory at the specified path.",
-            self::MV => "mv [source path][destination path]<br> -Move or rename a file or directory.",
-            self::CAT => "cat [path]<br> -Display the contents of a scroll.",
-        };
-    }
+enum TokenType
+{
+    case COMMAND;
+    case OPTION;
+    case PATH;
+    case STRING;
+    case MISC;
 }
