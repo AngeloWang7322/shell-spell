@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-function startCommandExecution()
+function startTerminalProcess()
 {
     try
     {
         $_SESSION["preserveState"] = false;
-        checkAndHandlePrompt();
+        checkAndHandleSpecialCases();
         prepareCommandExecution();
         executeCommand();
     }
@@ -16,6 +16,7 @@ function startCommandExecution()
         editMana($e->getCode());
         $_SESSION["response"] = $e->getMessage();
     }
+
     if ($_SESSION["preserveState"]) return;
     writeResponse();
     cleanUp();
@@ -46,18 +47,21 @@ function executeCd()
 }
 function executeMkdir()
 {
-    $roomName = end($_SESSION["tokens"]["path"][0]);
-    $tempRoom = &getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1));
-
-    if (in_array($roomName, array_keys($tempRoom->doors)) && !$_SESSION["isPrompt"])
+    for ($i = 0; $i < count($_SESSION["tokens"]["path"]); $i++)
     {
-        createPrompt($roomName . " exists, are you sure you want to replace it?<br>y/n");
+        $roomName = end($_SESSION["tokens"]["path"][$i]);
+        $tempRoom = &getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1));
+
+        if (in_array($roomName, array_keys($tempRoom->doors)) && !isset($_SESSION["prompt"]))
+        {
+            createPrompt($roomName . " exists, are you sure you want to replace it?<br>y/n");
+        }
+        $tempRoom->doors[$roomName] = new Room(
+            name: $roomName,
+            path: $tempRoom->path,
+            requiredRole: $_SESSION["user"]["role"]
+        );
     }
-    $tempRoom->doors[$roomName] = new Room(
-        name: $roomName,
-        path: $tempRoom->path,
-        requiredRole: $_SESSION["user"]["role"]
-    );
 }
 function executeLs()
 {
@@ -74,7 +78,10 @@ function executePwd()
 
 function executeRm()
 {
-    deleteElement($_SESSION["tokens"]["path"][0]);
+    for ($i = 0; $i < count($_SESSION["tokens"]["path"]); $i++)
+    {
+        deleteElement($_SESSION["tokens"]["path"][$i]);
+    }
 }
 
 function executeCp()
@@ -119,8 +126,8 @@ function executeCat()
 
 function executeGrep()
 {
-    $matchingLines = [];
     $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
+    $matchingLines = [];
     $searchMatching = true;
     $searchRecursive = false;
     $caseInsensitive = false;

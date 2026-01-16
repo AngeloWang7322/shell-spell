@@ -1,45 +1,70 @@
 <?php
 
 declare(strict_types=1);
-function checkAndHandlePrompt()
+function checkAndHandleSpecialCases()
+{
+    if (isset($_SESSION["prompt"]))
+    {
+        handlePrompt();
+    }
+    else if (strstr($_POST["command"], "|"))
+    {
+        managePipe();
+    }
+}
+function handlePrompt()
 {
     $response = $_POST["command"];
-    if ($_SESSION["isPrompt"])
+
+    switch (true)
     {
-        switch (true)
-        {
-            case (in_array($_POST["command"], [$_SESSION["prompt"]["options"][0], ""])):
-                {
-                    executeCommand();
-                    $response = "y";
-                }
-            case (in_array($_POST["command"], ["n", "N"])):
-                {
-                    $_SESSION["isPrompt"] = false;
-                    $_SESSION["preserveState"] = true;
-                    addToPreviousHistory("<br> " . $response);
-                    throw new Exception("", 0);
-                }
-            default:
-                {
-                    addToPreviousHistory("<br>" . $_POST["command"] . "<br>" . implode("/", $_SESSION["prompt"]["options"]));
-                    $_SESSION["isPrompt"] = true;
-                    $_SESSION["preserveState"] = true;
-                    throw new Exception("", 0);
-                }
-        }
+        case (in_array($_POST["command"], [$_SESSION["prompt"]["options"][0], ""])):
+            {
+                executeCommand();
+                $response = "y";
+            }
+        case (in_array($_POST["command"], ["n", "N"])):
+            {
+                $_SESSION["preserveState"] = true;
+                addToPreviousHistory("<br> " . $response);
+                cleanUp();
+                throw new Exception("", 0);
+            }
+        default:
+            {
+                addToPreviousHistory("<br>" . $_POST["command"] . "<br>" . implode("/", $_SESSION["prompt"]["options"]));
+                $_SESSION["preserveState"] = true;
+                throw new Exception("", 0);
+            }
     }
+}
+function managePipe()
+{
+    //check if pipe commands are valid combination
+    $_SESSION["isPipe"] = true;
+
+    $afterNeedle = strstr($_POST["command"], "|",);
+    $_POST["command"] = strstr($_POST["command"], "|", true);
+    startTerminalProcess();
+    $_POST["command"] = $afterNeedle;
+    startTerminalProcess();
+
+    header("Location: " . $_SERVER["REQUEST_URI"]);
 }
 function prepareCommandExecution()
 {
     if ($_POST["command"] == "") header("Location: " . $_SERVER["REQUEST_URI"]);
 
     getCommand(explode(" ", trim($_POST["command"]))[0])->interpretInput();
+    echo "<br>tokens: " . json_encode($_SESSION["tokens"]);
 }
 
 function executeCommand()
 {
     ("execute" . $_SESSION["tokens"]["command"])();
+    if (isset($_SESSION["isPipe"]))
+    {
+    }
 }
 function addToPreviousHistory($string)
 {
@@ -65,10 +90,8 @@ function writeResponse()
 }
 function cleanUp()
 {
-    if ($_SESSION["isPrompt"]) return;
-
     $_SESSION["tokens"] = [];
-    $_SESSION["prompt"] = [];
+    unset($_SESSION["prompt"]);
     $_SESSION["response"] = "";
 }
 
@@ -399,7 +422,6 @@ function checkIfNamesExists(array $names, $hayStack): bool
 
 function createPrompt($prompt, $validAnswers = ["y", "n"])
 {
-    $_SESSION["isPrompt"] = true;
     $_SESSION["prompt"] = [];
     $_SESSION["prompt"]["text"] = $prompt . "&nbsp - &nbsp DEFAULT: " . $validAnswers[0];
     $_SESSION["prompt"]["options"] = ["y", "n"];

@@ -34,7 +34,7 @@ class Command
         $this->optionInterpreter = $optionInterpreter;
     }
     public function interpretInput()
-    {   
+    {
         $syntaxArray = $this->tokenSyntax;
         $tokens = self::createTokens();
 
@@ -58,7 +58,7 @@ class Command
                 case TokenType::PATH:
                     {
                         $function = $this->pathInterpreter;
-                        $_SESSION["tokens"]["path"][] = self::$function(explode("/", $arg));
+                        $_SESSION["tokens"]["path"][] = self::$function(explode("/", $arg),  $syntaxArray, $i);
                         break;
                     }
                 case TokenType::STRING:
@@ -74,9 +74,14 @@ class Command
                         break;
                     }
             }
-            if (next($syntaxArray) == NULL)
+            if ($arg == "|")
             {
-                prev($syntaxArray);
+                $_SESSION["isPipe"] = true;
+                // $_SESSION["nextCommand"] = array_slice($tokens);
+            }
+            if (next($syntaxArray) == false)
+            {
+                end($syntaxArray);
             }
         }
     }
@@ -140,7 +145,6 @@ class Command
     }
     static public function interpretCommand($arg)
     {
-        echo "<br>arg:" . $arg;
         if (Commands::tryFrom($arg) != NULL)
         {
             return $arg;
@@ -213,16 +217,15 @@ class Command
         {
             if (in_array($arg, $this->validOptions))
             {
-               $_SESSION["tokens"]["options"][] = $arg;
+                $_SESSION["tokens"]["options"][] = $arg;
             }
-            echo "<br>in interpret: " . json_encode( prev($syntaxArray));
         }
         else
         {
             $argIndex--;
         }
     }
-    public function mkdirPathInterpreter($mkdirPath)
+    public function interpretPathMkdir($mkdirPath,  $syntaxArray, &$argIndex)
     {
         if (count($mkdirPath) <= 1)
         {
@@ -237,7 +240,6 @@ class Command
 
 function getCommand($command)
 {
-
     return match (true)
     {
         "cd" == $command
@@ -253,7 +255,7 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             [],
             "",
-            pathInterpreter: "mkdirPathInterpreter"
+            pathInterpreter: "interpretPathMkdir"
         ),
         "rm" == $command
         => new Command(
@@ -328,3 +330,21 @@ function getCommand($command)
         default => throw new Exception("unknown command")
     };
 }
+/*
+Funcionalities
+    CD:
+        -absolute, relative, /, -, ..
+    MKDIR:
+        - multiple at one
+        - prompt before replacing
+    RM:
+        - multiple at once
+    MV:
+    PWD:
+    LS:
+    CP:
+    GREP:
+    ECHO:
+    EXECUTE:
+    MAN:
+ */

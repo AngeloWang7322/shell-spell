@@ -18,7 +18,7 @@ if ($_SESSION["hasDbConnection"]) {
     $dbHelper = new DBHelper($pdo);
 }
 session_start();
-// session_unset();        
+session_unset();        
 
 if (!isset($_SESSION["history"])) {
     DBHelper::loadDefaultSession();
@@ -28,7 +28,7 @@ $_SESSION["curRoom"];
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
     switch ($_POST["action"]) {
         case "enterCommand": {
-                startCommandExecution();
+                startTerminalProcess();
                 break;
             }
         case "loadMap": {
