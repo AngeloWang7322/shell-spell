@@ -3,7 +3,7 @@
 declare(strict_types=1);
 function checkAndHandleSpecialCases()
 {
-    if (isset($_SESSION["prompt"]))
+    if (!empty($_SESSION["promptData"]))
     {
         handlePrompt();
     }
@@ -14,25 +14,25 @@ function checkAndHandleSpecialCases()
 }
 function handlePrompt()
 {
-    $response = $_POST["command"];
+    $answer = $_POST["command"];
 
     switch (true)
     {
-        case (in_array($_POST["command"], [$_SESSION["prompt"]["options"][0], ""])):
+        case (in_array($_POST["command"], [$_SESSION["promptData"]["options"][0], ""])):
             {
                 executeCommand();
-                $response = "y";
+                $answer = "y";
             }
         case (in_array($_POST["command"], ["n", "N"])):
             {
                 $_SESSION["preserveState"] = true;
-                addToPreviousHistory("<br> " . $response);
+                editLastHistory("<br> " . $answer);
                 cleanUp();
                 throw new Exception("", 0);
             }
         default:
             {
-                addToPreviousHistory("<br>" . $_POST["command"] . "<br>" . implode("/", $_SESSION["prompt"]["options"]));
+                editLastHistory("<br>" . $_POST["command"] . "<br>" . implode("/", $_SESSION["promptData"]["options"]));
                 $_SESSION["preserveState"] = true;
                 throw new Exception("", 0);
             }
@@ -40,59 +40,92 @@ function handlePrompt()
 }
 function managePipe()
 {
-    //check if pipe commands are valid combination
-    $_SESSION["isPipe"] = true;
+    $_SESSION["pipeCount"]++;
+    $tempInput = $_POST["command"];
+    $beforePipe = trim(strchr($tempInput, "|", true));
+    $afterPipe = trim(substr(strchr($tempInput, "|"), 2));
 
-    $afterNeedle = strstr($_POST["command"], "|",);
-    $_POST["command"] = strstr($_POST["command"], "|", true);
-    startTerminalProcess();
-    $_POST["command"] = $afterNeedle;
+    $_POST["command"] = $beforePipe;
     startTerminalProcess();
 
-    header("Location: " . $_SERVER["REQUEST_URI"]);
+    $_SESSION["tokens"] = [];
+    $_SESSION["pipeCount"]--;
+    $_POST["command"] = $afterPipe;
+    $_SESSION["inputCommand"] = $tempInput;
 }
 function prepareCommandExecution()
 {
+    $_SESSION["inputCommand"] = $_POST["command"];
     if ($_POST["command"] == "") header("Location: " . $_SERVER["REQUEST_URI"]);
 
-    getCommand(explode(" ", trim($_POST["command"]))[0])->interpretInput();
-    echo "<br>tokens: " . json_encode($_SESSION["tokens"]);
+    getCommand(explode(" ", trim($_POST["command"]))[0])->parseInput();
 }
 
 function executeCommand()
 {
     ("execute" . $_SESSION["tokens"]["command"])();
-    if (isset($_SESSION["isPipe"]))
-    {
-    }
 }
-function addToPreviousHistory($string)
+function editLastHistory($string)
 {
     $lastHistoryEntry = end($_SESSION["history"]);
     $lastHistoryEntry["response"] .=  $string;
     array_pop($_SESSION["history"]);
     array_push($_SESSION["history"], $lastHistoryEntry);
 }
+function handleException(Exception $e)
+{
+    editMana($e->getCode());
+    $_SESSION["response"] = $e->getMessage();
+}
+function closeProcess()
+{
+    if (!mustPreserveState())
+    {
+        writeResponse();
+        cleanUp();
+    }
+}
 function writeResponse()
 {
-    if ($_SESSION["preserveState"])
+    if (mustPreserveState())
     {
-        addToPreviousHistory($_SESSION["response"]);
+        editLastHistory($_SESSION["response"]);
     }
     else
     {
         $_SESSION["history"][] = [
             "directory" => $_POST["baseString"],
-            "command" => $_POST["command"],
+            "command" => $_SESSION["inputCommand"],
             "response" => $_SESSION["response"]
         ];
+        if (count($_SESSION["history"]) >= 15)
+        {
+            $_SESSION["history"] = array_slice($_SESSION["history"], 1, 15);
+        }
     }
 }
 function cleanUp()
 {
-    $_SESSION["tokens"] = [];
-    unset($_SESSION["prompt"]);
+
+    // $_SESSION["tokens"]["path"][0] = [];
+    $_SESSION["tokens"]["command"] = "";
+    $_SESSION["tokens"]["path"] = [];
+    $_SESSION["tokens"]["options"] = [];
+    $_SESSION["tokens"]["misc"] = [];
+    $_SESSION["inputCommand"] = "";
     $_SESSION["response"] = "";
+    $_SESSION["stdin"] = [];
+
+    unset(
+        $_SESSION["promptData"],
+        $_SESSION["pipeCount"]
+    );
+}
+function mustPreserveState()
+{
+    return isset($_SESSION["pipeCount"])
+        && $_SESSION["pipeCount"] > 0
+        || !empty(($_SESSION["promptData"]));
 }
 
 function getRoomOrItem($path, $tempRoom = null): mixed
@@ -302,18 +335,19 @@ function grepDirectory(
     $condition,
     $searchMatching = true,
     $searchRecursive = false,
-    $caseInsensitive = false,
+    $isCaseInsensitive = false,
 )
 {
     $grepOutput = [];
 
     foreach ($room->items as $item)
     {
-        $grepOutput = array_merge($grepOutput, grepItem(
-            $item,
+        $grepOutput = array_merge($grepOutput, grepText(
+            $item->content,
             $condition,
+            $item->path,
             $searchMatching,
-            $caseInsensitive
+            $isCaseInsensitive
         ));
     }
     if ($searchRecursive)
@@ -325,73 +359,71 @@ function grepDirectory(
                 condition: $condition,
                 searchMatching: $searchMatching,
                 searchRecursive: $searchRecursive,
-                caseInsensitive: $caseInsensitive,
+                isCaseInsensitive: $isCaseInsensitive,
             ));
         }
     }
     return $grepOutput;
 }
-function grepItem(
-    $item,
+function grepText(
+    $content,
     string $condition,
+    $path = [],
     $searchMatching = true,
-    $caseInsensitive = false,
+    $isCaseInsensitive = false,
 )
 {
     $matchingLines = [];
-    $contentLen = strlen($item->content);
+    $contentLen = strlen($content);
     $lineCounter = 0;
     $strOffset = -1;
 
     for ($i = 0; $i < $contentLen; $i++)
     {
-        if ($item->content[$i] == "." || $i == $contentLen - 1)
+        if ($content[$i] == "." || $i == $contentLen - 1)
         {
-            grepLine(
-                $item,
+            $tempLine = substr($content, $strOffset + 1, $i - $strOffset);
+            if (grepLine(
+                $tempLine,
                 $condition,
-                $caseInsensitive,
-                $matchingLines,
-                $i,
-                $strOffset,
-                $lineCounter,
+                $isCaseInsensitive,
                 $searchMatching,
-            );
+            ))
+            {
+                $matchingLines[implode('/', $path) . "&nbsp" . $lineCounter . ":"] = $tempLine;
+            }
+
+            $strOffset = $i + 1;
+            $lineCounter++;
         }
     }
 
     return $matchingLines;
 }
+
 function grepLine(
-    $item,
+    $tempLine,
     $condition,
-    $caseInsensitive = false,
-    &$matchingLines,
-    $lineStart,
-    &$strOffset,
-    &$lineCounter,
-    $searchMatching
+    $isCaseInsensitive = false,
+    $searchMatching = true,
 )
 {
-    $tempLine = substr($item->content, $strOffset + 1, $lineStart - $strOffset);
 
-    if ($caseInsensitive)
+    if ($isCaseInsensitive)
     {
         if ((bool)stristr($tempLine, (string)$condition) == $searchMatching)
         {
-            $matchingLines[implode('/', $item->path) . "&nbsp" . $lineCounter . ":"] = $tempLine . "<br>";
+            return true;
         }
     }
     else
     {
         if ((bool)strstr($tempLine, (string)$condition) == $searchMatching)
         {
-            $matchingLines[implode('/', $item->path) . "&nbsp" . $lineCounter . ":"] = $tempLine . "<br>";
+            return true;
         }
     }
-
-    $strOffset = $lineStart + 1;
-    $lineCounter++;
+    return false;
 }
 function countNotEmpty($array)
 {
@@ -422,10 +454,9 @@ function checkIfNamesExists(array $names, $hayStack): bool
 
 function createPrompt($prompt, $validAnswers = ["y", "n"])
 {
-    $_SESSION["prompt"] = [];
-    $_SESSION["prompt"]["text"] = $prompt . "&nbsp - &nbsp DEFAULT: " . $validAnswers[0];
-    $_SESSION["prompt"]["options"] = ["y", "n"];
-    $_SESSION["response"] = $prompt . "&nbsp - &nbsp DEFAULT: " . $validAnswers[0];
+    $_SESSION["promptData"]["prompt"] = $prompt . "<br>" . implode("/", $validAnswers) . "&nbsp - &nbsp DEFAULT: " . $validAnswers[0];
+    $_SESSION["promptData"]["options"] = ["y", "n"];
+    $_SESSION["response"] = $_SESSION["promptData"]["prompt"];
 
     throw new Exception($prompt, 0);
 }

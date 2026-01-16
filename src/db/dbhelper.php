@@ -135,20 +135,18 @@ class DBHelper
     public static function loadDefaultSession()
     {
         session_unset();
+        $_SESSION["tokens"]["command"] = "";
+        $_SESSION["tokens"]["path"] = [];
+        $_SESSION["tokens"]["options"] = [];
+        $_SESSION["tokens"]["misc"] = [];
         $_SESSION["validCommands"] = ["cd", "cat"];
         $_SESSION["history"] = [];
-        $_SESSION["isPrompt"] = false;
-        $_SESSION["prompt"] = [];
+        $_SESSION["stdin"] = NULL;
         $_SESSION["tokens"] = [];
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["curRoom"] = &$_SESSION["map"];
         $_SESSION["maxMana"] = 100;
         $_SESSION["curMana"] = 100;
-        $_SESSION["openedScroll"] = new Scroll(
-            "",
-            "",
-            content: ""
-        );
         $_SESSION["user"]["role"] = ROLE::WANDERER;
         $_SESSION["user"]["username"] = "guest";
         $_SESSION["lastPath"] = [];
@@ -162,7 +160,6 @@ class DBHelper
         $tempMap->doors["armory"] = new Room(name: "armory", requiredRole: ROLE::CONJURER);
         $tempMap->doors["passage"] = new Room(name: "passage", requiredRole: ROLE::WANDERER);
         $tempMap->doors["passage"]->doors["staircase"] = new Room(name: "staircase", path: $tempMap->doors["passage"]->path, requiredRole: ROLE::ROOT);
-
         $tempMap->items["manaRune.sh"] = new Spell(
             name: "",
             baseName: "manaRune",

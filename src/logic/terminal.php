@@ -6,20 +6,16 @@ function startTerminalProcess()
 {
     try
     {
-        $_SESSION["preserveState"] = false;
         checkAndHandleSpecialCases();
         prepareCommandExecution();
         executeCommand();
     }
     catch (Exception $e)
     {
-        editMana($e->getCode());
-        $_SESSION["response"] = $e->getMessage();
+        handleException($e);
     }
 
-    if ($_SESSION["preserveState"]) return;
-    writeResponse();
-    cleanUp();
+    closeProcess();
 }
 
 function executeCd()
@@ -52,9 +48,9 @@ function executeMkdir()
         $roomName = end($_SESSION["tokens"]["path"][$i]);
         $tempRoom = &getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1));
 
-        if (in_array($roomName, array_keys($tempRoom->doors)) && !isset($_SESSION["prompt"]))
+        if (in_array($roomName, array_keys($tempRoom->doors)) && !isset($_SESSION["promptData"]))
         {
-            createPrompt($roomName . " exists, are you sure you want to replace it?<br>y/n");
+            createPrompt($roomName . " exists, are you sure you want to replace it?", );
         }
         $tempRoom->doors[$roomName] = new Room(
             name: $roomName,
@@ -65,10 +61,12 @@ function executeMkdir()
 }
 function executeLs()
 {
-    $tempRoom = getRoom($_SESSION["tokens"]["path"][0], true);
+    $path = isset($_SESSION["tokens"]["path"][0]) ? $_SESSION["tokens"]["path"][0] : NULL;
+    $tempRoom = getRoom($path, true);
     $lsArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
     $_SESSION["stdin"] = $lsArray;
-    $_SESSION["response"] = "- " . implode(", ", $lsArray);
+    $_SESSION["promptData"] = [];
+    $_SESSION["response"] = implode(", ", $lsArray);
 }
 
 function executePwd()
@@ -126,42 +124,68 @@ function executeCat()
 
 function executeGrep()
 {
-    $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
     $matchingLines = [];
     $searchMatching = true;
     $searchRecursive = false;
-    $caseInsensitive = false;
-
-    foreach ($_SESSION["tokens"]["options"] as $flag)
+    $isCaseInsensitive = false;
+    if (isset($_SESSION["tokens"]["options"]))
     {
-        match ($flag)
+        foreach ($_SESSION["tokens"]["options"] as $flag)
         {
-            "-v" => $searchMatching = false,
-            "-r" => $searchRecursive = true,
-            "-i" => $caseInsensitive = true,
-        };
+            match ($flag)
+            {
+                "-v" => $searchMatching = false,
+                "-r" => $searchRecursive = true,
+                "-i" => $isCaseInsensitive = true,
+            };
+        }
     }
 
-    if (is_a($grepElement, Room::class))
+    if (isset($_SESSION["tokens"]["path"][0]))
     {
-        $matchingLines = grepDirectory(
-            room: $grepElement,
-            condition: $_SESSION["tokens"]["strings"][0],
-            searchMatching: $searchMatching,
-            searchRecursive: $searchRecursive,
-            caseInsensitive: $caseInsensitive,
-        );
+        $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
+
+        if (is_a($grepElement, Room::class))
+        {
+            $matchingLines = grepDirectory(
+                room: $grepElement,
+                condition: $_SESSION["tokens"]["strings"][0],
+                searchMatching: $searchMatching,
+                searchRecursive: $searchRecursive,
+                isCaseInsensitive: $isCaseInsensitive,
+            );
+        }
+        else
+        {
+            $matchingLines = grepText(
+                $grepElement->content,
+                $_SESSION["tokens"]["strings"][0],
+                $grepElement->path,
+                searchMatching: $searchMatching,
+                isCaseInsensitive: $isCaseInsensitive,
+            );
+        }
     }
-    else
+    else if (isset($_SESSION["stdin"]))
     {
-        $matchingLines = grepItem(
-            $grepElement,
-            $_SESSION["tokens"]["strings"][0]
-        );
+        foreach ($_SESSION["stdin"] as $key => $line)
+        {
+            if (grepLine(
+                $line,
+                $_SESSION["tokens"]["strings"][0],
+                searchMatching: $searchMatching,
+                isCaseInsensitive: $isCaseInsensitive,
+            ))
+            {
+                $matchingLines[$key] = $line;
+            }
+        }
+        $_SESSION["response"] = "";
     }
 
+    $_SESSION["stdin"] = $matchingLines;
     foreach ($matchingLines as $key => $line)
-        $_SESSION["response"] .= $key . " " . $line;
+        $_SESSION["response"] .= $key . " " . $line . "<br>";
 }
 
 function executeExecute()

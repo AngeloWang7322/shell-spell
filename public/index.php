@@ -13,42 +13,53 @@ require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
 require_once __DIR__ . "/../src/logic/terminal.php";
 require_once __DIR__ . "/../src/logic/terminalHelper.php";
-
-if ($_SESSION["hasDbConnection"]) {
+if ($_SESSION["hasDbConnection"])
+{
     $dbHelper = new DBHelper($pdo);
 }
 session_start();
-session_unset();        
+// session_unset();        
 
-if (!isset($_SESSION["history"])) {
+if (!isset($_SESSION["history"]))
+{
     DBHelper::loadDefaultSession();
 }
 
 $_SESSION["curRoom"];
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
-    switch ($_POST["action"]) {
-        case "enterCommand": {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
+{
+    switch ($_POST["action"])
+    {
+        case "enterCommand":
+            {
+                $start = hrtime(true);
                 startTerminalProcess();
+                $end = hrtime(true);
+                echo "<br>executed in: " . (($end - $start) / 1000000) . "ms";
                 break;
             }
-        case "loadMap": {
+        case "loadMap":
+            {
                 $dbHelper->loadGameState($_POST["mapId"]);
                 header("Location: /");
                 exit;
             }
-        case "closeScroll": {
+        case "closeScroll":
+            {
                 require __DIR__ . "/../src/logic/game.php";
                 break;
             }
-        case "newMap": {
+        case "newMap":
+            {
                 $dbHelper->createGameState($_POST["newMapName"]);
                 header("Location: /");
                 exit;
             }
-        case "deleteMap": {
+        case "deleteMap":
+            {
                 $dbHelper->deleteGameState($_POST["mapId"]);
                 break;
-            }   
+            }
     }
     // header("Location: " . $_SERVER["REQUEST_URI"]);
     // exit;
@@ -66,9 +77,15 @@ $routes = [
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = trim($path, '/');
 
-if (isset($routes[$path])) {
+if (isset($routes[$path]))
+{
+    $start = hrtime(true);
     require __DIR__ . '/templates//' . $routes[$path];
-} else {
+    $end = hrtime(true);
+    echo "<br>executed in: " . (($end - $start) / 1000000) . "ms";
+}
+else
+{
     require __DIR__ . '/templates//' . $routes['notfound'];
 }
 
