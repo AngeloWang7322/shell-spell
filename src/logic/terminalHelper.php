@@ -9,7 +9,13 @@ function checkAndHandleSpecialCases()
     }
     else if (strstr($_POST["command"], "|"))
     {
-        managePipe();
+        $_SESSION["pipeCount"]++;
+        commandChain("|");
+        $_SESSION["pipeCount"]--;
+    }
+    else if (strstr($_POST["command"], "&&"))
+    {
+        commandChain("&&");
     }
 }
 function handlePrompt()
@@ -38,18 +44,16 @@ function handlePrompt()
             }
     }
 }
-function managePipe()
+function commandChain($seperator)
 {
-    $_SESSION["pipeCount"]++;
     $tempInput = $_POST["command"];
-    $beforePipe = trim(strchr($tempInput, "|", true));
-    $afterPipe = trim(substr(strchr($tempInput, "|"), 2));
+    $beforePipe = trim(strchr($tempInput, $seperator, true));
+    $afterPipe = trim(substr(strchr($tempInput, $seperator), 2));
 
     $_POST["command"] = $beforePipe;
     startTerminalProcess();
 
     $_SESSION["tokens"] = [];
-    $_SESSION["pipeCount"]--;
     $_POST["command"] = $afterPipe;
 }
 function prepareCommandExecution()
