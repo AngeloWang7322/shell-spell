@@ -16,7 +16,7 @@ require_once __DIR__ . "/../src/logic/terminal.php";
 require_once __DIR__ . "/../src/logic/terminalHelper.php";
 
 session_start();
-// session_unset();        
+// session_unset();           
 
 if (!isset($_SESSION["history"]))
 {
@@ -51,15 +51,12 @@ $path = trim($path, '/');
 
 if (isset($routes[$path]))
 {
-    $start = hrtime(true);
     require __DIR__ . '/templates//' . $routes[$path];
-    $end = hrtime(true);
-    echo "<br>executed in: " . (($end - $start) / 1000000) . "ms";
 }
 else
 {
     require __DIR__ . '/templates//' . $routes['notfound'];
 }
 
-require __DIR__ . '/assets/footer.php';
+// require __DIR__ . '/assets/footer.php';
 require __DIR__ . '/assets/layout.php';

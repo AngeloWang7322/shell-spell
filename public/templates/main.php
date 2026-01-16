@@ -135,3 +135,12 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
     </div>
 
 </div>
+<script>
+  window.addEventListener("load", () => {
+    const history = document.querySelector(".history-container");
+    const lastLine = history.lastElementChild;
+    if (lastLine) {
+      lastLine.scrollIntoView({ behavior: "auto", block: "end" });
+    }
+  });
+</script>

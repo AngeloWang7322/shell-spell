@@ -47,8 +47,9 @@ function handlePrompt()
 function commandChain($seperator)
 {
     $tempInput = $_POST["command"];
-    $beforePipe = trim(strchr($tempInput, $seperator, true));
-    $afterPipe = trim(substr(strchr($tempInput, $seperator), 2));
+    $needlePos = strrpos($tempInput, $seperator);
+    $beforePipe = trim(substr($tempInput, 0,$needlePos, ));
+    $afterPipe = trim(substr($tempInput, $needlePos +strlen($seperator) + 1));
 
     $_POST["command"] = $beforePipe;
     startTerminalProcess();
@@ -118,9 +119,9 @@ function cleanUp()
     $_SESSION["response"] = "";
     $_SESSION["stdin"] = [];
 
+    $_SESSION["pipeCount"] = 0;
     unset(
         $_SESSION["promptData"],
-        $_SESSION["pipeCount"]
     );
 }
 function mustPreserveState()
@@ -361,7 +362,7 @@ function getLsArray($tempRoom)
             }
             for ($j = 0; $j < count($finalArray); $j++)
             {
-                $finalArray[$j] .= spaceOf(((int)($longest - strlen($tempLsArray[$j][$i])) * 0.7));
+                $finalArray[$j] .= spaceOf(((int)($longest - strlen($tempLsArray[$j][$i])) * 0.6));
             }
         }
         $_SESSION["stdin"] = $finalArray;
@@ -484,10 +485,8 @@ function countNotEmpty($array)
 
 function checkIfNamesExists(array $names, $hayStack): bool
 {
-    echo "<br>CHECKING";
     foreach ($names as $name)
     {
-        echo "<br>checking name: " . $name;
         if (array_key_exists($name, $hayStack));
         {
             return true;
