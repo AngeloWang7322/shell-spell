@@ -16,6 +16,7 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
         </div>
         <div class="header-group">
             <?php
+            //HEADER
             if (!isset($_SESSION["user"]["id"]))
             {
                 echo '            <a href="register">
@@ -47,6 +48,7 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
     <div class="elements-container">
         <div class="elements-wrapper">
             <?php
+            // ROOMS
             foreach ($_SESSION["curRoom"]->doors as $door)
             {
                 echo "
@@ -59,13 +61,11 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
         </div>
         <div class="elements-wrapper">
             <?php
+            // ITEMS
             foreach ($_SESSION["curRoom"]->items as $item)
             {
                 $itemClasses = $item->type->value;
-                if ($item->type == ItemType::ALTER && !$item->isActive)
-                {
-                    $itemClasses .= " alter-inactive";
-                }
+                if ($item->type == ItemType::ALTER && !$item->isActive) $itemClasses .= " alter-inactive";
                 echo "
                 <div class='element-container'>
                     <div class='element item " . $itemClasses . "'> </div>
@@ -80,8 +80,9 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
         <div class="spellbook-wrapper">
             <div class="history-container">
                 <?php
+                //HISTORY
                 for ($i = 0; $i < count($_SESSION["history"]); $i++)
-                    echo "<p class='prev-command'>"
+                    echo "<p class='prev-command'>&nbsp"
                         . $_SESSION["history"][$i]["directory"]
                         . $_SESSION["history"][$i]["command"] . "<br>"
                         . $_SESSION["history"][$i]["response"]
@@ -91,6 +92,7 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
             <div class="input-line">
                 <div class="base-string">
                     <?php
+                    //INPUT LINE
                     echo $baseString;
                     ?>
                 </div>
@@ -104,6 +106,7 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
         <div class="mana-display-container">
             <div class="mana-bar" style="width:
             <?php
+            //MANA
             echo $_SESSION["curMana"] / $_SESSION["maxMana"] * 100;
             ?>%;">
             </div>
@@ -112,26 +115,23 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
             </h3>
         </div>
     </div>
-    <div class="scroll-container" style="visibility: 
-    <?php
-    if ($_SESSION["openedScroll"]->isOpen)
-    {
-        echo "visible";
-    }
-    else
-    {
-        echo "hidden";
-    }
-    ?>;">
-        <div class="header-container">
-            <h1 class="scroll-header">
-                <?php echo $_SESSION["openedScroll"]->header; ?>
-            </h1>
-        </div>
-        <div class="scroll-content">
-            <p>
-                <?php echo $_SESSION["openedScroll"]->content; ?>
-            </p>
-        </div>
-    </div>
+        <?php
+        //SCROLL
+        if (isset($_SESSION["openedScroll"]))
+        {
+            echo '    
+            <div class="scroll-container">
+                <div class="header-container">
+                    <h1 class="scroll-header">'
+                        . $_SESSION["openedScroll"]["header"]
+                        . '</h1>
+                    </div>
+                    <div class="scroll-content">
+                        <p>'
+                        . $_SESSION["openedScroll"]["content"]
+                        . ' </p>
+                </div>    
+            </div>';
+        }
+        ?>
 </div>

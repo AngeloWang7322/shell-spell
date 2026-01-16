@@ -49,6 +49,7 @@ enum Commands: string
     case ECHO = "echo";
     case EXECUTE = "execute";
     case MAN = "man";
+    case CAT = "cat";
 }
 
 enum TokenType: string
