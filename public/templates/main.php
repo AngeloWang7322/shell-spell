@@ -76,6 +76,23 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
             ?>
         </div>
     </div>
+    <?php
+    //SCROLL
+    if (isset($_SESSION["openedScroll"]))
+    {
+        echo '
+        <div class="backdrop"></div>
+        <div class="scroll-container">
+            <div class="header-container">
+                <h1 class="scroll-header">' . $_SESSION["openedScroll"]["header"] . '</h1>
+            </div>
+            <form class="scroll-content" method="post">
+                <input type="hidden" value="editScroll" name="action">
+                <input name="newFileContent" class="file-text-input" autofocus autocomplete="off" value="' . $_SESSION["openedScroll"]["content"] . '"></input>
+            </form>
+        </div>';
+    }
+    ?>
     <div class="ui-wrapper">
         <div class="spellbook-wrapper">
             <div class="history-container">
@@ -115,23 +132,5 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
             </h3>
         </div>
     </div>
-        <?php
-        //SCROLL
-        if (isset($_SESSION["openedScroll"]))
-        {
-            echo '    
-            <div class="scroll-container">
-                <div class="header-container">
-                    <h1 class="scroll-header">'
-                        . $_SESSION["openedScroll"]["header"]
-                        . '</h1>
-                    </div>
-                    <div class="scroll-content">
-                        <p>'
-                        . $_SESSION["openedScroll"]["content"]
-                        . ' </p>
-                </div>    
-            </div>';
-        }
-        ?>
+
 </div>

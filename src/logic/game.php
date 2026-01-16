@@ -1,10 +1,13 @@
 <?php
 declare(strict_types= 1);
 
-if($_POST["action"] == "closeScroll")
-{
-    closeScroll();
-}
+
 function closeScroll(){
+
     unset($_SESSION["openedScroll"]);
+}
+function editScroll(){
+    $tempScroll = &getItem($_SESSION["openedScroll"]["path"]);
+    $tempScroll->content = $_POST["newFileContent"];
+    closeScroll();
 }

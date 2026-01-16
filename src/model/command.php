@@ -226,7 +226,7 @@ class Command
             $argIndex--;
         }
     }
-    public function parsePathMkdir($mkdirPath,  $syntaxArray, &$argIndex)
+    public function parsePathNew($mkdirPath,  $syntaxArray, &$argIndex)
     {
         if (count($mkdirPath) <= 1)
         {
@@ -259,7 +259,7 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             [],
             "",
-            pathParser: "parsePathMkdir"
+            pathParser: "parsePathNew"
         ),
         "rm" == $command
         => new Command(
@@ -344,6 +344,15 @@ function getCommand($command)
             "",
             true,
         ),
+        "touch" == $command
+        => new Command(
+            "touch",
+            [TokenTYPE::PATH],
+            [],
+            "",
+            true,
+            pathParser: "parsePathnew",
+        ),
         default => throw new Exception("unknown command")
     };
 }
@@ -364,4 +373,7 @@ Funcionalities
     ECHO:
     EXECUTE:
     MAN:
+    TOUCH: 
+        - create file
+        - open file
  */
