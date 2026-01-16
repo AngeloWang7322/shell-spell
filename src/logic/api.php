@@ -14,6 +14,7 @@ function getValidActions()
 }
 function enterCommand()
 {
+    $_SESSION["inputCommand"]= $_POST["command"];
     startTerminalProcess();
 }
 

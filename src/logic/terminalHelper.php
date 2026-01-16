@@ -51,11 +51,9 @@ function managePipe()
     $_SESSION["tokens"] = [];
     $_SESSION["pipeCount"]--;
     $_POST["command"] = $afterPipe;
-    $_SESSION["inputCommand"] = $tempInput;
 }
 function prepareCommandExecution()
 {
-    $_SESSION["inputCommand"] = $_POST["command"];
     if ($_POST["command"] == "") header("Location: " . $_SERVER["REQUEST_URI"]);
 
     getCommand(explode(" ", trim($_POST["command"]))[0])->parseInput();
@@ -362,11 +360,13 @@ function getLsArray($tempRoom)
                 $finalArray[$j] .= spaceOf(((int)($longest - strlen($tempLsArray[$j][$i])) * 0.7));
             }
         }
+        $_SESSION["stdin"] = $finalArray;
         $_SESSION["response"] = implode("<br> ", $finalArray);
     }
     else
     {
         $finalArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
+        $_SESSION["stdin"] = $finalArray;
         $_SESSION["response"] = implode(", ", $finalArray);
     }
 }
