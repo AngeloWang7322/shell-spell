@@ -1,13 +1,25 @@
 <?php
-declare(strict_types= 1);
 
+declare(strict_types=1);
 
-function closeScroll(){
+require __DIR__ . "/terminalHelper.php";
+
+function closeScroll()
+{
 
     unset($_SESSION["openedScroll"]);
 }
-function editScroll(){
+function editScroll()
+{
     $tempScroll = &getItem($_SESSION["openedScroll"]["path"]);
-    $tempScroll->content = $_POST["newFileContent"];
+    $userRole = $_SESSION["user"]["role"];
+    if ($userRole->isLowerThan($tempScroll->requiredRole))
+    {
+        editLastHistory("unable to change scroll, required role: ". colorizeString($tempScroll->requiredRole->value));
+    }
+    else
+    {
+        $tempScroll->content = $_POST["newFileContent"];
+    }
     closeScroll();
 }
