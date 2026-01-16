@@ -63,10 +63,9 @@ function executeLs()
 {
     $path = isset($_SESSION["tokens"]["path"][0]) ? $_SESSION["tokens"]["path"][0] : NULL;
     $tempRoom = getRoom($path, true);
-    $lsArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-    $_SESSION["stdin"] = $lsArray;
+    getLsArray($tempRoom);
+    // $_SESSION["stdin"] = $lsArray;
     $_SESSION["promptData"] = [];
-    $_SESSION["response"] = implode(", ", $lsArray);
 }
 
 function executePwd()

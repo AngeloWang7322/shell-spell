@@ -3,7 +3,7 @@ $title = "Shell spell";
 $extraCss[] = 'main.css';
 $script = "main.js";
 
-$baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp";
+$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["user"]["role"]->value);
 ?>
 
 <div class="game-container">
@@ -19,7 +19,8 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
             //HEADER
             if (!isset($_SESSION["user"]["id"]))
             {
-                echo '            <a href="register">
+                echo '            
+            <a href="register">
                 <div class="header-element">
                     Register
                     <img class="icon" src="../assets/images/icon_register_white.png" alt="register_icon">
@@ -99,7 +100,7 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
                 <?php
                 //HISTORY
                 for ($i = 0; $i < count($_SESSION["history"]); $i++)
-                    echo "<p class='prev-command'>&nbsp"
+                    echo "<p class='prev-command'>"
                         . $_SESSION["history"][$i]["directory"]
                         . $_SESSION["history"][$i]["command"] . "<br>"
                         . $_SESSION["history"][$i]["response"]

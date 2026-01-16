@@ -286,7 +286,7 @@ function getCommand($command)
         => new Command(
             "ls",
             [TokenTYPE::OPTION, TokenType::PATH],
-            [],
+            ["-l"],
             "",
             true,
         ),

@@ -28,7 +28,6 @@ enum ItemType: string
     case SCROLL = "txt";
     case SPELL = "sh";
     case ALTER = "exe";
-    case LOG = "log";
 }
 enum ActionType: string
 {

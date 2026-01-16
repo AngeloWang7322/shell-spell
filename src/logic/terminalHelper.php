@@ -330,6 +330,46 @@ function pushNewLastPath(array $newPath)
 
     array_push($_SESSION["lastPath"], $newPath);
 }
+function getLsArray($tempRoom)
+{
+    $tempLsArray = [];
+    if (in_array("-l", $_SESSION["tokens"]["options"]))
+    {
+        foreach (array_merge($tempRoom->doors, $tempRoom->items) as $element)
+        {
+            $tempEntry = [];
+            $tempEntry[0] = colorizeString($element->requiredRole->value);
+            $tempEntry[1] = $element->timeOfLastChange;
+            $tempEntry[2] = $element->name;
+
+            array_push($tempLsArray, $tempEntry);
+        }
+
+        $finalArray = array_fill(0, count($tempLsArray), "");
+        for ($i = 0; $i < 3; $i++)
+        {
+            $longest = 5;
+            for ($j = 0; $j < count($tempLsArray); $j++)
+            {
+                if (strlen($tempLsArray[$j][$i]) + 4 > $longest)
+                {
+                    $longest = strlen($tempLsArray[$j][$i]) + 4;
+                }
+                $finalArray[$j] .= $tempLsArray[$j][$i] . " ";
+            }
+            for ($j = 0; $j < count($finalArray); $j++)
+            {
+                $finalArray[$j] .= spaceOf(((int)($longest - strlen($tempLsArray[$j][$i])) * 0.7));
+            }
+        }
+        $_SESSION["response"] = implode("<br> ", $finalArray);
+    }
+    else
+    {
+        $finalArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
+        $_SESSION["response"] = implode(", ", $finalArray);
+    }
+}
 function grepDirectory(
     $room,
     $condition,
@@ -471,6 +511,16 @@ function isNameValid($name, $suffix)
 
 function colorizeString($string, $class = "")
 {
-    if($class == "") $class = $string;
+    if ($class == "") $class = $string;
     return "<span class='" . $class . "'>" . $string . "</span>";
+}
+
+function spaceOf($length)
+{
+    $space = "";
+    for ($i = 0; $i < $length; $i++)
+    {
+        $space .= "&nbsp ";
+    }
+    return $space;
 }

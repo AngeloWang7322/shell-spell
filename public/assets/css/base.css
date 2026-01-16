@@ -52,7 +52,9 @@ button {
     align-items: center;
     height: 100vh;
 }
-
+.wanderer{
+    color: rgb(225, 255, 197);
+}
 .apprentice {
     color: rgb(235, 206, 42);
 }

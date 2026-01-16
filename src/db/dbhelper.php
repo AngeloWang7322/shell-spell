@@ -153,33 +153,56 @@ class DBHelper
     }
     public static function getDefaultMap(): Room
     {
-        $tempMap = new Room("hall");
+        $tempMap = new Room(
+            "hall",
+            curDate: false,
+        );
         $_SESSION["curRoom"] = &$tempMap;
         $tempMap->path = ["hall"];
-        $tempMap->doors["library"] = new Room(name: "library", requiredRole: ROLE::APPRENTICE);
-        $tempMap->doors["armory"] = new Room(name: "armory", requiredRole: ROLE::CONJURER);
-        $tempMap->doors["passage"] = new Room(name: "passage", requiredRole: ROLE::WANDERER);
-        $tempMap->doors["passage"]->doors["staircase"] = new Room(name: "staircase", path: $tempMap->doors["passage"]->path, requiredRole: ROLE::ROOT);
+        $tempMap->doors["library"] = new Room(
+            name: "library",
+            requiredRole: ROLE::APPRENTICE,
+            curDate: false,
+        );
+        $tempMap->doors["armory"] = new Room(
+            name: "armory",
+            requiredRole: ROLE::CONJURER,
+            curDate: false,
+        );
+        $tempMap->doors["passage"] = new Room(
+            name: "passage",
+            requiredRole: ROLE::WANDERER,
+            curDate: false,
+        );
+        $tempMap->doors["passage"]->doors["staircase"] = new Room(
+            name: "staircase",
+            path: $tempMap->doors["passage"]->path,
+            requiredRole: ROLE::ROOT,
+            curDate: false,
+        );
         $tempMap->items["manaRune.sh"] = new Spell(
             name: "",
             baseName: "manaRune",
             path: [],
             action: ActionType::GET_MANA,
-            requiredRole: ROLE::WANDERER
+            requiredRole: ROLE::WANDERER,
+            curDate: false
         );
         $tempMap->items["grimoire.txt"] = new Scroll(
             "",
             "grimoire",
             [],
             Role::CONJURER,
-            "OPEN SCROLL: <br>'cat [scroll name]'<br>"
+            "OPEN SCROLL: <br>'cat [scroll name]'<br>",
+            curDate: false
         );
         $tempMap->items["oldDiary.txt"] = new Scroll(
             "",
             "oldDiary",
             [],
             Role::WANDERER,
-            "some old diary text about hunting boar"
+            "some old diary text about hunting boar",
+            curDate: false
         );
         $tempMap->items["ancientAlter.exe"] = new Alter(
             "",
@@ -188,14 +211,17 @@ class DBHelper
             Role::ROOT,
             true,
             ["dusty_key.txt"],
-            new Room("rewardRoom"),
+            new Room("rewardRoom", curDate: true),
+            curDate: false
         );
+
         $tempMap->doors["passage"]->items["dusty_key.txt"] = new Scroll(
             "",
             "dusty_key",
             ["hall", "passage"],
             Role::ROOT,
             "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
+            curDate: false
         );
         $tempMap->doors["passage"]->items["recipe.txt"] = new Scroll(
             "",
@@ -203,6 +229,7 @@ class DBHelper
             ["hall", "passage"],
             Role::ROOT,
             "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
+            curDate: false
         );
         echo "<br>map after creation: " . json_encode($tempMap);
         return $tempMap;
