@@ -69,7 +69,7 @@ class Scroll extends Item
     {
         $_SESSION["openedScroll"]["header"] = $this->name;
         $_SESSION["openedScroll"]["content"] = $this->content;
-        $_SESSION["openedScroll"]["isOpen"] = true;
+        $_SESSION["openedScroll"]["path"] = $this->path;
     }
 }
 class Alter extends Item

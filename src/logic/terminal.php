@@ -50,7 +50,7 @@ function executeMkdir()
 
         if (in_array($roomName, array_keys($tempRoom->doors)) && !isset($_SESSION["promptData"]))
         {
-            createPrompt($roomName . " exists, are you sure you want to replace it?", );
+            createPrompt($roomName . " exists, are you sure you want to replace it?",);
         }
         $tempRoom->doors[$roomName] = new Room(
             name: $roomName,
@@ -108,20 +108,38 @@ function executeMv()
 function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
-    if (is_a($catItem, SCROLL::class))
+    $_SESSION["response"] = $catItem->content;
+    $_SESSION["stdin"] = $catItem->content;
+}
+
+function executeTouch()
+{
+    $fileName = array_pop($_SESSION["tokens"]["path"][0]);
+
+    $destRoom = &getRoom($_SESSION["tokens"]["path"][0]);
+
+    if (!isNameValid($fileName, "." . ItemType::SCROLL->value))
     {
-        $catItem->openScroll();
+        throw new Exception("invalid name given");
     }
-    else if (is_a($catItem, LOG::class))
+    if (key_exists($fileName, $destRoom->items))
     {
-        $_SESSION["response"] = $catItem->content;
+        $touchFile = $destRoom->items[$fileName];
+        if (is_a($touchFile, Scroll::class))
+        {
+            $touchFile->openScroll();
+        }
     }
     else
     {
-        throw new Exception("item not readable");
+        $destRoom->items[$fileName] = new Scroll(
+            name: $fileName,
+            baseName: "",
+            path: $destRoom->path,
+            requiredRole: $_SESSION["user"]["role"]
+        );
     }
 }
-
 function executeGrep()
 {
     $matchingLines = [];

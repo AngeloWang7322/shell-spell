@@ -460,3 +460,10 @@ function createPrompt($prompt, $validAnswers = ["y", "n"])
 
     throw new Exception($prompt, 0);
 }
+function isNameValid($name, $suffix )
+{   $illegalBaseNames = ["..",];
+    if (!str_ends_with($name, $suffix)) return false;
+
+    $baseName = substr($name, 0, strlen($suffix));
+    return !in_array($baseName, $illegalBaseNames);
+}

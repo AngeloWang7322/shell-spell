@@ -35,7 +35,6 @@
     width: fit-content;
 }
 .input-line {
-
     display: flex;
     flex-direction: row;
     align-items: end;
@@ -87,6 +86,7 @@
 }
 
 .scroll-container {
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -95,8 +95,8 @@
     padding: 16px 32px;
     top: 50%;
     left: 50%;
-    width: 700px;
-    height: 700px;
+    height: 80vh;
+    width: 80vh;
     transform: translate(-50%, -50%);
     image-rendering: pixelated;
     background-image: url("../images/scroll.png");
@@ -110,16 +110,31 @@
     width: 100%;
     font-size: 46px;
     text-align: center;
+    margin-top: -8vh;
+    color: white;
 }
 
 .scroll-content {
-    width: 55%;
     height: 100%;
+    width: 50%;
     font-size: 28px;
     text-align: center;
     text-justify: center;
     display: flex;
     justify-content: center;
+}
+.file-text-input{
+    width: 100%;
+    height: 90%;
+    font-size: 18px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0px;
+    text-align: center;
+}
+    .file-text-input:focus{
+        outline: none !important;
+    border: 0px;
+    border: rgba(255, 255, 255, 0.062);
 }
 
 .elements-container {
@@ -254,4 +269,11 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+}
+.backdrop{
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.575);
 }
