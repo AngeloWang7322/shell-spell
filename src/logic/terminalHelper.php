@@ -88,7 +88,7 @@ function organizeInput(array $inputArray)
     $_SESSION["context"]["response"] = "";
 
     $inputArgs = [
-        "command" => $inputArray[0],
+        "command" => $inputArray[0], 
         "path" => [],
         "strings" => [],
         "flags" => [],

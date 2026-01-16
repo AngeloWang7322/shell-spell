@@ -6,3 +6,5 @@ cd hall -> invalid command
 BUG: currently in hall
 cat oldDiary.txt -> item not found
 2nd attempt cat oldDiary.txt -> scoll open
+
+BUG: the bugs that were mentioned above did not occur this time but mana was not used while cd in different rooms

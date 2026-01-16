@@ -8,7 +8,7 @@ function initiateTerminalLogic()
 {
     try
     {
-        organizeInput(explode(" ", trim($_POST["command"])));
+        organizeInput(inputArray: explode(" ", trim($_POST["command"])));
         validateInput();
         ("execute" . $_SESSION["context"]["inputArgs"]["command"])();
     }
@@ -203,81 +203,81 @@ function executeExecutable($name, $size = 10)
 
 function executeMan()
 {
-    if (empty($inputArgs["path"])) {
-                    $response =
-                    "CLI-Game Manual\n\n" .
-                    "USAGE:\n" .
-                    "  man command\n\n" .
-                    "AVAILABLE COMMANDS:\n" .
-                    "  cd, ls, mkdir, pwd, rm, mv, cat, man\n\n";
+    if (empty($_SESSION["context"]["inputArgs"]["path"])) {
+                    $_SESSION["context"]["response"] =
+                    "CLI-Game Manual <br>" .
+                    "USAGE: <br>" .
+                    "  man command <br>" .
+                    "AVAILABLE COMMANDS: <br>" .
+                    "  cd, ls, mkdir, pwd, rm, mv, cat, man <br>";
                 }
             
-                $command_to_define = strtolower($_SESSION["context"]["inputArgs"]["command"]);
+                $command_to_define = strtolower($_SESSION["context"]["inputArgs"]["path"][0][0]);
 
                 switch($command_to_define) {
 
                     case "cd": {
-                        $response =
-                        "cd - change current room\n\n".
-                        "USAGE:\n". 
-                        "  cd (path)\n". 
-                        "  cd /\n".
-                        "  cd -\n". 
-                        "  cd ..\n". 
-                        "DESCRIPTION:\n". 
+                        $_SESSION["context"]["response"] =
+                        "cd - change current room <br>".
+                        "USAGE: <br>". 
+                        "  cd (path) <br>". 
+                        "  cd / <br>".
+                        "  cd - <br>". 
+                        "  cd .. <br>". 
+                        "DESCRIPTION: <br>". 
                         "  you can switch into different rooms";
                     break;
                     }
                     case "ls": {
-                        $response =
-                        "ls - list all items/rooms\n\n". 
-                        "USAGE:\n". 
-                        "  ls \n". 
-                        "  ls (path)\n";
+                        $_SESSION["context"]["response"] =
+                        "ls - list all items/rooms <br>". 
+                        "USAGE: <br>". 
+                        "  ls  <br>". 
+                        "  ls (path) <br>";
                     break;
                     }
                     case "mkdir": {
-                        $response =
-                        "mkdir - create a new room\n\n". 
-                        "USAGE:\n". 
+                        $_SESSION["context"]["response"] =
+                        "mkdir - create a new room <br>". 
+                        "USAGE: <br>". 
                         "  mkdir (path)";
                     break;
                     }
                     case "pwd": {
-                        $response = 
+                        $_SESSION["context"]["response"] = 
                         "pwd - print current room path";
                     break;
                     }
                     case "rm": {
-                        $response = 
-                        "rm - remove room or item\n\n". 
-                        "WARNING:\n". 
+                        $_SESSION["context"]["response"] = 
+                        "rm - remove room or item <br>". 
+                        "WARNING: <br>". 
                         "  This operation is irreversible";
                     break;
                     }
                     case "mv": {
-                        $response = 
-                        "mv - move room/item\n\n". 
-                        "USAGE:\n". 
+                        $_SESSION["context"]["response"] = 
+                        "mv - move room/item <br>". 
+                        "USAGE: <br>". 
                         "  mv (source) (destination)";
                     break;
                     }
                     case "cat": {
-                        $response = 
-                        "cat - read a scroll\n\n". 
-                        "USAGE:\n". 
+                        $_SESSION["context"]["response"] = 
+                        "cat - read a scroll <br>". 
+                        "USAGE: <br>". 
                         "  cat (scroll)";
                     break;
                     }
                     case "man": {
-                        $response = 
-                        "man - show manual pages\n\n". 
-                        "USAGE:\n". 
+                        $_SESSION["context"]["response"] = 
+                        "man - show manual pages <br>". 
+                        "USAGE: <br>". 
                         "  man (command)";
                     break;
                     }
                     default:
-                        $response = "No manual entry for: " . $command_to_define;
+                        $_SESSION["context"]["response"] = "No manual entry for: " . $command_to_define;
                      break;
                 }
             
