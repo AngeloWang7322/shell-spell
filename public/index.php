@@ -16,8 +16,9 @@ require_once __DIR__ . "/../src/logic/terminal.php";
 require_once __DIR__ . "/../src/logic/terminalHelper.php";
 
 session_start();
-// session_unset();           
+// session_unset();          
 echo "<div class='ui'>";
+// echo "map: " . json_encode($_SESSION["curRoom"]->items) ;
 if (!isset($_SESSION["history"]))
 {
     DBHelper::loadDefaultSession();

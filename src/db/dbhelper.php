@@ -138,6 +138,7 @@ class DBHelper
         $_SESSION["tokens"]["command"] = "";
         $_SESSION["tokens"]["path"] = [];
         $_SESSION["tokens"]["options"] = [];
+        $_SESSION["tokens"]["keyValueOptions"] = [];
         $_SESSION["tokens"]["misc"] = [];
         $_SESSION["validCommands"] = ["cd", "cat"];
         $_SESSION["history"] = [];
@@ -183,7 +184,7 @@ class DBHelper
         $tempMap->items["manaRune.sh"] = new Spell(
             name: "",
             baseName: "manaRune",
-            path: [],
+            path: ["hall"],
             action: ActionType::GET_MANA,
             requiredRole: ROLE::WANDERER,
             curDate: false
@@ -191,7 +192,7 @@ class DBHelper
         $tempMap->items["grimoire.txt"] = new Scroll(
             "",
             "grimoire",
-            [],
+            ["hall"],
             Role::CONJURER,
             "OPEN SCROLL: <br>'cat [scroll name]'<br>",
             curDate: false
@@ -199,7 +200,7 @@ class DBHelper
         $tempMap->items["oldDiary.txt"] = new Scroll(
             "",
             "oldDiary",
-            [],
+            ["hall"],
             Role::WANDERER,
             "some old diary text about hunting boar",
             curDate: false
@@ -207,7 +208,7 @@ class DBHelper
         $tempMap->items["ancientAlter.exe"] = new Alter(
             "",
             "ancientAlter",
-            [],
+            ["hall"],
             Role::ROOT,
             true,
             ["dusty_key.txt"],
@@ -231,7 +232,7 @@ class DBHelper
             "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
             curDate: false
         );
-        echo "<br>map after creation: " . json_encode($tempMap);
+        // echo "<br>map after creation: " . json_encode($tempMap);
         return $tempMap;
     }
 }

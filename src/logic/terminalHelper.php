@@ -48,8 +48,8 @@ function startCommandChain($seperator)
 {
     $tempInput = $_POST["command"];
     $needlePos = strrpos($tempInput, $seperator);
-    $beforePipe = trim(substr($tempInput, 0,$needlePos, ));
-    $afterPipe = trim(substr($tempInput, $needlePos +strlen($seperator) + 1));
+    $beforePipe = trim(substr($tempInput, 0, $needlePos,));
+    $afterPipe = trim(substr($tempInput, $needlePos + strlen($seperator) + 1));
 
     $_POST["command"] = $beforePipe;
     startTerminalProcess();
@@ -109,11 +109,10 @@ function writeResponse()
 }
 function cleanUp()
 {
-
-    // $_SESSION["tokens"]["path"][0] = [];
     $_SESSION["tokens"]["command"] = "";
     $_SESSION["tokens"]["path"] = [];
     $_SESSION["tokens"]["options"] = [];
+    $_SESSION["tokens"]["keyValueOptions"] = [];
     $_SESSION["tokens"]["misc"] = [];
     $_SESSION["inputCommand"] = "";
     $_SESSION["response"] = "";
@@ -149,7 +148,7 @@ function &getRoom($path, $rankRestrictive = false): Room
     $index = 0;
     $tempRoom = &$_SESSION["curRoom"];
 
-    if (empty($path))
+    if (empty($path) || $path[0] == ".")
     {
         return $tempRoom;
     }
@@ -336,7 +335,8 @@ function pushNewLastPath(array $newPath)
 function getLsArray($tempRoom)
 {
     $tempLsArray = [];
-    if (in_array("-l", $_SESSION["tokens"]["options"]))
+
+    if (!empty($_SESSION["tokens"]["options"]) && in_array("-l", $_SESSION["tokens"]["options"]))
     {
         foreach (array_merge($tempRoom->doors, $tempRoom->items) as $element)
         {
@@ -357,7 +357,7 @@ function getLsArray($tempRoom)
             {
                 if (strlen($tempLsArray[$j][$i]) + 12 > $longest)
                 {
-                    $longest = strlen($tempLsArray[$j][$i]) + 15 ;
+                    $longest = strlen($tempLsArray[$j][$i]) + 15;
                 }
                 $finalArray[$j] .= $tempLsArray[$j][$i] . " ";
             }
@@ -527,4 +527,82 @@ function spaceOf($length)
         $space .= "&nbsp ";
     }
     return $space;
+}
+function callFunctionOnRoomRec($room, callable $function, ...$args)
+{
+    $result = [];
+    $result = array_merge($result, $function($room, ...$args));
+    foreach ($room->doors as $door)
+    {
+        $result = array_merge($result,  callFunctionOnRoomRec($door, $function, ...$args));
+    }
+    return $result;
+}
+function findByName($room, $findFunction, $findString)
+{
+    $matches = [];
+    foreach (array_merge($room->doors, $room->items) as $element)
+    {
+        if (
+            $findString == "" || 
+            $findFunction($element->name, $findString) ==
+            ($findFunction != "strcmp")
+            
+        )
+        {
+            $matches[] = implode("/", $element->path);
+        }
+    }
+    return $matches;
+}
+function getOptionsForFind(&$findFunction, &$conditionString)
+{
+    if (empty($_SESSION["tokens"]["keyValueOptions"])) return;
+    foreach ($_SESSION["tokens"]["keyValueOptions"] as $key => $value)
+    {
+        switch ($key)
+        {
+            case "-name":
+                {
+                    switch (substr_count($value, "*"))
+                    {
+                        case 0:
+                            {
+                                $findFunction = "strcmp";
+                                $conditionString = $value;
+                                break;
+                            }
+                        case 1:
+                            {
+                                if (substr($value, 0, 1) == "*")
+                                {
+                                    $findFunction = "str_ends_with";
+                                    $conditionString = substr($value, 1);
+                                }
+                                else if (substr($value, -1, 1) == "*")
+                                {
+                                    $findFunction = "str_starts_with";
+                                    $conditionString = substr($value, 0, -1);
+                                }
+                                break;
+                            }
+                        case 2:
+                            {
+                                if (
+                                    substr($value, 0, 1) == "*"
+                                    && substr($value, -1) == "*"
+                                )
+                                {
+                                    $findFunction = "strstr";
+                                    $conditionString = substr($value, 1, -1);
+                                    echo "<br> CONDITION STRING" . $conditionString;
+                                    break;
+                                }
+                            }
+                        default:
+                            throw new Exception("false usage of '*' operator");
+                    }
+                }
+        }
+    }
 }

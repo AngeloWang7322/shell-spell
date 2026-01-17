@@ -8,6 +8,7 @@ function startTerminalProcess()
     {
         checkAndHandleSpecialCases();
         prepareCommandExecution();
+        echo "<br> tokens: " . json_encode($_SESSION["tokens"]);
         executeCommand();
     }
     catch (Exception $e)
@@ -235,5 +236,14 @@ function executeEcho()
 
 function executeFind()
 {
-    // $_SESSION =
+    $findString = "";
+    $findFunction = "";
+    $startingRoom = getRoom($_SESSION["tokens"]["path"][0]);
+    $findResult = [];
+
+    getOptionsForFind($findFunction,$findString, );
+
+    $findResult = callFunctionOnRoomRec($startingRoom, "findByName", $findFunction, $findString);
+    $_SESSION["stdin"] = $findResult;
+    $_SESSION["response"] = implode( "<br>",$findResult, );
 }

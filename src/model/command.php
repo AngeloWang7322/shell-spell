@@ -50,6 +50,9 @@ class Command
         for ($i = 0; $i < count($tokens); $i++)
         {
             $arg = $tokens[$i];
+            echo "<br>arg: " . $arg;
+            echo "<br>tokentype: " . current($syntaxArray)->value;
+
             switch (current($syntaxArray))
             {
                 case TokenType::COMMAND:
@@ -66,8 +69,8 @@ class Command
                     }
                 case TokenType::KEYVALUEOPTION:
                     {
-                        $function = $this->optionParser;
-                        self::$function($arg, $tokens[$i + 1], $syntaxArray, $i);
+                        $function = $this->keyValueOptionParser;
+                        self::$function($arg, $tokens, $syntaxArray, $i);
                         break;
                     }
                 case TokenType::PATH:
@@ -238,18 +241,15 @@ class Command
             $argIndex--;
         }
     }
-    public function parsekeyValueOption($option, $stringValue, &$syntaxArray, &$argIndex)
+    public function parsekeyValueOption($option, $tokens, &$syntaxArray, &$argIndex)
     {
-        if (substr($option, 0, 1) == '-')
+        if (substr($option, 0, 1) == '-' && $argIndex <= count($tokens))
         {
             if (in_array($option, $this->validOptions))
             {
-                $_SESSION["tokens"]["keyValueOption"][$option] = $this->parseString($stringValue);
+                $_SESSION["tokens"]["keyValueOptions"][$option] = $this->parseString($tokens[$argIndex + 1]);
+                $argIndex++;
             }
-        }
-        else
-        {
-            $argIndex--;
         }
     }
     public function parsePathNew($mkdirPath,  &$syntaxArray, &$argIndex)
@@ -341,7 +341,8 @@ function getCommand($command)
             [TokenType::PATH, TokenType::KEYVALUEOPTION],
             ["-name"],
             "",
-            true
+            true,
+            pathParser: "parsePathFind"
         ),
         "./" == substr($command, 0, 2)
         => new Command(

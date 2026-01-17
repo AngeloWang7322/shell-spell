@@ -11,7 +11,7 @@
 
   <link rel="icon" type="image/png" href="assets/images/favicon-32x32.png">
 
-  <?php if (count($extraCss) > 0)
+  <?php if (!empty($extraCss) && count($extraCss) > 0)
     foreach ($extraCss as $css) {
       echo '<link rel="stylesheet" href="/assets/css/' .  htmlspecialchars($css) . '">';
     }
