@@ -10,12 +10,12 @@ function checkAndHandleSpecialCases()
     else if (strstr($_POST["command"], "|"))
     {
         $_SESSION["pipeCount"]++;
-        commandChain("|");
+        startCommandChain("|");
         $_SESSION["pipeCount"]--;
     }
     else if (strstr($_POST["command"], "&&"))
     {
-        commandChain("&&");
+        startCommandChain("&&");
     }
 }
 function handlePrompt()
@@ -44,7 +44,7 @@ function handlePrompt()
             }
     }
 }
-function commandChain($seperator)
+function startCommandChain($seperator)
 {
     $tempInput = $_POST["command"];
     $needlePos = strrpos($tempInput, $seperator);
@@ -349,20 +349,21 @@ function getLsArray($tempRoom)
         }
 
         $finalArray = array_fill(0, count($tempLsArray), "");
+
         for ($i = 0; $i < 3; $i++)
         {
             $longest = 5;
             for ($j = 0; $j < count($tempLsArray); $j++)
             {
-                if (strlen($tempLsArray[$j][$i]) + 4 > $longest)
+                if (strlen($tempLsArray[$j][$i]) + 12 > $longest)
                 {
-                    $longest = strlen($tempLsArray[$j][$i]) + 4;
+                    $longest = strlen($tempLsArray[$j][$i]) + 15 ;
                 }
                 $finalArray[$j] .= $tempLsArray[$j][$i] . " ";
             }
             for ($j = 0; $j < count($finalArray); $j++)
             {
-                $finalArray[$j] .= spaceOf(((int)($longest - strlen($tempLsArray[$j][$i])) * 0.6));
+                $finalArray[$j] .= spaceOf((int)(($longest - strlen($tempLsArray[$j][$i])) * 0.6));
             }
         }
         $_SESSION["stdin"] = $finalArray;

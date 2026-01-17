@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/base.css">
 
-  <!-- <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico"> -->
   <link rel="icon" type="image/png" href="assets/images/favicon-32x32.png">
 
   <?php if (count($extraCss) > 0)
