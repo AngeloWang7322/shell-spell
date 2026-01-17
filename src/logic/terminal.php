@@ -8,7 +8,7 @@ function startTerminalProcess()
     {
         checkAndHandleSpecialCases();
         prepareCommandExecution();
-        // echo "<br> tokens: " . json_encode($_SESSION["tokens"]);
+        echo "<br> tokens: " . json_encode($_SESSION["tokens"]);
         executeCommand();
     }
     catch (Exception $e)

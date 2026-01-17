@@ -37,6 +37,7 @@ class DBHelper
         {
             $_SESSION['user']["name"] = $user['username'];
             $_SESSION["user"]["id"] = $user["id"];
+            $_SESSION["isLoggedIn"] = true;
         }
         else
         {
@@ -145,6 +146,11 @@ class DBHelper
         $_SESSION["tokens"]["misc"] = [];
         $_SESSION["validCommands"] = ["cd", "cat"];
         $_SESSION["history"] = [];
+        $_SESSION["history"][] = [
+            "directory" => "",
+            "command" => "> Welcome to ShellSpell !",
+            "response" => "> Cast <p1>cat [scrollname]</p1> to read the scroll"
+        ];
         $_SESSION["stdin"] = NULL;
         $_SESSION["tokens"] = [];
         $_SESSION["map"] = self::getDefaultMap();
@@ -163,84 +169,130 @@ class DBHelper
         );
         $_SESSION["curRoom"] = &$tempMap;
         $tempMap->path = ["hall"];
-        $tempMap->doors["library"] = new Room(
-            name: "library",
+        $tempMap->doors["oldDoor"] = new Room(
+            name: "oldDoor",
+            requiredRole: ROLE::WANDERER,
+            curDate: false,
+        );
+        $tempMap->items["rippedPage.txt"] = new Scroll(
+            "",
+            "rippedPage",
+            ["hall"],
+            Role::WANDERER,
+            "...so in short, when using the Spell <p1>cd</p1> with a correct destination, you can quickly move around ! ",
+        );
+        $tempMap->doors["oldDoor"]->doors["longHallway"] = new Room(
+            name: "longHallway",
+            path: ["hall", "oldDoor"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false,
+        );
+
+        $tempMap->doors["oldDoor"]->doors["longHallway"]->doors["sideEntrance"] = new Room(
+            name: "sideEntrance",
+            path: ["hall", "oldDoor"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false,
+        );
+
+        $tempMap->doors["oldDoor"]->doors["longHallway"]->doors["sideEntrance"]->doors["stairway"] = new Room(
+            name: "stairway",
+            path: ["hall", "oldDoor", "longHallway"],
             requiredRole: ROLE::APPRENTICE,
             curDate: false,
         );
-        $tempMap->doors["armory"] = new Room(
-            name: "armory",
-            requiredRole: ROLE::CONJURER,
-            curDate: false,
-        );
-        $tempMap->doors["passage"] = new Room(
-            name: "passage",
-            requiredRole: ROLE::WANDERER,
-            curDate: false,
-        );
-        $tempMap->doors["passage"]->doors["staircase"] = new Room(
-            name: "staircase",
-            path: $tempMap->doors["passage"]->path,
-            requiredRole: ROLE::ROOT,
-            curDate: false,
-        );
-        $tempMap->doors["tavern"] = new Room(
-            name: "tavern",
-            path: ["hall"],
-            requiredRole: ROLE::ARCHIVIST,
-            curDate: false,
-        );
-        $tempMap->items["manaRune.sh"] = new Spell(
-            name: "",
-            baseName: "manaRune",
-            path: ["hall"],
-            action: ActionType::GET_MANA,
-            requiredRole: ROLE::WANDERER,
-            curDate: false
-        );
-        $tempMap->items["grimoire.txt"] = new Scroll(
+        $tempMap->doors["oldDoor"]->doors["longHallway"]->items["note.txt"] = new Scroll(
             "",
-            "grimoire",
-            ["hall"],
-            Role::CONJURER,
-            "OPEN SCROLL: <br>'cat [scroll name]'<br>",
-            curDate: false
-        );
-        $tempMap->items["oldDiary.txt"] = new Scroll(
-            "",
-            "oldDiary",
-            ["hall"],
+            "note",
+            ["hall", "oldDoor", "longHallway", "sideEntrance"],
             Role::WANDERER,
-            "some old diary text about hunting boar",
-            curDate: false
+            "i don't know",
         );
-        $tempMap->items["ancientAlter.exe"] = new Alter(
-            "",
-            "ancientAlter",
-            ["hall"],
-            Role::ROOT,
-            true,
-            ["dusty_key.txt"],
-            new Room("rewardRoom", curDate: true),
-            curDate: false
-        );
+        // $tempMap = new Room(
+        //     "hall",
+        //     curDate: false,
+        // );
+        // $_SESSION["curRoom"] = &$tempMap;
+        // $tempMap->path = ["hall"];
+        // $tempMap->doors["library"] = new Room(
+        //     name: "library",
+        //     requiredRole: ROLE::APPRENTICE,
+        //     curDate: false,
+        // );
+        // $tempMap->doors["armory"] = new Room(
+        //     name: "armory",
+        //     requiredRole: ROLE::CONJURER,
+        //     curDate: false,
+        // );
+        // $tempMap->doors["passage"] = new Room(
+        //     name: "passage",
+        //     requiredRole: ROLE::WANDERER,
+        //     curDate: false,
+        // );
+        // $tempMap->doors["passage"]->doors["staircase"] = new Room(
+        //     name: "staircase",
+        //     path: $tempMap->doors["passage"]->path,
+        //     requiredRole: ROLE::ROOT,
+        //     curDate: false,
+        // );
+        // $tempMap->doors["tavern"] = new Room(
+        //     name: "tavern",
+        //     path: ["hall"],
+        //     requiredRole: ROLE::ARCHIVIST,
+        //     curDate: false,
+        // );
+        // $tempMap->items["manaRune.sh"] = new Spell(
+        //     name: "",
+        //     baseName: "manaRune",
+        //     path: ["hall"],
+        //     action: ActionType::GET_MANA,
+        //     requiredRole: ROLE::WANDERER,
+        //     curDate: false
+        // );
+        // $tempMap->items["grimoire.txt"] = new Scroll(
+        //     "",
+        //     "grimoire",
+        //     ["hall"],
+        //     Role::CONJURER,
+        //     "OPEN SCROLL: <br>'cat [scroll name]'<br>",
+        //     curDate: false
+        // );
+        // $tempMap->items["oldDiary.txt"] = new Scroll(
+        //     "",
+        //     "oldDiary",
+        //     ["hall"],
+        //     Role::WANDERER,
+        //     "some old diary text about hunting boar",
+        //     curDate: false
+        // );
+        // $tempMap->items["ancientAlter.exe"] = new Alter(
+        //     "",
+        //     "ancientAlter",
+        //     ["hall"],
+        //     Role::ROOT,
+        //     "if you see this, here is a little tip",
+        //     true,
+        //     ["dusty_key.txt"],
+        //     new Room(name: "rewardRoom", curDate: true),
+        //     curDate: false
+        // );
 
-        $tempMap->doors["passage"]->items["dusty_key.txt"] = new Scroll(
-            "",
-            "dusty_key",
-            ["hall", "passage"],
-            Role::ROOT,
-            "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
-            curDate: false
-        );
-        $tempMap->doors["passage"]->items["recipe.txt"] = new Scroll(
-            "",
-            "recipe",
-            ["hall", "passage"],
-            Role::ROOT,
-            "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
-            curDate: false
-        );
+        // $tempMap->doors["passage"]->items["dusty_key.txt"] = new Scroll(
+        //     "",
+        //     "dusty_key",
+        //     ["hall", "passage"],
+        //     Role::ROOT,
+        //     "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
+        //     curDate: false
+        // );
+        // $tempMap->doors["passage"]->items["recipe.txt"] = new Scroll(
+        //     "",
+        //     "recipe",
+        //     ["hall", "passage"],
+        //     Role::ROOT,
+        //     "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
+        //     curDate: false
+        // );
         return $tempMap;
     }
 }

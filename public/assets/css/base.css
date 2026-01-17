@@ -1,3 +1,11 @@
+
+    /* body :not(.bs-scope):not(.bs-scope *) {
+      all: revert;
+    } */
+body {
+    padding: 0;
+    margin: 0;
+}
 :root {
     font-family:
         "Pixelify Sans"
@@ -8,12 +16,6 @@
     min-height: 100vh;
     padding: 0;
 }
-
-body {
-    padding: 0;
-    margin: 0;
-}
-
 main {
     max-width: 800px;
     min-height: 100vh;
@@ -55,11 +57,14 @@ button {
     align-items: center;
     height: 100vh;
 }
+p1{
+    color: rgb(255, 201, 209);
+}
 .wanderer{
     color: rgb(253, 250, 199);
 }
 .apprentice {
-    color: rgb(212, 255, 132);
+    color: rgb(171, 253, 139);
 }
 
 .archivist {

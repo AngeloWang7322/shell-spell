@@ -353,7 +353,7 @@ function getCommand($command)
         "echo" == $command
         => new Command(
             "echo",
-            [TokenTYPE::OPTION, TokenType::PATH],
+            [],
             [],
             "",
             true,
@@ -406,4 +406,5 @@ Funcionalities
     TOUCH: 
         - create file
         - open file
+    FIND: 
  */

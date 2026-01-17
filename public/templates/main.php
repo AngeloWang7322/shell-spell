@@ -1,6 +1,6 @@
 <?php
 $title = "Shell spell";
-$extraCss[] = 'main.css';
+$extraCss[] = '/assets/css/main.css';
 $script = "main.js";
 
 $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["user"]["role"]->value);

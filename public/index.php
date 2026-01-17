@@ -24,15 +24,14 @@ if (!isset($_SESSION["map"]))
     DBHelper::loadDefaultSession();
 }
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
 {
     if (in_array($_POST["action"], getValidActions()))
     {
         ($_POST["action"])($dbHelper);
     }
-    // header("Location: " . $_SERVER["REQUEST_URI"]);
-    // exit;
+    header("Location: " . $_SERVER["REQUEST_URI"]);
+    exit;
 }
 echo "</div>";
 

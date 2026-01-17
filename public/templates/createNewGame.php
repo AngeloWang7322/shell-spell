@@ -2,7 +2,8 @@
 declare(strict_types=1);
 require_once __DIR__ . "/../../src/db/dbhelper.php";
 
-$extraCss[] = "createNewGame.css";
+exitIfNotLoggedIn();
+$extraCss[] = "/assets/css/createNewGame.css";
 
 ?>
 

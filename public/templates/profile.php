@@ -1,8 +1,8 @@
 <?php
 
 declare(strict_types=1);
-
-$extraCss[] = "profile.css";
+exitIfNotLoggedIn();
+$extraCss[] = "/assets/css/profile.css";
 
 ?>
 <div class="page-content">

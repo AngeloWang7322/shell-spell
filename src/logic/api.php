@@ -15,19 +15,23 @@ function getValidActions()
 function enterCommand($dbHelper)
 {
     $start = hrtime(as_number: true);
-    $_POST["command"] = trim( $_POST["command"], " ");
+    $_POST["command"] = trim($_POST["command"], " ");
     $_SESSION["inputCommand"] = $_POST["command"];
 
-    if($_POST["command"] == "") return;
+    if ($_POST["command"] == "") return;
+
 
     startTerminalProcess();
     $end = hrtime(true);
     echo "<br>Terminal: " . (($end - $start) / 1000000) . "ms";
 
-    $start = hrtime(as_number: true);
-    $dbHelper->updateUserMap();
-    $end = hrtime(true);
-    echo "<br>Query: " . (($end - $start) / 1000000) . "ms";
+    if (isset($_SESSION["isLoggedIn"]))
+    {
+        $start = hrtime(as_number: true);
+        $dbHelper->updateUserMap();
+        $end = hrtime(true);
+        echo "<br>Query: " . (($end - $start) / 1000000) . "ms";
+    }
 }
 
 function deleteMap($dbHelper)

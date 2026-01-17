@@ -9,3 +9,6 @@
 .errors{
     color: red;
 }
+button{
+    border-width: 2px;
+}
