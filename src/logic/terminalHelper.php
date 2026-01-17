@@ -115,6 +115,7 @@ function cleanUp()
     $_SESSION["tokens"]["path"] = [];
     $_SESSION["tokens"]["options"] = [];
     $_SESSION["tokens"]["keyValueOptions"] = [];
+    $_SESSION["tokens"]["strings"] = [];
     $_SESSION["tokens"]["misc"] = [];
     $_SESSION["inputCommand"] = "";
     $_SESSION["response"] = "";
@@ -378,6 +379,53 @@ function getLsArray($tempRoom)
         $_SESSION["response"] = implode(", ", $finalArray);
     }
 }
+function callCorrectGrepFunction($searchMatching, $searchRecursive, $isCaseInsensitive)
+{
+    if (isset($_SESSION["tokens"]["path"][0]))
+    {
+        $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
+
+        if (is_a($grepElement, Room::class))
+        {
+            $matchingLines = grepDirectory(
+                room: $grepElement,
+                condition: $_SESSION["tokens"]["strings"][0],
+                searchMatching: $searchMatching,
+                isCaseInsensitive: $isCaseInsensitive,
+                searchRecursive: $searchRecursive,
+            );
+            echo "<br>matching lines ADSD" . json_encode($matchingLines);
+        }
+        else
+        {
+            $matchingLines = grepText(
+                $grepElement->content,
+                $_SESSION["tokens"]["strings"][0],
+                $grepElement->path,
+                searchMatching: $searchMatching,
+                isCaseInsensitive: $isCaseInsensitive,
+            );
+            echo "<br>matching lines B" . json_encode($matchingLines);
+        }
+    }
+    else if (isset($_SESSION["stdin"]))
+    {
+        foreach ($_SESSION["stdin"] as $key => $line)
+        {
+            if (grepLine(
+                $line,
+                $_SESSION["tokens"]["strings"][0],
+                searchMatching: $searchMatching,
+                isCaseInsensitive: $isCaseInsensitive,
+            ))
+            {
+                $matchingLines[$key] = $line;
+            }
+        }
+        $_SESSION["response"] = "";
+    }
+    return $matchingLines;
+}
 function grepDirectory(
     $room,
     $condition,
@@ -473,6 +521,23 @@ function grepLine(
     }
     return false;
 }
+function grepArray($array, $condition, $searchMatching, $isCaseInsensitive)
+{
+    $matchingLines = [];
+    foreach ($array as $key => $line)
+    {
+        if (grepLine(
+            $line,
+            $condition,
+            $isCaseInsensitive,
+            $searchMatching,
+        ))
+        {
+            $matchingLines[$key] = $line;
+        }
+    }
+    return $matchingLines;
+}
 function countNotEmpty($array)
 {
     $counter = 0;
@@ -500,7 +565,7 @@ function checkIfNamesExists(array $names, $hayStack): bool
 
 function createPrompt($prompt, $validAnswers = ["y", "n"])
 {
-    $_SESSION["promptData"]["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0]. "<br>" . implode("/", $validAnswers) ;
+    $_SESSION["promptData"]["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
     $_SESSION["promptData"]["options"] = ["y", "n"];
     $_SESSION["response"] = $_SESSION["promptData"]["prompt"];
     writeNewHistory();
@@ -556,7 +621,7 @@ function findByName($room, $findFunction, $findString)
     }
     return $matches;
 }
-function getOptionsForFind(&$findFunction, &$conditionString)
+function getOptionsFind(&$findFunction, &$conditionString)
 {
     if (empty($_SESSION["tokens"]["keyValueOptions"])) return;
     foreach ($_SESSION["tokens"]["keyValueOptions"] as $key => $value)
@@ -604,6 +669,22 @@ function getOptionsForFind(&$findFunction, &$conditionString)
                             throw new Exception("false usage of '*' operator");
                     }
                 }
+        }
+    }
+}
+function getOptionsGrep(&$searchMatching, &$searchRecursive, &$isCaseInsensitive)
+{
+    if (isset($_SESSION["tokens"]["options"]))
+    {
+        foreach ($_SESSION["tokens"]["options"] as $flag)
+        {
+            echo "<br> setting option: " . $flag;
+            match ($flag)
+            {
+                "-v" => $searchMatching = false,
+                "-r" => $searchRecursive = true,
+                "-i" => $isCaseInsensitive = true,
+            };
         }
     }
 }

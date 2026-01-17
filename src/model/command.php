@@ -234,10 +234,11 @@ class Command
             if (in_array($arg, $this->validOptions))
             {
                 $_SESSION["tokens"]["options"][] = $arg;
+                prev($syntaxArray);
             }
         }
         else
-        {
+        {   
             $argIndex--;
         }
     }

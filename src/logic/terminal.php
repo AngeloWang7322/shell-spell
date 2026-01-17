@@ -48,7 +48,7 @@ function executeMkdir()
     {
         $roomName = end($_SESSION["tokens"]["path"][$i]);
         $tempRoom = &getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1));
-        
+
         if (in_array($roomName, array_keys($tempRoom->doors)) && !isset($_SESSION["promptData"]))
         {
             echo "<br>creating prompt";
@@ -147,60 +147,18 @@ function executeGrep()
     $searchMatching = true;
     $searchRecursive = false;
     $isCaseInsensitive = false;
-    if (isset($_SESSION["tokens"]["options"]))
-    {
-        foreach ($_SESSION["tokens"]["options"] as $flag)
-        {
-            match ($flag)
-            {
-                "-v" => $searchMatching = false,
-                "-r" => $searchRecursive = true,
-                "-i" => $isCaseInsensitive = true,
-            };
-        }
-    }
 
-    if (isset($_SESSION["tokens"]["path"][0]))
-    {
-        $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
+    getOptionsGrep(
+        $searchMatching,
+        $searchRecursive,
+        $isCaseInsensitive
+    );
 
-        if (is_a($grepElement, Room::class))
-        {
-            $matchingLines = grepDirectory(
-                room: $grepElement,
-                condition: $_SESSION["tokens"]["strings"][0],
-                searchMatching: $searchMatching,
-                searchRecursive: $searchRecursive,
-                isCaseInsensitive: $isCaseInsensitive,
-            );
-        }
-        else
-        {
-            $matchingLines = grepText(
-                $grepElement->content,
-                $_SESSION["tokens"]["strings"][0],
-                $grepElement->path,
-                searchMatching: $searchMatching,
-                isCaseInsensitive: $isCaseInsensitive,
-            );
-        }
-    }
-    else if (isset($_SESSION["stdin"]))
-    {
-        foreach ($_SESSION["stdin"] as $key => $line)
-        {
-            if (grepLine(
-                $line,
-                $_SESSION["tokens"]["strings"][0],
-                searchMatching: $searchMatching,
-                isCaseInsensitive: $isCaseInsensitive,
-            ))
-            {
-                $matchingLines[$key] = $line;
-            }
-        }
-        $_SESSION["response"] = "";
-    }
+    $matchingLines = callCorrectGrepFunction(
+        $searchMatching,
+        $searchRecursive,
+        $isCaseInsensitive
+    );
 
     $_SESSION["stdin"] = $matchingLines;
     foreach ($matchingLines as $key => $line)
@@ -240,9 +198,9 @@ function executeFind()
     $startingRoom = getRoom($_SESSION["tokens"]["path"][0]);
     $findResult = [];
 
-    getOptionsForFind($findFunction,$findString, );
+    getOptionsFind($findFunction, $findString,);
 
     $findResult = callFunctionOnRoomRec($startingRoom, "findByName", $findFunction, $findString);
     $_SESSION["stdin"] = $findResult;
-    $_SESSION["response"] = implode( "<br>",$findResult, );
+    $_SESSION["response"] = implode("<br>", $findResult,);
 }
