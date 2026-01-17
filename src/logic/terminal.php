@@ -48,9 +48,10 @@ function executeMkdir()
     {
         $roomName = end($_SESSION["tokens"]["path"][$i]);
         $tempRoom = &getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1));
-
+        
         if (in_array($roomName, array_keys($tempRoom->doors)) && !isset($_SESSION["promptData"]))
         {
+            echo "<br>creating prompt";
             createPrompt($roomName . " exists, are you sure you want to replace it?",);
         }
         $tempRoom->doors[$roomName] = new Room(
@@ -65,8 +66,6 @@ function executeLs()
     $path = isset($_SESSION["tokens"]["path"][0]) ? $_SESSION["tokens"]["path"][0] : NULL;
     $tempRoom = getRoom($path, true);
     getLsArray($tempRoom);
-    // $_SESSION["stdin"] = $lsArray;
-    $_SESSION["promptData"] = [];
 }
 
 function executePwd()

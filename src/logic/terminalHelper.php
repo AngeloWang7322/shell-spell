@@ -3,7 +3,7 @@
 declare(strict_types=1);
 function checkAndHandleSpecialCases()
 {
-    if (!empty($_SESSION["promptData"]))
+    if (isset($_SESSION["promptData"]))
     {
         handlePrompt();
     }
@@ -31,7 +31,6 @@ function handlePrompt()
             }
         case (in_array($_POST["command"], ["n", "N"])):
             {
-                $_SESSION["preserveState"] = true;
                 editLastHistory("<br> " . $answer);
                 cleanUp();
                 throw new Exception("", 0);
@@ -39,7 +38,6 @@ function handlePrompt()
         default:
             {
                 editLastHistory("<br>" . $_POST["command"] . "<br>" . implode("/", $_SESSION["promptData"]["options"]));
-                $_SESSION["preserveState"] = true;
                 throw new Exception("", 0);
             }
     }
@@ -96,15 +94,19 @@ function writeResponse()
     }
     else
     {
-        $_SESSION["history"][] = [
-            "directory" => $_POST["baseString"],
-            "command" => $_SESSION["inputCommand"],
-            "response" => $_SESSION["response"]
-        ];
-        if (count($_SESSION["history"]) >= 15)
-        {
-            $_SESSION["history"] = array_slice($_SESSION["history"], 1, 15);
-        }
+        writeNewHistory();
+    }
+}
+function writeNewHistory()
+{
+    $_SESSION["history"][] = [
+        "directory" => $_POST["baseString"],
+        "command" => $_SESSION["inputCommand"],
+        "response" => $_SESSION["response"]
+    ];
+    if (count($_SESSION["history"]) >= 15)
+    {
+        $_SESSION["history"] = array_slice($_SESSION["history"], 1, 15);
     }
 }
 function cleanUp()
@@ -498,11 +500,11 @@ function checkIfNamesExists(array $names, $hayStack): bool
 
 function createPrompt($prompt, $validAnswers = ["y", "n"])
 {
-    $_SESSION["promptData"]["prompt"] = $prompt . "<br>" . implode("/", $validAnswers) . "&nbsp - &nbsp DEFAULT: " . $validAnswers[0];
+    $_SESSION["promptData"]["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0]. "<br>" . implode("/", $validAnswers) ;
     $_SESSION["promptData"]["options"] = ["y", "n"];
     $_SESSION["response"] = $_SESSION["promptData"]["prompt"];
-
-    throw new Exception($prompt, 0);
+    writeNewHistory();
+    throw new Exception("", 0);
 }
 function isNameValid($name, $suffix)
 {
@@ -544,10 +546,9 @@ function findByName($room, $findFunction, $findString)
     foreach (array_merge($room->doors, $room->items) as $element)
     {
         if (
-            $findString == "" || 
+            $findString == "" ||
             $findFunction($element->name, $findString) ==
             ($findFunction != "strcmp")
-            
         )
         {
             $matches[] = implode("/", $element->path);
