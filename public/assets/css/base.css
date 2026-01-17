@@ -56,18 +56,18 @@ button {
     height: 100vh;
 }
 .wanderer{
-    color: rgb(225, 255, 197);
+    color: rgb(253, 250, 199);
 }
 .apprentice {
-    color: rgb(235, 206, 42);
+    color: rgb(212, 255, 132);
 }
 
 .archivist {
-    color: rgb(48, 181, 199);
+    color: rgb(109, 232, 248);
 }
 
 .conjurer {
-    color: rgb(150, 48, 218);
+    color: rgb(165, 117, 255);
 }
 
 .root {

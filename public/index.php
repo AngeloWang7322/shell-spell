@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-// require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/model/room.php';
 require __DIR__ . '/../src/model/user.php';
 require __DIR__ . '/../src/model/items.php';
@@ -17,21 +16,20 @@ require_once __DIR__ . "/../src/logic/terminalHelper.php";
 
 session_start();
 // session_unset();          
+
 echo "<div class='ui'>";
-// echo "map: " . json_encode($_SESSION["curRoom"]->items) ;
-if (!isset($_SESSION["history"]))
+
+if (!isset($_SESSION["map"]))
 {
     DBHelper::loadDefaultSession();
 }
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
 {
     if (in_array($_POST["action"], getValidActions()))
     {
-        $start = hrtime(as_number: true);
         ($_POST["action"])($dbHelper);
-        $end = hrtime(true);
-        echo "<br>executed in: " . (($end - $start) / 1000000) . "ms";
     }
     // header("Location: " . $_SERVER["REQUEST_URI"]);
     // exit;

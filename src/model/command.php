@@ -50,8 +50,6 @@ class Command
         for ($i = 0; $i < count($tokens); $i++)
         {
             $arg = $tokens[$i];
-            echo "<br>arg: " . $arg;
-            echo "<br>tokentype: " . current($syntaxArray)->value;
 
             switch (current($syntaxArray))
             {

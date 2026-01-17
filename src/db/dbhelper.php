@@ -13,13 +13,18 @@ class DBHelper
     public function updateUserMap()
     {
         $query = $this->pdo->prepare(
-            "UPDATE map_json FROM user_maps VALUES( :mapjson) 
-            WHERE user_id = :userid"
+            "UPDATE game_states SET 
+            map_json = :mapJson,
+            xp = :xp,
+            curMana = :curMana
+            WHERE user_id = :userId"
         );
 
         $response = $query->execute([
-            ":userid" => $_SESSION["user"]["id"],
-            ":mapjson" => json_encode($_SESSION["map"])
+            ":userId" => $_SESSION["user"]["id"],
+            ":mapJson" => json_encode($_SESSION["map"]),
+            ":xp" => 200,
+            ":curMana" => $_SESSION["curMana"]
         ]);
     }
     public function loginUser($password, $email)
@@ -27,8 +32,6 @@ class DBHelper
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch();
-        // echo "input hash: " . $password;
-        // echo "response: " . json_encode($user);
 
         if ($user && password_verify($password, $user['password_hash']))
         {
@@ -181,6 +184,12 @@ class DBHelper
             requiredRole: ROLE::ROOT,
             curDate: false,
         );
+        $tempMap->doors["tavern"] = new Room(
+            name: "tavern",
+            path: ["hall"],
+            requiredRole: ROLE::ARCHIVIST,
+            curDate: false,
+        );
         $tempMap->items["manaRune.sh"] = new Spell(
             name: "",
             baseName: "manaRune",
@@ -232,7 +241,6 @@ class DBHelper
             "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
             curDate: false
         );
-        // echo "<br>map after creation: " . json_encode($tempMap);
         return $tempMap;
     }
 }
