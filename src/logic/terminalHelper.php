@@ -166,7 +166,7 @@ function &getRoom($path, $rankRestrictive = false): Room
                 {
                     throw new Exception("invalid path");
                 }
-                while ($path[$index] == '..' && $index < count($path))
+                while ($index < count($path) && $path[$index] == '..')
                 {
                     $index++;
                 }

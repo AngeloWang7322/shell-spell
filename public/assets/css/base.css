@@ -23,7 +23,10 @@ main {
 button {
     padding: .6rem 1rem;
 }
-
+.ui{
+    margin-top: 20px;
+    position: absolute;
+}
 .page-content {
     display: flex;
     justify-content: center;

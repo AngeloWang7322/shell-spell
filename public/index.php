@@ -17,7 +17,7 @@ require_once __DIR__ . "/../src/logic/terminalHelper.php";
 
 session_start();
 // session_unset();           
-
+echo "<div class='ui'>";
 if (!isset($_SESSION["history"]))
 {
     DBHelper::loadDefaultSession();
@@ -35,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
     // header("Location: " . $_SERVER["REQUEST_URI"]);
     // exit;
 }
+echo "</div>";
 
 $routes = [
     '' => 'main.php',

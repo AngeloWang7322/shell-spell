@@ -120,27 +120,32 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                     <input name="command" class="command-input" type="text" autocomplete="off" autofocus>
                 </form>
             </div>
-        </div>
-        <div class="mana-display-container">
-            <div class="mana-bar" style="width:
-            <?php
-            //MANA
-            echo $_SESSION["curMana"] / $_SESSION["maxMana"] * 100;
-            ?>%;">
+            <div class="mana-display-container">
+                <div class="mana-bar" style="width:
+                <?php
+                //MANA
+                echo $_SESSION["curMana"] / $_SESSION["maxMana"] * 100;
+                ?>%;">
+                    <h3 class="mana-text">
+                        MANA
+                    </h3>
+                </div>
+
             </div>
-            <h3 class="mana-text">
-                MANA
-            </h3>
         </div>
+
     </div>
 
 </div>
 <script>
-  window.addEventListener("load", () => {
-    const history = document.querySelector(".history-container");
-    const lastLine = history.lastElementChild;
-    if (lastLine) {
-      lastLine.scrollIntoView({ behavior: "auto", block: "end" });
-    }
-  });
+    window.addEventListener("load", () => {
+        const history = document.querySelector(".history-container");
+        const lastLine = history.lastElementChild;
+        if (lastLine) {
+            lastLine.scrollIntoView({
+                behavior: "auto",
+                block: "end"
+            });
+        }
+    });
 </script>

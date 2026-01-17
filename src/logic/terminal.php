@@ -70,7 +70,9 @@ function executeLs()
 
 function executePwd()
 {
-    $_SESSION["response"] = implode("/", $_SESSION["curRoom"]->path);
+    $pwd = implode("/", $_SESSION["curRoom"]->path);
+    $_SESSION["stdin"] = $pwd;
+    $_SESSION["response"] = $pwd;
 }
 
 function executeRm()

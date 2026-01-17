@@ -12,6 +12,7 @@ class Command
     public string $stringParser;
     public string $miscParser;
     public string $optionParser;
+    public string $keyValueOptionParser;
 
     public function __construct(
         $commandName,
@@ -25,6 +26,7 @@ class Command
         $stringParser = "parseString",
         $miscParser = "valiateMisc",
         $optionParser = "parseOption",
+        $keyValueOptionParser = "parsekeyValueOption",
     )
     {
         $this->commandName = $commandName;
@@ -38,6 +40,7 @@ class Command
         $this->stringParser =  $stringParser;
         $this->miscParser =  $miscParser;
         $this->optionParser = $optionParser;
+        $this->keyValueOptionParser = $keyValueOptionParser;
     }
     public function parseInput()
     {
@@ -59,6 +62,12 @@ class Command
                     {
                         $function = $this->optionParser;
                         self::$function($arg, $syntaxArray, $i);
+                        break;
+                    }
+                case TokenType::KEYVALUEOPTION:
+                    {
+                        $function = $this->optionParser;
+                        self::$function($arg, $tokens[$i + 1], $syntaxArray, $i);
                         break;
                     }
                 case TokenType::PATH:
@@ -162,13 +171,16 @@ class Command
             }
         }
     }
-    public function parsePath($arg)
+    public function parsePath($path)
     {
         $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors + $_SESSION["curRoom"]->items), ["hall", "/", "-", ".."]);
-        if (in_array($arg[0], $validPathArgs))
+        if (countNotEmpty($path) != count($path))
         {
-            echo "<br>path: " . json_encode($arg);
-            return $arg;
+            throw new Exception("empty path provided");
+        }
+        if (in_array($path[0], $validPathArgs))
+        {
+            return $path;
         }
         else
         {
@@ -226,19 +238,35 @@ class Command
             $argIndex--;
         }
     }
-    public function parsePathNew($mkdirPath,  $syntaxArray, &$argIndex)
+    public function parsekeyValueOption($option, $stringValue, &$syntaxArray, &$argIndex)
     {
-        if (count($mkdirPath) <= 1)
+        if (substr($option, 0, 1) == '-')
         {
-            return $mkdirPath;
+            if (in_array($option, $this->validOptions))
+            {
+                $_SESSION["tokens"]["keyValueOption"][$option] = $this->parseString($stringValue);
+            }
         }
         else
         {
-            return self::parsePath(array_slice($mkdirPath, 0, -1));
+            $argIndex--;
         }
     }
-    public function parsePathGrep($mkdirPath,  $syntaxArray, &$argIndex)
+    public function parsePathNew($mkdirPath,  &$syntaxArray, &$argIndex)
     {
+        return match (true)
+        {
+            $mkdirPath[0] == ""
+            => throw new Exception("now argument provided"),
+            count($mkdirPath) == 1
+            => $mkdirPath,
+            default
+            => self::parsePath(array_slice($mkdirPath, 0, -1)),
+        };
+    }
+    public function parsePathFind($path)
+    {
+        return $path[0] == "." ? $path : self::parsePath($path);
     }
 }
 
@@ -281,6 +309,7 @@ function getCommand($command)
             [],
             [],
             "",
+            true
         ),
         "ls" == $command
         => new Command(
@@ -309,9 +338,10 @@ function getCommand($command)
         "find" == $command
         => new Command(
             "find",
-            [TokenType::PATH, TokenType::OPTION],
+            [TokenType::PATH, TokenType::KEYVALUEOPTION],
             ["-name"],
             "",
+            true
         ),
         "./" == substr($command, 0, 2)
         => new Command(

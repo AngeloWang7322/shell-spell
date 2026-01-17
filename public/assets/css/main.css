@@ -8,22 +8,21 @@
     flex-direction: column;
     justify-content: end;
     align-items: start;
-    position: absolute;
-    bottom: -8%;
+    position: fixed;
+    bottom: 50px;
     left: 50%;
-    transform: translate(-50%, -50%);
-    height: 340px;
-    width: 852px;
+    transform: translate(-50%, 0%);
+    width: 952px;
+    height: fit-content;
+    max-height: 300px;
     padding: 16px 24px;
     background-color: rgba(49, 49, 49, 0.363);
     z-index: 5;
-    overflow: hidden;
 }
 
 .history-container {
     /* display: flex; */
       flex: 1 1 auto;
-
     flex-direction: column;
     word-break: break-all;
     overflow-y: scroll;
@@ -33,7 +32,7 @@
     text-wrap-mode: wrap;
     justify-content: end;
     width: 100%;
-    min-height:350;
+    height: fit-content;
 }
 .base-string{
     text-wrap-mode: nowrap;
@@ -67,15 +66,15 @@
 }
 
 .mana-display-container {
-    display: flex;
+    display: fixed;
     flex-direction: row;
     position: absolute;
-    bottom: 0%;
+    bottom: -38px;
     left: 50%;
     transform: translate(-50%, -50%);
     align-items: center;
-    width: 700px;
-    height: 34px;
+    width: 100%;
+    height: 28px;
     background-color: rgba(255, 255, 255, 0.164);
 }
 
@@ -86,6 +85,7 @@
 
 .mana-text {
     position: absolute;
+    margin-top: -2px;
     left: 50%;
     transform: translate(-50%, 0%);
 }
@@ -144,6 +144,10 @@
 
 .elements-container {
     margin-top: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .elements-wrapper {
@@ -158,7 +162,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 12px 84px;
+    margin: 12px 44px;
     min-width: 50px;
 }
 
