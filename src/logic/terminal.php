@@ -161,8 +161,7 @@ function executeGrep()
     );
 
     $_SESSION["stdin"] = $matchingLines;
-    foreach ($matchingLines as $key => $line)
-        $_SESSION["response"] .= $key . " " . $line . "<br>";
+    $_SESSION["response"] = arrayToString($matchingLines);
 }
 
 function executeExecute()

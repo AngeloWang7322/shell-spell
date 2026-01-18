@@ -9,13 +9,18 @@ function checkAndHandleSpecialCases()
     }
     else if (strstr($_POST["command"], "|"))
     {
+        //isPipeValid();
         $_SESSION["pipeCount"]++;
-        startCommandChain("|");
+        handleCommandChain("|");
         $_SESSION["pipeCount"]--;
     }
     else if (strstr($_POST["command"], "&&"))
     {
-        startCommandChain("&&");
+        handleCommandChain("&&");
+    }
+    else if (strstr($_POST["command"], " > ") || strstr($_POST["command"], " >> "))
+    {
+        handleRedirect();
     }
 }
 function handlePrompt()
@@ -42,24 +47,75 @@ function handlePrompt()
             }
     }
 }
-function startCommandChain($seperator)
+function handleCommandChain($seperator)
 {
-    $tempInput = $_POST["command"];
-    $needlePos = strrpos($tempInput, $seperator);
-    $beforePipe = trim(substr($tempInput, 0, $needlePos,));
-    $afterPipe = trim(substr($tempInput, $needlePos + strlen($seperator) + 1));
+    $beforeSeperator = "";
+    $afterSeperator = "";
+    splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
 
-    $_POST["command"] = $beforePipe;
-    startTerminalProcess();
+    $_POST["command"] = $beforeSeperator;
 
     $_SESSION["tokens"] = [];
-    $_POST["command"] = $afterPipe;
+    $_POST["command"] = $afterSeperator;
+}
+
+function handleRedirect()
+{
+    $seperator = strstr($_POST["command"], ">>") ? ">>" : ">";
+    $command = "";
+    $redirectFilePath = "";
+
+    splitString($_POST["command"], $command, $redirectFilePath, $seperator);
+    $_POST["command"] = $command;
+    prepareCommandExecution();
+    executeCommand();
+
+    $redirectFilePath = toPath($redirectFilePath);
+    checkIfCanRedirect($redirectFilePath, $seperator);
+    addStdinToFile($seperator, $redirectFilePath);
+
+    closeProcess();
+    header("Location: /");
+}
+function arrayToString($array, $seperator = "<br>", $includeKeys = true)
+{
+    $finalString = "";
+    foreach ($array as $key => $line)
+    {
+        $finalString .= $includeKeys ?
+            $key . " " . $line . $seperator
+            : $line . $seperator;
+    }
+    return $finalString;
+}
+function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperator)
+{
+    $needlePos = strrpos($baseString, $seperator);
+    $beforeSeperator = trim(substr($baseString, 0, $needlePos));
+    $afterSeperator = trim(substr($baseString, $needlePos + strlen($seperator) + 1));
+}
+function checkIfCanRedirect($redirectFilePath, $seperator)
+{
+    Command::parsePath($redirectFilePath);
+    if (empty($_SESSION["stdin"])) throw new Exception("invalid usage of '" . $seperator . "' operator");
+}
+function addStdinToFile($seperator, $redirectFilePath)
+{
+    $newStr = arrayToString($_SESSION["stdin"]);
+    $destItem = &getItem($redirectFilePath);
+    if ($seperator == ">>")
+    {
+        $destItem->content = $newStr;
+    }
+    else
+    {
+        $destItem->content .= $newStr;
+    }
 }
 function prepareCommandExecution()
 {
-    if ($_POST["command"] == "") header("Location: " . $_SERVER["REQUEST_URI"]);
-
-    getCommand(explode(" ", trim($_POST["command"]))[0])->parseInput();
+    $command = getCommand(explode(" ", trim($_POST["command"]))[0]);
+    $command->parseInput();
 }
 
 function executeCommand()
@@ -460,6 +516,10 @@ function grepDirectory(
         }
     }
     return $grepOutput;
+}
+function toPath($pathString)
+{
+    return explode("/", $pathString);
 }
 function grepText(
     $content,

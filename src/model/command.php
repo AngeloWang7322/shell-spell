@@ -172,7 +172,7 @@ class Command
             }
         }
     }
-    public function parsePath($path)
+    static public function parsePath($path)
     {
         $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors + $_SESSION["curRoom"]->items), ["hall", "/", "-", ".."]);
         if (countNotEmpty($path) != count($path))
@@ -188,7 +188,7 @@ class Command
             throw new Exception("invalid path provided");
         }
     }
-    public function parseString($arg): string
+    static public function parseString($arg): string
     {
         $firstAndLast = [substr($arg, 0, 1), substr($arg, -1, 1)];
 
@@ -208,7 +208,7 @@ class Command
             throw new Exception("empty string given");
         }
     }
-    public function parseMisc($arg)
+    static public function parseMisc($arg)
     {
         switch ($_SESSION["tokens"]["command"])
         {
@@ -386,58 +386,3 @@ function getCommand($command)
         default => throw new Exception("unknown command")
     };
 }
-/*
-Funcionalities
-    CD:
-        - change directory
-        - absolute, relative, /, -, ..
-    MKDIR:
-        - Make Directory
-        - multiple at one
-        - prompt before replacing
-    RM:
-        - Remove Element
-        - multiple at once
-    MV:
-        - move element
-        - prompt before replacing
-    PWD:
-        - print working directory
-        - writes to stdin
-    LS: 
-        - list elements
-        - -l long format
-        - writes to stdin
-    CP:
-        - copy element
-    GREP:
-        - filter 
-        - -r search recursively
-        - -i search caseInsensitive
-        - -v search not non-matches
-        - writes to stdin
-        - reads from stdin
-    ECHO:
-        - print entered string
-        - writes to stdin
-    EXECUTE:
-        - execute file
-    MAN:
-        - get manual
-    TOUCH: 
-        - create file
-        - open file
-    CAT: 
-        - get file content
-        - writes to stdin
-    FIND: 
-        - get all paths
-        - filter by name 
-        - search name wildcard
-        - writes to stdin
-    |:
-        - pipe commands
-    &&: 
-        - run multiple commands
-
- */
