@@ -8,39 +8,20 @@ function manageExecution()
         handlePrompt();
         return;
     }
-    switch ($operator = findLastSpecialOperator())
+    match ($operator = findLastSpecialOperator())
     {
-        case ">>":
-        case ">":
-            {
-                handleRedirect($operator);
-                return;
-            }
-        case "|":
-            {
-                $_SESSION["pipeCount"]++;
-                handleCommandChain($operator);
-                $_SESSION["pipeCount"]--;
-                return;
-            }
-        case "&&":
-            {
-                handleCommandChain($operator);
-                return;
-            }
-        case "||":
-            {
-                handleFailSafe($operator);
-                return;
-            }
-        default:
-            {
-                prepareCommandExecution();
-                executeCommand();
-            }
-    }
+        ">>", ">" => handleRedirect($operator),
+        "|" => handlePipe($operator),
+        "&&" => handleCommandChain($operator),
+        "||" => handleFailSafe($operator),
+        default => handleDefault()
+    };
 }
-
+function handleDefault()
+{
+    prepareCommandExecution();
+    executeCommand();
+}
 function handlePrompt()
 {
     $answer = $_POST["command"];
@@ -94,7 +75,12 @@ function handleCommandChain($seperator)
     prepareCommandExecution();
     executeCommand();
 }
-
+function handlePipe($seperator)
+{
+    $_SESSION["pipeCount"]++;
+    handleCommandChain($seperator);
+    $_SESSION["pipeCount"]--;
+}
 function handleRedirect($seperator)
 {
     $command = "";
