@@ -68,7 +68,7 @@ function executeLs()
 function executePwd()
 {
     $pwd = implode("/", $_SESSION["curRoom"]->path);
-    $_SESSION["stdin"] = $pwd;
+    $_SESSION["stdout"] = $pwd;
     $_SESSION["response"] = $pwd;
 }
 
@@ -107,7 +107,7 @@ function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
     $_SESSION["response"] = $catItem->content;
-    $_SESSION["stdin"] = $catItem->content;
+    $_SESSION["stdout"] = $catItem->content;
 }
 
 function executeTouch()
@@ -159,7 +159,7 @@ function executeGrep()
         $isCaseInsensitive
     );
 
-    $_SESSION["stdin"] = $matchingLines;
+    $_SESSION["stdout"] = $matchingLines;
     $_SESSION["response"] = arrayToString($matchingLines);
 }
 
@@ -179,7 +179,7 @@ function executeExecute()
 
 function executeEcho()
 {
-    $_SESSION["stdin"] = $_SESSION["tokens"]["command"];
+    $_SESSION["stdout"] = $_SESSION["tokens"]["command"];
     $_SESSION["response"] = substr($_POST["command"], 5);
 }
 
@@ -193,6 +193,6 @@ function executeFind()
     getOptionsFind($findFunction, $findString,);
 
     $findResult = callFunctionOnRoomRec($startingRoom, "findByName", $findFunction, $findString);
-    $_SESSION["stdin"] = $findResult;
+    $_SESSION["stdout"] = $findResult;
     $_SESSION["response"] = implode("<br>", $findResult,);
 }

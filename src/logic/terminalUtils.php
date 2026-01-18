@@ -236,13 +236,13 @@ function getLsArray($tempRoom)
                 $finalArray[$j] .= spaceOf((int)(($longest - strlen($tempLsArray[$j][$i])) * 0.6));
             }
         }
-        $_SESSION["stdin"] = $finalArray;
+        $_SESSION["stdout"] = $finalArray;
         $_SESSION["response"] = implode("<br> ", $finalArray);
     }
     else
     {
         $finalArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-        $_SESSION["stdin"] = $finalArray;
+        $_SESSION["stdout"] = $finalArray;
         $_SESSION["response"] = implode(", ", $finalArray);
     }
 }
@@ -275,9 +275,9 @@ function callCorrectGrepFunction($searchMatching, $searchRecursive, $isCaseInsen
             );
         }
     }
-    else if (isset($_SESSION["stdin"]))
+    else if (isset($_SESSION["stdout"]))
     {
-        foreach ($_SESSION["stdin"] as $key => $line)
+        foreach ($_SESSION["stdout"] as $key => $line)
         {
             if (grepLine(
                 $line,

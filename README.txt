@@ -52,4 +52,6 @@ Funcionalities
     &&: 
         - run multiple commands
     >>:
-        -redirect stdinj to append/replace scrolls
+        - redirect output to append/replace scrolls
+    ||:
+        - failsafe
