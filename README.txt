@@ -51,3 +51,5 @@ Funcionalities
         - pipe commands
     &&: 
         - run multiple commands
+    >>:
+        -redirect stdinj to append/replace scrolls

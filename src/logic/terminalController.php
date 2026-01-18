@@ -6,6 +6,7 @@ function manageExecution()
     if (isset($_SESSION["promptData"]))
     {
         handlePrompt();
+        return;
     }
     switch ($operator = findLastSpecialOperator())
     {
@@ -20,17 +21,24 @@ function manageExecution()
                 $_SESSION["pipeCount"]++;
                 handleCommandChain($operator);
                 $_SESSION["pipeCount"]--;
-                break;
+                return;
             }
         case "&&":
             {
-                handleCommandChain("&&");
-                break;
+                handleCommandChain($operator);
+                return;
+            }
+        case "||":
+            {
+                handleFailSafe($operator);
+                return;
+            }
+        default:
+            {
+                prepareCommandExecution();
+                executeCommand();
             }
     }
-
-    prepareCommandExecution();
-    executeCommand();
 }
 
 function handlePrompt()
@@ -57,6 +65,23 @@ function handlePrompt()
             }
     }
 }
+function handleFailSafe($seperator)
+{
+    $beforeSeperator = "";
+    $afterSeperator = "";
+    splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
+    $_POST["command"] = $beforeSeperator;
+    try
+    {
+        manageExecution();
+    }
+    catch (Exception $e)
+    {
+        $_SESSION["tokens"] = [];
+        $_POST["command"] = $afterSeperator;
+        manageExecution();
+    }
+}
 function handleCommandChain($seperator)
 {
     $beforeSeperator = "";
@@ -66,6 +91,8 @@ function handleCommandChain($seperator)
     manageExecution();
     $_SESSION["tokens"] = [];
     $_POST["command"] = $afterSeperator;
+    prepareCommandExecution();
+    executeCommand();
 }
 
 function handleRedirect($seperator)
@@ -96,7 +123,7 @@ function arrayToString($array, $seperator = "<br>", $includeKeys = true)
 function findLastSpecialOperator()
 {
     $str = $_POST["command"];
-    $operators = [">", ">>", "|", "&&"];
+    $operators = [">", ">>", "||", "|", "&&",];
     for ($i = strlen($str); $i > 0; $i--)
     {
         foreach ($operators as $operator)
@@ -127,11 +154,11 @@ function addStdinToFile($seperator, $redirectFilePath)
     $destItem = &getItem($redirectFilePath);
     if ($seperator == ">>")
     {
-        $destItem->content = $newStr;
+        $destItem->content .= $newStr;
     }
     else
     {
-        $destItem->content .= $newStr;
+        $destItem->content = $newStr;
     }
 }
 function prepareCommandExecution()
