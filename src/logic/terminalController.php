@@ -7,27 +7,32 @@ function manageExecution()
     {
         handlePrompt();
     }
-    else if (strstr($_POST["command"], "|"))
+    switch ($operator = findLastSpecialOperator())
     {
-        //isPipeValid();
-        $_SESSION["pipeCount"]++;
-        handleCommandChain("|");
-        $_SESSION["pipeCount"]--;
-    }
-    else if (strstr($_POST["command"], "&&"))
-    {
-        handleCommandChain("&&");
-    }
-    else if (strstr($_POST["command"], " > ") || strstr($_POST["command"], " >> "))
-    {
-        handleRedirect();
-        return;
+        case ">>":
+        case ">":
+            {
+                handleRedirect($operator);
+                return;
+            }
+        case "|":
+            {
+                $_SESSION["pipeCount"]++;
+                handleCommandChain($operator);
+                $_SESSION["pipeCount"]--;
+                break;
+            }
+        case "&&":
+            {
+                handleCommandChain("&&");
+                break;
+            }
     }
 
     prepareCommandExecution();
-    // echo "<br> tokens: " . json_encode($_SESSION["tokens"]);
     executeCommand();
 }
+
 function handlePrompt()
 {
     $answer = $_POST["command"];
@@ -57,26 +62,23 @@ function handleCommandChain($seperator)
     $beforeSeperator = "";
     $afterSeperator = "";
     splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
-
     $_POST["command"] = $beforeSeperator;
-
+    manageExecution();
     $_SESSION["tokens"] = [];
     $_POST["command"] = $afterSeperator;
 }
 
-function handleRedirect()
+function handleRedirect($seperator)
 {
-    $seperator = strstr($_POST["command"], ">>") ? ">>" : ">";
     $command = "";
     $redirectFilePath = "";
 
     splitString($_POST["command"], $command, $redirectFilePath, $seperator);
+    $redirectFilePath = toPath($redirectFilePath);
     $_POST["command"] = $command;
-    prepareCommandExecution();
-    executeCommand();
+    manageExecution();
     $_SESSION["response"] = "";
 
-    $redirectFilePath = toPath($redirectFilePath);
     checkIfCanRedirect($redirectFilePath, $seperator);
     addStdinToFile($seperator, $redirectFilePath);
 }
@@ -90,6 +92,23 @@ function arrayToString($array, $seperator = "<br>", $includeKeys = true)
             : $line . $seperator;
     }
     return $finalString;
+}
+function findLastSpecialOperator()
+{
+    $str = $_POST["command"];
+    $operators = [">", ">>", "|", "&&"];
+    for ($i = strlen($str); $i > 0; $i--)
+    {
+        foreach ($operators as $operator)
+        {
+            $len = strlen($operator);
+            $substr = substr($str, $i - $len, $len);
+            if ($substr == $operator)
+            {
+                return $operator;
+            }
+        }
+    }
 }
 function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperator)
 {
@@ -119,8 +138,19 @@ function prepareCommandExecution()
 {
     $command = getCommand(explode(" ", trim($_POST["command"]))[0]);
     $command->parseInput();
+    checkPipe($command);
 }
-
+function checkPipe($command)
+{
+    if (
+        $_SESSION["pipeCount"] > 0
+        && !$command->isWriter
+        && !isset($_SESSION["stdin"])
+    )
+    {
+        throw new Exception("command not pipable");
+    }
+}
 function executeCommand()
 {
     ("execute" . $_SESSION["tokens"]["command"])();

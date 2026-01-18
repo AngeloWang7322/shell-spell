@@ -115,7 +115,7 @@ class Command
 
             if ($tempToken == "")
             {
-                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']) || $first == $last)
+                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']) || ($first == $last && strlen($word) > 1))
                 {
                     array_push($tokens, $word);
                 }
@@ -174,7 +174,7 @@ class Command
     }
     static public function parsePath($path)
     {
-        $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors + $_SESSION["curRoom"]->items), ["hall", "/", "-", ".."]);
+        $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), ["hall", "/", "-", ".."]);
         if (countNotEmpty($path) != count($path))
         {
             throw new Exception("empty path provided");
@@ -236,7 +236,7 @@ class Command
             }
         }
         else
-        {   
+        {
             $argIndex--;
         }
     }

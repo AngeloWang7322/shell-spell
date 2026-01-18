@@ -248,6 +248,7 @@ function getLsArray($tempRoom)
 }
 function callCorrectGrepFunction($searchMatching, $searchRecursive, $isCaseInsensitive)
 {
+    $matchingLines = [];
     if (isset($_SESSION["tokens"]["path"][0]))
     {
         $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
@@ -272,7 +273,6 @@ function callCorrectGrepFunction($searchMatching, $searchRecursive, $isCaseInsen
                 searchMatching: $searchMatching,
                 isCaseInsensitive: $isCaseInsensitive,
             );
-            echo "<br>matching lines B" . json_encode($matchingLines);
         }
     }
     else if (isset($_SESSION["stdin"]))

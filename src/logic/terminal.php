@@ -134,7 +134,9 @@ function executeTouch()
             name: $fileName,
             baseName: "",
             path: $destRoom->path,
-            requiredRole: $_SESSION["user"]["role"]
+            requiredRole: $_SESSION["user"]["role"],
+            content: "",
+            curDate: true
         );
     }
 }

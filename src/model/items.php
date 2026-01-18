@@ -25,7 +25,7 @@ class Item
         $this->path = $path;
         $this->content = $content;
         $this->timeOfLastChange = $date;
-        if ($curDate && $date == "")
+        if (!$date == "")
         {
             $this->timeOfLastChange = $date;
         }
@@ -239,7 +239,7 @@ function generateDate($curDate)
 {
     if ($curDate)
     {
-        return date("Y-m-d H:i:s");
+        return date("Y-m-d H:i:s", NULL);
     }
     return date("Y-m-d H:i:s", mktime(
         rand(0, 24),

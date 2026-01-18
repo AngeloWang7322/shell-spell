@@ -150,7 +150,6 @@ class DBHelper
             "command" => "> Welcome to ShellSpell !",
             "response" => "> Cast <p1>cat [scrollname]</p1> to read the scroll"
         ];
-        $_SESSION["stdin"] = NULL;
         $_SESSION["tokens"] = [];
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["curRoom"] = &$_SESSION["map"];
@@ -179,6 +178,14 @@ class DBHelper
             ["hall"],
             Role::WANDERER,
             "...so in short, when using the Spell <p1>cd</p1> with a correct destination, you can quickly move around ! ",
+            false,
+        );
+        $tempMap->items["log.txt"] = new Scroll(
+            "",
+            "log",
+            ["hall"],
+            Role::WANDERER,
+            "",
             false,
         );
         $tempMap->doors["oldDoor"]->doors["longHallway"] = new Room(
@@ -211,7 +218,7 @@ class DBHelper
 
 
 
-        
+
         // $tempMap = new Room(
         //     "hall",
         //     curDate: false,
