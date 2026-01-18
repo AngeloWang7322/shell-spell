@@ -30,8 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
     {
         ($_POST["action"])($dbHelper);
     }
-    header(header: "Location: " . $_SERVER["REQUEST_URI"]);
-    exit;
+    // header(header: "Location: " . $_SERVER["REQUEST_URI"]);
+    // exit;
 }
 echo "</div>";
 
@@ -57,5 +57,9 @@ else
     require __DIR__ . '/templates//' . $routes['notfound'];
 }
 
-// require __DIR__ . '/assets/footer.php';
+
+$start = hrtime(as_number: true);
 require __DIR__ . '/assets/layout.php';
+echo "<div class='ui'";
+$end = hrtime(true);
+echo "<br>layout: " . (($end - $start) / 1000000) . "ms</div>";

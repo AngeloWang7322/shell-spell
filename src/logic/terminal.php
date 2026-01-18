@@ -167,21 +167,15 @@ function executeGrep()
 
 function executeExecute()
 {
-    if (strncmp($_SESSION["tokens"]["command"], "./", 2) == 0)
+
+    $itemExec = &getItem(explode("/", substr($_SESSION["tokens"]["command"], 2)));
+    if (is_a($itemExec, Alter::class) || is_a($itemExec, Spell::class))
     {
-        $itemExec = &getItem(explode("/", substr($_SESSION["tokens"]["command"], 2)));
-        if (is_a($itemExec, Alter::class) || is_a($itemExec, Spell::class))
-        {
-            $itemExec->executeAction();
-        }
-        else
-        {
-            throw new Exception("item not executable");
-        }
+        $itemExec->executeAction();
     }
     else
     {
-        throw new Exception("invalid command");
+        throw new Exception("item not executable");
     }
 }
 

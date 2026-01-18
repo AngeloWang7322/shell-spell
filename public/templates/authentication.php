@@ -82,11 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     </form>
     <?php if (!empty($errors)): ?>
         <div class="errors" style="color:red;">
-            <ul>
                 <?php foreach ($errors as $e): ?>
                     <?php echo $e . "<br>"; ?>
                 <?php endforeach; ?>
-            </ul>
         </div>
     <?php endif; ?>
     <br>

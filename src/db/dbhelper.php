@@ -179,6 +179,7 @@ class DBHelper
             ["hall"],
             Role::WANDERER,
             "...so in short, when using the Spell <p1>cd</p1> with a correct destination, you can quickly move around ! ",
+            false,
         );
         $tempMap->doors["oldDoor"]->doors["longHallway"] = new Room(
             name: "longHallway",
@@ -207,6 +208,10 @@ class DBHelper
             Role::WANDERER,
             "i don't know",
         );
+
+
+
+        
         // $tempMap = new Room(
         //     "hall",
         //     curDate: false,
