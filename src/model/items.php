@@ -6,7 +6,7 @@ class Item
     public ItemType $type;
     public Role $requiredRole;
     public array $path;
-    public string $content;
+    public string $content = "";
 
     public function __construct(
         $name,
@@ -103,7 +103,7 @@ class Alter extends Item
             $name,
             $baseName,
             $path,
-            $requiredRole,  
+            $requiredRole,
         );
     }
     public function executeAction()
@@ -185,7 +185,6 @@ class Spell extends Item
     }
     public static function fromArray(array $data)
     {
-        $type = ItemType::from($data["type"]);
         $requiredRole = Role::from($data["requiredRole"]);
         $action = ActionType::from($data["action"]);
         return new self(

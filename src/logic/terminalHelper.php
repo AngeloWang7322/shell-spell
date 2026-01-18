@@ -1,121 +1,99 @@
 <?php
 
 declare(strict_types=1);
-function validateInput()
+function checkAndHandleSpecialCases()
 {
-    /*
-    PATHS:
-        mkdir:  0-1
-        ls:     0-1
-        rm:     1 
-        cd:     1
-        grep:   1
-        cat:    1
-        exe:    1
-        cp:     2
-        mv:     2
-    FLAGS:
-        mkdir:  
-        ls:     
-        rm:      
-        cd:     
-        grep:   -r, -i, -v
-        cat:    
-        exe:    
-        cp:     
-        mv:     
-    */
-
-    $paths = $_SESSION["context"]["inputArgs"]["path"];
-    $command = $_SESSION["context"]["inputArgs"]["command"];
-    switch ($command)
+    if (!empty($_SESSION["prompt"]))
     {
-        case "mkdir":
-        case "ls":
-            {
-                if (countNotEmpty($paths) > 1)
-                {
-                    throw new Exception("incorrect number of paths");
-                }
-                break;
-            }
-        case "rm":
-        case "cd":
-        case "grep":
-        case "cat":
-            {
-                if (countNotEmpty($paths) != 1)
-                {
-                    throw new Exception("incorrect number of paths");
-                }
-                break;
-            }
-        case "mv":
-        case "cp":
-            {
-                if (countNotEmpty($paths) != 2)
-                {
-                    throw new Exception("incorrect number of paths");
-                }
-
-                if ($command == "mv")
-                {
-                    $tempPath1 = getRoom($_SESSION["context"]["inputArgs"]["path"][0])->path;
-                    $tempPath2 = getRoom($_SESSION["context"]["inputArgs"]["path"][1])->path;
-
-                    if (
-                        count(array_diff(
-                            $tempPath1,
-                            array_intersect($tempPath1, $tempPath2)
-                        )) == 0
-                    )
-                    {
-                        throw new Exception("cannot move room into itsself");
-                    }
-                }
-                break;
-            }
+        handlePrompt();
     }
-    return;
+    else if (strstr($_POST["command"], "|"))
+    {
+        managePipe();
+    }
 }
-function organizeInput(array $inputArray)
+function handlePrompt()
 {
-    if (countNotEmpty($inputArray) == 0)
-    {
-        throw new Exception("", 0);
-    }
+    $response = $_POST["command"];
 
-    $_SESSION["context"]["response"] = "";
+    switch (true)
+    {
+        case (in_array($_POST["command"], [$_SESSION["prompt"]["options"][0], ""])):
+            {
+                executeCommand();
+                $response = "y";
+            }
+        case (in_array($_POST["command"], ["n", "N"])):
+            {
+                $_SESSION["preserveState"] = true;
+                addToPreviousHistory("<br> " . $response);
+                cleanUp();
+                throw new Exception("", 0);
+            }
+        default:
+            {
+                addToPreviousHistory("<br>" . $_POST["command"] . "<br>" . implode("/", $_SESSION["prompt"]["options"]));
+                $_SESSION["preserveState"] = true;
+                throw new Exception("", 0);
+            }
+    }
+}
+function managePipe()
+{
+    //check if pipe commands are valid combination
+    $_SESSION["isPipe"] = true;
 
-    $inputArgs = [
-        "command" => $inputArray[0], 
-        "path" => [],
-        "strings" => [],
-        "flags" => [],
-    ];
-    if (substr($inputArray[0], 0, 2) == "./")
+    $afterNeedle = strstr($_POST["command"], "|",);
+    $_POST["command"] = strstr($_POST["command"], "|", true);
+    startTerminalProcess();
+    $_POST["command"] = $afterNeedle;
+    startTerminalProcess();
+
+    header("Location: " . $_SERVER["REQUEST_URI"]);
+}
+function prepareCommandExecution()
+{
+    if ($_POST["command"] == "") header("Location: " . $_SERVER["REQUEST_URI"]);
+
+    getCommand(explode(" ", trim($_POST["command"]))[0])->interpretInput();
+    echo "<br>tokens: " . json_encode($_SESSION["tokens"]);
+}
+
+function executeCommand()
+{
+    ("execute" . $_SESSION["tokens"]["command"])();
+    if (isset($_SESSION["isPipe"]))
+
     {
-        $inputArgs["command"] = "Executable";
     }
-    for ($i = 1; $i < count($inputArray); $i++)
+}
+function addToPreviousHistory($string)
+{
+    $lastHistoryEntry = end($_SESSION["history"]);
+    $lastHistoryEntry["response"] .=  $string;
+    array_pop($_SESSION["history"]);
+    array_push($_SESSION["history"], $lastHistoryEntry);
+}
+function writeResponse()
+{
+    if ($_SESSION["preserveState"])
     {
-        if ($inputArray[$i][0] == '-')
-        {
-            $inputArgs["flags"][] = $inputArray[$i];
-        }
-        else if (
-            ($inputArray[$i][0] == "'" && substr($inputArray[$i], -1) == "'") ||
-            ($inputArray[$i][0] == '"' && substr($inputArray[$i], -1) == '"')
-        )
-        {
-            array_push($inputArgs["strings"], substr($inputArray[$i], 1, -1));
-        }
-        else
-        {
-            array_push($inputArgs["path"], explode("/", $inputArray[$i]));
-        }
+        addToPreviousHistory($_SESSION["response"]);
     }
-    $_SESSION["context"]["inputArgs"] = $inputArgs;
+    else
+    {
+        $_SESSION["history"][] = [
+            "directory" => $_POST["baseString"],
+            "command" => $_POST["command"],
+            "response" => $_SESSION["response"]
+        ];
+    }
+}
+function cleanUp()
+{
+    $_SESSION["tokens"] = [];
+    unset($_SESSION["prompt"]);
+    $_SESSION["response"] = "";
 }
 
 function getRoomOrItem($path, $tempRoom = null): mixed
@@ -343,7 +321,6 @@ function grepDirectory(
     {
         foreach ($room->doors as $door)
         {
-            echo "<br> is searching recursive;";
             $grepOutput = array_merge($grepOutput, grepDirectory(
                 room: $door,
                 condition: $condition,
@@ -428,4 +405,28 @@ function countNotEmpty($array)
         }
     }
     return $counter;
+}
+
+function checkIfNamesExists(array $names, $hayStack): bool
+{
+    echo "<br>CHECKING";
+    foreach ($names as $name)
+    {
+        echo "<br>checking name: " . $name;
+        if (array_key_exists($name, $hayStack));
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+function createPrompt($prompt, $validAnswers = ["y", "n"])
+{
+    $_SESSION["prompt"] = [];
+    $_SESSION["prompt"]["text"] = $prompt . "&nbsp - &nbsp DEFAULT: " . $validAnswers[0];
+    $_SESSION["prompt"]["options"] = ["y", "n"];
+    $_SESSION["response"] = $prompt . "&nbsp - &nbsp DEFAULT: " . $validAnswers[0];
+
+    throw new Exception($prompt, 0);
 }

@@ -6,17 +6,20 @@ require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/model/room.php';
 require __DIR__ . '/../src/model/user.php';
 require __DIR__ . '/../src/model/items.php';
+require __DIR__ . '/../src/model/exceptions.php';
+require __DIR__ . '/../src/model/command.php';
 require_once __DIR__ . '/../src/db/db.php';
 require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
 require __DIR__ . '/../src/logic/upload.php';
 require_once __DIR__ . "/../src/logic/terminal.php";
+require_once __DIR__ . "/../src/logic/terminalHelper.php";
 
 if ($_SESSION["hasDbConnection"]) {
     $dbHelper = new DBHelper($pdo);
 }
 session_start();
-// session_unset();        
+session_unset();        
 
 if (!isset($_SESSION["history"])) {
     DBHelper::loadDefaultSession();
@@ -26,9 +29,10 @@ $_SESSION["curRoom"];
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
     switch ($_POST["action"]) {
         case "enterCommand": {
-            initiateTerminalLogic();
-            break;
-        }
+
+                startTerminalProcess();
+                break;
+            }
         case "loadMap": {
             $dbHelper->loadGameState($_POST["mapId"]);
             header("Location: /");
