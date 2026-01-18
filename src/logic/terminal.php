@@ -6,10 +6,7 @@ function startTerminalProcess()
 {
     try
     {
-        checkAndHandleSpecialCases();
-        prepareCommandExecution();
-        echo "<br> tokens: " . json_encode($_SESSION["tokens"]);
-        executeCommand();
+        manageExecution();
     }
     catch (Exception $e)
     {

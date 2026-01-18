@@ -12,7 +12,8 @@ require __DIR__ . "/../src/logic/game.php";
 require __DIR__ . "/../src/logic/api.php";
 require __DIR__ . "/../src/db/db.php";
 require_once __DIR__ . "/../src/logic/terminal.php";
-require_once __DIR__ . "/../src/logic/terminalHelper.php";
+require_once __DIR__ . "/../src/logic/terminalController.php";
+require_once __DIR__ . "/../src/logic/terminalUtils.php";
 
 session_start();
 // session_unset();          
