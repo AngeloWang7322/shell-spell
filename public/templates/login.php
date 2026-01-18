@@ -19,10 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
     $dbHelper = new DBHelper(pdo: $pdo);
 
-    if ($email === '' || $password === '')
+    if ($email == '' || $password == '')
     {
         $errors[] = "Bitte alle Felder ausfüllen.";
-        exit();
+        // header('Location: /login');
     }
 
     try
@@ -39,15 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
 <div class="form-wrapper container">
     <h1>Log In</h1>
-    <?php if (!empty($errors)): ?>
-        <div class="errors">
-            <ul>
-                <?php foreach ($errors as $e): ?>
-                    <?php echo htmlspecialchars($e); ?><br>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
+
     <br>
     <form class="d-flex flex-column justify-content-center" method="post">
         <div class="form-group">
@@ -64,10 +56,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         </div>
         <br>
         <button class="btn btn-primary btn-lg" type="submit">Log In</button>
-    </form>
+    </form> <?php if (!empty($errors)): ?>
+        <div class="errors" style="color:red;">
+            <?php foreach ($errors as $e): ?>
+                <?php echo $e . "<br>"; ?>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
     <br>
     <div class="well"> No Account Yet? </div>
     <form action="register">
-        <button class="btn btn-primary btn-sm">Register</button>
+        <button class="btn btn-primary btn-md">Register</button>
     </form>
 </div>

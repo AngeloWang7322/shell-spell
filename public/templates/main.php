@@ -11,7 +11,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
         <div class="header-group">
             <div class="title-container">
                 Shell Spell
-                <img src="../assets/images/favicon-32x32.png">
+                <img class="icon-medium" src="../assets/images/favicon-32x32.png">
             </div>
         </div>
         <div class="header-group">
@@ -23,13 +23,13 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
             <a href="register">
                 <div class="header-element">
                     Register
-                    <img class="icon" src="../assets/images/icon_register_white.png" alt="register_icon">
+                    <img class="icon-small" src="../assets/images/icon_register_white.png" alt="register_icon">
                 </div>
             </a>            
             <a href="login">
                 <div class="header-element">
                     Sign In
-                    <img class="icon" src="../assets/images/icon_profile_white.png" alt="profile_icon">
+                    <img class="icon-small" src="../assets/images/icon_profile_white.png" alt="profile_icon">
                 </div>
             </a>';
             }
@@ -39,7 +39,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
             <a href="profile">
                 <div class="header-element">
                     Profile
-                    <img class="icon-medium" src="../assets/images/icon_profile_white.png" alt="profile_icon">
+                    <img class="icon-small" src="../assets/images/icon_profile_white.png" alt="profile_icon">
                 </div>
             </a>';
             }
@@ -58,11 +58,6 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                     <p class='element-name " . $door->requiredRole->value . "'>" . $door->name . "</p> 
                 </div>";
             }
-            ?>
-        </div>
-        <div class="elements-wrapper">
-            <?php
-            // ITEMS
             foreach ($_SESSION["curRoom"]->items as $item)
             {
                 $itemClasses = $item->type->value;

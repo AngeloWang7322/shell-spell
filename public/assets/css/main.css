@@ -1,6 +1,6 @@
 .game-container {
-    height: 100vh;
-    overflow: hidden;
+    max-height: 100vh;
+    overflow-y: scroll;
 }
 
 .spellbook-wrapper {
@@ -21,8 +21,7 @@
 }
 
 .history-container {
-    /* display: flex; */
-      flex: 1 1 auto;
+    flex: 1 1 auto;
     flex-direction: column;
     word-break: break-all;
     overflow-y: scroll;
@@ -34,10 +33,12 @@
     width: 100%;
     height: fit-content;
 }
-.base-string{
+
+.base-string {
     text-wrap-mode: nowrap;
     width: fit-content;
 }
+
 .input-line {
     display: flex;
     flex-direction: row;
@@ -128,7 +129,8 @@
     display: flex;
     justify-content: center;
 }
-.file-text-input{
+
+.file-text-input {
     width: 100%;
     height: 90%;
     font-size: 18px;
@@ -136,8 +138,9 @@
     border-width: 0px;
     text-align: center;
 }
-    .file-text-input:focus{
-        outline: none !important;
+
+.file-text-input:focus {
+    outline: none !important;
     border: 0px;
     border: rgba(255, 255, 255, 0.062);
 }
@@ -155,6 +158,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    padding-bottom: 50vh;
 }
 
 .element-container {
@@ -236,11 +240,11 @@
 
 .header-wrapper {
     display: flex;
-    width: 98vw;
-    flex-direction: row;
-    margin-top: 16px;
-    position: absolute;
+    width: 95vw;
     justify-content: space-between;
+    flex-direction: row;
+    margin: 16px 24px;
+    /* position: absolute;  */
     background-color: rgba(255, 255, 255, 0);
     font-size: 16px;
     height: 32px;
@@ -279,10 +283,47 @@
     align-items: center;
     justify-content: center;
 }
-.backdrop{
+
+.backdrop {
     position: fixed;
     top: 0;
     height: 100vh;
     width: 100vw;
     background-color: rgba(0, 0, 0, 0.575);
+}
+
+@media (max-width: 1200px) {
+    .spellbook-wrapper {
+        max-height: 30vh;
+    }
+
+    .header-wrapper {
+        width: 92vw;
+    }
+
+    .door {
+        width: 22vw;
+        height: 22vw;
+        margin: 12px -34px;
+    }
+
+    .item {
+        width: 12vw;
+        height: 12vw;
+        margin: 12px -34px;
+    }
+
+    .title-container {
+        font-size: 32px;
+    }
+
+    .header-element {
+        height: 52px;
+        width: 160px;
+        font-size: 32px;
+    }
+
+    .command-input {
+        height: 34px;
+    }
 }

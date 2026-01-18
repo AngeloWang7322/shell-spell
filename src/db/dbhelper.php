@@ -110,7 +110,6 @@ class DBHelper
             $statesData[$data["id"]]["name"] = $data["name"];
             $statesData[$data["id"]]["rank"] = getRankFromXp($data["xp"])->value;
         }
-        echo "<br>states: " . json_encode($statesData);
         return $statesData;
     }
     public function createGameState($name)

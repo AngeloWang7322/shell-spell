@@ -1,11 +1,8 @@
-
-    /* body :not(.bs-scope):not(.bs-scope *) {
-      all: revert;
-    } */
 body {
     padding: 0;
     margin: 0;
 }
+
 :root {
     font-family:
         "Pixelify Sans"
@@ -16,6 +13,7 @@ body {
     min-height: 100vh;
     padding: 0;
 }
+
 main {
     max-width: 800px;
     min-height: 100vh;
@@ -25,10 +23,12 @@ main {
 button {
     padding: .6rem 1rem;
 }
-.ui{
+
+.ui {
     margin-top: 20px;
     position: absolute;
 }
+
 .page-content {
     display: flex;
     justify-content: center;
@@ -57,12 +57,15 @@ button {
     align-items: center;
     height: 100vh;
 }
-p1{
+
+p1 {
     color: rgb(255, 201, 209);
 }
-.wanderer{
+
+.wanderer {
     color: rgb(253, 250, 199);
 }
+
 .apprentice {
     color: rgb(171, 253, 139);
 }
@@ -108,19 +111,44 @@ form {
         "Pixelify Sans"
     ;
 }
-button{
-        font-family:
+
+button {
+    font-family:
         "Pixelify Sans"
     ;
     color: white;
 }
+
 input {
     font-family:
         "Pixelify Sans"
     ;
     font-size: 22px;
 }
-::-webkit-scrollbar{
+
+::-webkit-scrollbar {
     width: 4px;
     background-color: gray;
+}
+
+@media (max-width: 1200px) {
+    p {
+        font-size: 32px;
+    }
+    h1 {
+        font-size: 72px;
+    }
+    .icon-small {
+        width: 34px;
+        height: 34px;
+    }
+
+    .icon-medium {
+        width: 66px;
+        height: 66x;
+    }
+    .icon-large{
+        width: 84px;
+        height: 84px;
+    }
 }

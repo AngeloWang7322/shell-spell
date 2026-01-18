@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
     {
         ($_POST["action"])($dbHelper);
     }
-    header("Location: " . $_SERVER["REQUEST_URI"]);
+    header(header: "Location: " . $_SERVER["REQUEST_URI"]);
     exit;
 }
 echo "</div>";

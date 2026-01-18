@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 require_once "./../src/db/db.php";
 require_once "./../src/db/dbhelper.php";
-if (isset($_SESSION["isLoggedIn"]))
-{
-    header(header: "Location: " . "/");
-    exit;
-}
+
+exitIfLoggedIn();
+
 $errors = [];
 $success = "";
 $title = "register";
@@ -57,15 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 ?>
 <div class="form-wrapper .bs-scope">
     <h1>Register</h1>
-    <?php if (!empty($errors)): ?>
-        <div style="color:red;">
-            <ul>
-                <?php foreach ($errors as $e): ?>
-                    <li><?php echo htmlspecialchars($e); ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
+
     <?php if ($success): ?>
         <div style="color:green;"><?php echo htmlspecialchars($success); ?></div>
     <?php endif; ?>
@@ -89,10 +79,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             </label>
         </div><br>
         <button class="btn btn-primary btn-lg" type="submit">Registrieren</button>
-    </form><br>
+    </form>
+    <?php if (!empty($errors)): ?>
+        <div class="errors" style="color:red;">
+            <ul>
+                <?php foreach ($errors as $e): ?>
+                    <?php echo $e . "<br>"; ?>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+    <br>
     <p>Already Registered?
     <form action="login">
-        <button class="btn btn-primary btn-sm">Log In</button>
+        <button class="btn btn-primary btn-md">Log In</button>
     </form>
 
 </div>
