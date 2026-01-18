@@ -95,21 +95,19 @@ function handleRedirect($seperator)
     checkIfCanRedirect($redirectFilePath, $seperator);
     addStdoutToFile($seperator, $redirectFilePath);
 }
-function arrayToString($array, $seperator = "<br>", $includeKeys = true)
+function arrayKeyValueToString($array, $seperator = "<br>")
 {
     $finalString = "";
     foreach ($array as $key => $line)
     {
-        $finalString .= $includeKeys ?
-            $key . " " . $line . $seperator
-            : $line . $seperator;
+        $finalString .= $key . " " . $line . $seperator;
     }
     return $finalString;
 }
 function findLastSpecialOperator()
 {
     $str = $_POST["command"];
-    $operators = [">", ">>", "||", "|", "&&",];
+    $operators = [">>", ">", "||", "|", "&&",];
     for ($i = strlen($str); $i > 0; $i--)
     {
         foreach ($operators as $operator)
@@ -132,11 +130,11 @@ function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperato
 function checkIfCanRedirect($redirectFilePath, $seperator)
 {
     Command::parsePath($redirectFilePath);
-    if (!isset($_SESSION["Stdout"])) throw new Exception("invalid usage of '" . $seperator . "' operator");
+    if (!isset($_SESSION["stdout"])) throw new Exception("invalid usage of '" . $seperator . "' operator");
 }
 function addStdoutToFile($seperator, $redirectFilePath)
 {
-    $newStr = arrayToString($_SESSION["Stdout"]);
+    $newStr = arrayKeyValueToString($_SESSION["stdout"]);
     $destItem = &getItem($redirectFilePath);
     if ($seperator == ">>")
     {
@@ -158,7 +156,7 @@ function checkPipe($command)
     if (
         $_SESSION["pipeCount"] > 0
         && !$command->isWriter
-        && !isset($_SESSION["Stdout"])
+        && !isset($_SESSION["stdout"])
     )
     {
         throw new Exception("command not pipable");
@@ -225,7 +223,7 @@ function cleanUp()
     $_SESSION["pipeCount"] = 0;
     unset(
         $_SESSION["promptData"],
-        $_SESSION["Stdout"],
+        $_SESSION["stdout"],
     );
 }
 function mustPreserveState()

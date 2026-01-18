@@ -188,6 +188,14 @@ class DBHelper
             "",
             false,
         );
+        $tempMap->items["bread.txt"] = new Scroll(
+            "",
+            "bread",
+            ["hall"],
+            Role::WANDERER,
+            "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
+            false,
+        );
         $tempMap->doors["oldDoor"]->doors["longHallway"] = new Room(
             name: "longHallway",
             path: ["hall", "oldDoor"],
@@ -215,6 +223,7 @@ class DBHelper
             Role::WANDERER,
             "i don't know",
         );
+
 
 
 

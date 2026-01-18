@@ -107,7 +107,7 @@ function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
     $_SESSION["response"] = $catItem->content;
-    $_SESSION["stdout"] = $catItem->content;
+    $_SESSION["stdout"] = getLinesFromText($catItem->content);
 }
 
 function executeTouch()
@@ -160,7 +160,7 @@ function executeGrep()
     );
 
     $_SESSION["stdout"] = $matchingLines;
-    $_SESSION["response"] = arrayToString($matchingLines);
+    $_SESSION["response"] = arrayKeyValueToString($matchingLines);
 }
 
 function executeExecute()
@@ -179,7 +179,7 @@ function executeExecute()
 
 function executeEcho()
 {
-    $_SESSION["stdout"] = $_SESSION["tokens"]["command"];
+    $_SESSION["stdout"] = getLinesFromText($_SESSION["tokens"]["command"]);
     $_SESSION["response"] = substr($_POST["command"], 5);
 }
 
@@ -195,4 +195,27 @@ function executeFind()
     $findResult = callFunctionOnRoomRec($startingRoom, "findByName", $findFunction, $findString);
     $_SESSION["stdout"] = $findResult;
     $_SESSION["response"] = implode("<br>", $findResult,);
+}
+
+function executeWc()
+{
+    $lines = getLines();
+    $counts = getCounts($lines);
+
+    $_SESSION["stdout"] = $counts;
+    $_SESSION["response"] = arrayKeyValueToString($counts, " ");
+}
+function executeHead()
+{
+    $lines = getLines();
+    $lines = getPartialArray($lines);
+    $_SESSION["stdout"] = $lines;
+    $_SESSION["response"] = arrayKeyValueToString($lines, " ");
+}
+function executeTail()
+{
+    $lines = getLines();
+    $lines = getPartialArray($lines, false);
+    $_SESSION["stdout"] = $lines;
+    $_SESSION["response"] = arrayKeyValueToString($lines, " ");
 }
