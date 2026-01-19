@@ -197,6 +197,14 @@ class DBHelper
             "",
             false,
         );
+        $tempMap->items["secret.txt"] = new Scroll(
+            "",
+            "secret",
+            ["hall"],
+            Role::ARCHIVIST,
+            "",
+            false,
+        );
         $tempMap->items["bread.txt"] = new Scroll(
             "",
             "bread",

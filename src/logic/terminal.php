@@ -74,26 +74,24 @@ function executePwd()
 
 function executeRm()
 {
-    for ($i = 0; $i < count($_SESSION["tokens"]["path"]); $i++)
-    {
-        deleteElement($_SESSION["tokens"]["path"][$i]);
-    }
+        deleteElements($_SESSION["tokens"]["path"]);
 }
 
 function executeCp()
 {
+    $matches = getMatchingElements();
     $destRoom = &getRoom($_SESSION["tokens"]["path"][1]);
-    copyElementsTo(
-        getMatchingElements(),
-        $destRoom
-    );
+
+    copyElementsTo($matches, $destRoom);
     updatePaths($destRoom);
 }
 
 function executeMv()
 {
+    $matches = getMatchingElements();
+
     executeCp();
-    deleteElement($_SESSION["tokens"]["path"][0], false);
+    deleteElements(getPathsFromElements($matches), false);
 }
 
 function executeCat()
@@ -211,6 +209,5 @@ function executeTail()
 function executeNano()
 {
     $textFile = getItem($_SESSION["tokens"]["path"][0]);
-
     openScrollIfIsScroll($textFile);
 }

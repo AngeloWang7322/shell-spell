@@ -78,8 +78,10 @@ function handleCommandChain($seperator)
     splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
     $_POST["command"] = $beforeSeperator;
     manageExecution();
+
     $_SESSION["tokens"] = [];
     $_POST["command"] = $afterSeperator;
+        
     prepareCommandExecution();
     executeCommand();
 }
@@ -136,7 +138,7 @@ function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperato
 }
 function checkIfCanRedirect($redirectFilePath, $seperator)
 {
-    Command::parsePath($redirectFilePath);
+    Command::parsePath($redirectFilePath, );
     if (!isset($_SESSION["stdout"])) throw new Exception("invalid usage of '" . $seperator . "' operator");
 }
 function addStdoutToFile($seperator, $redirectFilePath)

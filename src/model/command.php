@@ -181,10 +181,14 @@ class Command
             }
         }
     }
-    static public function parsePath($path)
+    static public function parsePath($path, $tokens = "", &$syntaxArray = [], &$argIndex = NULL, $validChars = [])
     {
-        $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), ["hall", "/", "-", ".."]);
-        if (in_array($path[0], $validPathArgs))
+        $validChars = array_merge($validChars, ["hall", "/", "-", ".."]);
+        $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), $validChars);
+        if (
+            in_array($path[0], $validPathArgs) ||
+            count($path) == 1 && !empty(getWildCardStringAndFunction($path[0]))
+        )
         {
             return $path;
         }
@@ -282,7 +286,7 @@ class Command
             $argIndex--;
         }
     }
-    static public function parsePathNew($mkdirPath,  &$syntaxArray, &$argIndex)
+    static public function parsePathNew($mkdirPath, $tokens, &$syntaxArray, &$argIndex)
     {
         return match (true)
         {
@@ -291,20 +295,20 @@ class Command
             count($mkdirPath) == 1
             => $mkdirPath,
             default
-            => self::parsePath(array_slice($mkdirPath, 0, -1)),
+            => self::parsePath(array_slice($mkdirPath, 0, -1), $tokens, $syntaxArray, $argIndex),
         };
     }
-    static public function parsePathFind($path)
+    static public function parsePathFind($path, $tokens, &$syntaxArray, &$argIndex)
     {
-        return $path[0] == "." ? $path : self::parsePath($path);
+        return $path[0] == "." ? $path : self::parsePath($path, $tokens, $syntaxArray, $argIndex);
     }
-    static public function parsePathOptional($path)
+    static public function parsePathOptional($path, $tokens, &$syntaxArray, &$argIndex)
     {
         if (!isset($_SESSION["stdout"]))
         {
             try
             {
-                return self::parsePath($path);
+                return self::parsePath($path, $tokens, $syntaxArray, $argIndex);
             }
             catch (Exception $e)
             {
@@ -317,18 +321,6 @@ class Command
     static public function parsePathRename($path, $tokens, &$syntaxArray, &$argIndex)
     {
 
-        // if (substr($tokens[$argIndex], -1) != "/")
-        // {
-        //     $_SESSION["tokens"]["path"][] = array_slice($path, 0, -1);
-
-        //     if (!empty($_SESSION["tokens"]["path"][0]))
-        //     {
-        //         $_SESSION["tokens"]["misc"] =  end($path);
-        //         $_SESSION["tokens"]["path"][] = array_slice($path, 0, -1);
-        //         return false;
-        //     }
-        // }
-        // return self::parsePath($path);
         if (substr($tokens[$argIndex], -1) != "/" && !empty($_SESSION["tokens"]["path"][0]))
         {
             $_SESSION["tokens"]["misc"] =  end($path);
@@ -340,10 +332,10 @@ class Command
             $end = end($path);
             if (end($path) == "")
             {
-                $_SESSION["tokens"]["path"][] = self::parsePath(array_slice($path, 0, -1));
+                $_SESSION["tokens"]["path"][] = self::parsePath(array_slice($path, 0, -1), $tokens, $syntaxArray, $argIndex,);
                 return false;
             }
-            return self::parsePath($path);
+            return self::parsePath($path, $tokens, $syntaxArray, $argIndex, ["*"]);
         }
     }
 }
