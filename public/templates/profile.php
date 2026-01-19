@@ -5,7 +5,7 @@ exitIfNotLoggedIn();
 $extraCss[] = "/assets/css/profile.css";
 
 ?>
-<div class="page-content">  
+<div class="page-content">
     <div class="ui-wrapper">
         <a href="/">
             <div class="back-button">
@@ -13,19 +13,21 @@ $extraCss[] = "/assets/css/profile.css";
             </div>
         </a>
     </div>
-    Profile
+    <h1>Profile</h1>
     <div class="profile-picture-container">
         <?php
-            $default = "/uploads/profile_pics/default.png";
-            $pic = $_SESSION["profile_pic"] ?? $default;
+        $default = "/uploads/profile_pics/default.png";
+        $pic = $_SESSION["profile_pic"] ?? $default;
         ?>
         <img src="<?= htmlspecialchars($pic) ?>" class="profile-picture">
 
         <form class="profile-upload-form" method="post" enctype="multipart/form-data" action="/profile">
+            <input type="hidden" name="action" value="uploadProfilePic">
             <input type="file" name="profile_pic" accept="image/png,image/jpeg,image/webp" required>
-            <button type="submit" name="upload_profile_pic">Upload</button>
+            <button type="submit">Upload</button>
         </form>
+
     </div>
 
-    <h1>Profile</h1>
+    
 </div>

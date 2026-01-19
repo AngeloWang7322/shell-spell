@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 use FFI\CData;
-require __DIR__ . "/terminalHelper.php";
-
 function startTerminalProcess()
 {
     try

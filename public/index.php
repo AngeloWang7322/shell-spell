@@ -17,9 +17,7 @@ require_once __DIR__ . "/../src/logic/terminalController.php";
 require_once __DIR__ . "/../src/logic/terminalUtils.php";
 
 session_start();
-// session_unset();          
-
-echo "<div class='ui'>";
+// session_unset();   
 
 if (!isset($_SESSION["map"]))
 {
@@ -65,3 +63,4 @@ require __DIR__ . '/assets/layout.php';
 echo "<div class='ui'";
 $end = hrtime(true);
 echo "<br>layout: " . (($end - $start) / 1000000) . "ms</div>";
+echo "<div class='ui'>";

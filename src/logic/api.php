@@ -9,7 +9,8 @@ function getValidActions()
         "closeScroll",
         "deleteMap",
         "loadMap",
-        "newMap"
+        "newMap",
+        "uploadProfilePic"
     ];
 }
 function enterCommand($dbHelper)
@@ -50,5 +51,14 @@ function newMap($dbHelper)
 {
     $dbHelper->createGameState($_POST["newMapName"]);
     header("Location: /");
+    exit;
+}
+function uploadProfilePic($dbHelper)
+{
+    $path = handleProfilePicUpload(); 
+    if ($path !== null && !empty($_SESSION["isLoggedIn"])) {
+        $dbHelper->setUserProfilePic($_SESSION["user"]["id"], $path);
+    }
+    header("Location: /profile");
     exit;
 }
