@@ -8,6 +8,8 @@ require __DIR__ . '/../src/model/items.php';
 require __DIR__ . '/../src/model/exceptions.php';
 require __DIR__ . '/../src/model/command.php';
 require __DIR__ . '/../src/model/enums.php';
+require __DIR__ . '/../src/logic/upload.php';
+require __DIR__ . "/../src/logic/game.php";
 require __DIR__ . "/../src/logic/gameUtils.php";
 require __DIR__ . "/../src/logic/api.php";
 require_once __DIR__ . "/../src/db/db.php";;
@@ -16,6 +18,7 @@ require_once __DIR__ . "/../src/logic/terminalController.php";
 require_once __DIR__ . "/../src/logic/terminalUtils.php";
 
 session_start();
+
 // session_unset();
 
 echo "<div class='ui'>";
@@ -64,3 +67,4 @@ require __DIR__ . '/assets/layout.php';
 echo "<div class='ui'";
 $end = hrtime(true);
 echo "<br>layout: " . (($end - $start) / 1000000) . "ms</div>";
+echo "<div class='ui'>";

@@ -33,14 +33,12 @@ class DBHelper
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password_hash']))
-        {
+        if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['user']["name"] = $user['username'];
             $_SESSION["user"]["id"] = $user["id"];
             $_SESSION["isLoggedIn"] = true;
-        }
-        else
-        {
+            $_SESSION["profile_pic"] = $user["profile_pic_path"] ?? null;
+        } else {
             throw new Exception("Email oder Passwort falsch");
         }
     }
@@ -72,15 +70,11 @@ class DBHelper
         ]);
         $gameState = $fetchGameState->fetch();
         //assign userRole and maxMana by xp
-        for ($i = 1; $i <= count(Role::cases()); $i++)
-        {
-            if ($gameState["xp"] <= $i * 100)
-            {
+        for ($i = 1; $i <= count(Role::cases()); $i++) {
+            if ($gameState["xp"] <= $i * 100) {
                 $_SESSION["maxMana"] = $i * 100;
-                foreach (Role::cases() as $role)
-                {
-                    if ($i == 1)
-                    {
+                foreach (Role::cases() as $role) {
+                    if ($i == 1) {
                         $_SESSION["user"]["role"] = $role;
                         break 2;
                     }
@@ -105,8 +99,7 @@ class DBHelper
         ]);
         $statesData = [];
         $response = (array) $fetchStatesData->fetchAll();
-        foreach ($response as $data)
-        {
+        foreach ($response as $data) {
             $statesData[$data["id"]]["name"] = $data["name"];
             $statesData[$data["id"]]["rank"] = getRankFromXp($data["xp"])->value;
         }
@@ -249,7 +242,6 @@ class DBHelper
             "i don't know",
         );
 
-
         // $tempMap = new Room(
         //     "hall",
         //     curDate: false,
@@ -337,17 +329,26 @@ class DBHelper
         // );
         return $tempMap;
     }
+    public function setUserProfilePic(int $userId, string $path): void
+    {
+        $stmt = $this->pdo->prepare("
+        UPDATE users
+        SET profile_pic_path = :path
+        WHERE id = :id
+    ");
+        $stmt->execute([
+            ":path" => $path,
+            ":id" => $userId
+        ]);
+    }
+
 }
 function getRankFromXp($xp): Role
 {
-    for ($i = 1; $i <= count(Role::cases()); $i++)
-    {
-        if ($xp <= $i * 100)
-        {
-            foreach (Role::cases() as $role)
-            {
-                if ($i == 1)
-                {
+    for ($i = 1; $i <= count(Role::cases()); $i++) {
+        if ($xp <= $i * 100) {
+            foreach (Role::cases() as $role) {
+                if ($i == 1) {
                     return $role;
                 }
                 $i--;
@@ -356,3 +357,5 @@ function getRankFromXp($xp): Role
     }
     throw new Exception("role not found?");
 }
+
+

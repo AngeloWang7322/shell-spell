@@ -10,3 +10,25 @@
 }
 .back-button {
 }
+.profile-picture-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.profile-picture {
+    width: 180px;
+    height:  180px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #444;
+    background-color: #222;
+
+}
+.profile-upload-form {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}

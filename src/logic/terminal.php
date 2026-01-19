@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use FFI\CData;
 function startTerminalProcess()
 {
     try
