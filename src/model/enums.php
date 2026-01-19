@@ -51,6 +51,10 @@ enum Commands: string
     case CAT = "cat";
     case TOUCH = "touch";
     case FIND = "find";
+    case WC = "wc";
+    case HEAD = "head";
+    case TAIL = "tail";
+    case NANO = "nano";
 }
 
 enum TokenType: string

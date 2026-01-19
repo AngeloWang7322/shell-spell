@@ -25,7 +25,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                     Register
                     <img class="icon-small" src="../assets/images/icon_register_white.png" alt="register_icon">
                 </div>
-            </a>            
+            </a>
             <a href="login">
                 <div class="header-element">
                     Sign In
@@ -52,6 +52,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
             // ROOMS
             foreach ($_SESSION["curRoom"]->doors as $door)
             {
+                if ($door->isHidden && isset($_SESSION["displayAll"])) continue;
                 echo "
                 <div class='element-container'>
                     <div class='element door'></div>                        
@@ -84,7 +85,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
             </div>
             <form class="scroll-content" method="post">
                 <input type="hidden" value="editScroll" name="action">
-                <input name="newFileContent" class="file-text-input" autofocus autocomplete="off" value="' . $_SESSION["openedScroll"]["content"] . '"></input>
+                <input name="newFileContent" class="file-text-input" autofocus autocomplete="off" value="' . htmlentities($_SESSION["openedScroll"]["content"]) . '"></input>
             </form>
         </div>';
     }
@@ -112,7 +113,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                 <form class="command-input" method="post">
                     <input type="hidden" value="enterCommand" name="action">
                     <input type="hidden" value=<?php echo '"' . $baseString . '"' ?> name="baseString">
-                    <input name="command" class="command-input" type="text" autocomplete="off" autofocus>
+                    <input id="commandInputField" name="command" class="command-input" type="text" autocomplete="off" autofocus>
                 </form>
             </div>
             <div class="mana-display-container">
@@ -128,12 +129,71 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
 
             </div>
         </div>
-
     </div>
-
 </div>
 <script>
+    let commandHistory = [];
+    let cursor = 0;
+    let draft = "";
+    let hasPressedEnter = false;
+
+    const input = document.getElementById("commandInputField");
+
+    function incrementCursorDown() {
+        if (cursor >= commandHistory.length) return;
+
+        cursor++;
+        if (cursor == commandHistory.length) {
+            input.value = draft;
+        } else {
+            input.value = commandHistory[cursor];
+        }
+    }
+
+    function incrementCursorUp() {
+        if (cursor <= 0) return;
+
+        if (cursor == commandHistory.length) {
+            draft = input.value;
+        }
+        cursor--;
+        input.value = commandHistory[cursor];
+    }
+
+    function addToHistory(cmd) {
+        if (cmd == "") return;
+        commandHistory.push(cmd);
+        sessionStorage.setItem("commandHistory", JSON.stringify(commandHistory));
+    }
+
+    function loadHistory() {
+        const historyJson = sessionStorage.getItem("commandHistory");
+        commandHistory = historyJson ? JSON.parse(historyJson) : [];
+        cursor = commandHistory.length;
+    }
+
+    input.addEventListener("keydown", (e) => {
+        switch (e.key) {
+            case "Enter": {
+                if (hasPressedEnter) return;
+                hasPressedEnter = true;
+                const cmd = input.value;
+                addToHistory(cmd);
+                break;
+            }
+            case "ArrowUp": {
+                incrementCursorUp();
+                break;
+            }
+            case "ArrowDown": {
+                incrementCursorDown();
+                break;
+            }
+        }
+    });
+
     window.addEventListener("load", () => {
+        loadHistory();
         const history = document.querySelector(".history-container");
         const lastLine = history.lastElementChild;
         if (lastLine) {

@@ -6,33 +6,22 @@ function manageExecution()
     if (isset($_SESSION["promptData"]))
     {
         handlePrompt();
+        return;
     }
-    switch ($operator = findLastSpecialOperator())
+    match ($operator = getLastOccuringElementIn($_POST["command"]))
     {
-        case ">>":
-        case ">":
-            {
-                handleRedirect($operator);
-                return;
-            }
-        case "|":
-            {
-                $_SESSION["pipeCount"]++;
-                handleCommandChain($operator);
-                $_SESSION["pipeCount"]--;
-                break;
-            }
-        case "&&":
-            {
-                handleCommandChain("&&");
-                break;
-            }
-    }
-
+        ">>", ">" => handleRedirect($operator),
+        "|" => handlePipe($operator),
+        "&&" => handleCommandChain($operator),
+        "||" => handleFailSafe($operator),
+        default => handleDefault()
+    };
+}
+function handleDefault()
+{
     prepareCommandExecution();
     executeCommand();
 }
-
 function handlePrompt()
 {
     $answer = $_POST["command"];
@@ -41,8 +30,16 @@ function handlePrompt()
     {
         case (in_array($_POST["command"], [$_SESSION["promptData"]["options"][0], ""])):
             {
-                executeCommand();
-                $answer = "y";
+                try
+                {
+                    executeCommand();
+                    $answer = "y";
+                }
+                catch (Exception $e)
+                {
+                    unset($_SESSION["promptData"]);
+                    throw new Exception($e->getMessage());
+                }
             }
         case (in_array($_POST["command"], ["n", "N"])):
             {
@@ -57,6 +54,23 @@ function handlePrompt()
             }
     }
 }
+function handleFailSafe($seperator)
+{
+    $beforeSeperator = "";
+    $afterSeperator = "";
+    splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
+    $_POST["command"] = $beforeSeperator;
+    try
+    {
+        manageExecution();
+    }
+    catch (Exception $e)
+    {
+        $_SESSION["tokens"] = [];
+        $_POST["command"] = $afterSeperator;
+        manageExecution();
+    }
+}
 function handleCommandChain($seperator)
 {
     $beforeSeperator = "";
@@ -66,8 +80,15 @@ function handleCommandChain($seperator)
     manageExecution();
     $_SESSION["tokens"] = [];
     $_POST["command"] = $afterSeperator;
+    prepareCommandExecution();
+    executeCommand();
 }
-
+function handlePipe($seperator)
+{
+    $_SESSION["pipeCount"]++;
+    handleCommandChain($seperator);
+    $_SESSION["pipeCount"]--;
+}
 function handleRedirect($seperator)
 {
     $command = "";
@@ -80,35 +101,32 @@ function handleRedirect($seperator)
     $_SESSION["response"] = "";
 
     checkIfCanRedirect($redirectFilePath, $seperator);
-    addStdinToFile($seperator, $redirectFilePath);
+    addStdoutToFile($seperator, $redirectFilePath);
 }
-function arrayToString($array, $seperator = "<br>", $includeKeys = true)
+function arrayKeyValueToString($array, $seperator = "<br>")
 {
     $finalString = "";
     foreach ($array as $key => $line)
     {
-        $finalString .= $includeKeys ?
-            $key . " " . $line . $seperator
-            : $line . $seperator;
+        $finalString .= $key . " " . $line . $seperator;
     }
     return $finalString;
 }
-function findLastSpecialOperator()
+function getLastOccuringElementIn($needle, $haystack = [">>", ">", "||", "|", "&&",])
 {
-    $str = $_POST["command"];
-    $operators = [">", ">>", "|", "&&"];
-    for ($i = strlen($str); $i > 0; $i--)
+    for ($i = strlen($needle); $i > 0; $i--)
     {
-        foreach ($operators as $operator)
+        foreach ($haystack as $element)
         {
-            $len = strlen($operator);
-            $substr = substr($str, $i - $len, $len);
-            if ($substr == $operator)
+            $len = strlen($element);
+            $substr = substr($needle, $i - $len, $len);
+            if ($substr == $element)
             {
-                return $operator;
+                return $element;
             }
         }
     }
+    return false;
 }
 function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperator)
 {
@@ -119,19 +137,19 @@ function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperato
 function checkIfCanRedirect($redirectFilePath, $seperator)
 {
     Command::parsePath($redirectFilePath);
-    if (!isset($_SESSION["stdin"])) throw new Exception("invalid usage of '" . $seperator . "' operator");
+    if (!isset($_SESSION["stdout"])) throw new Exception("invalid usage of '" . $seperator . "' operator");
 }
-function addStdinToFile($seperator, $redirectFilePath)
+function addStdoutToFile($seperator, $redirectFilePath)
 {
-    $newStr = arrayToString($_SESSION["stdin"]);
+    $newStr = arrayKeyValueToString($_SESSION["stdout"]);
     $destItem = &getItem($redirectFilePath);
     if ($seperator == ">>")
     {
-        $destItem->content = $newStr;
+        $destItem->content .= $newStr;
     }
     else
     {
-        $destItem->content .= $newStr;
+        $destItem->content = $newStr;
     }
 }
 function prepareCommandExecution()
@@ -145,7 +163,7 @@ function checkPipe($command)
     if (
         $_SESSION["pipeCount"] > 0
         && !$command->isWriter
-        && !isset($_SESSION["stdin"])
+        && !isset($_SESSION["stdout"])
     )
     {
         throw new Exception("command not pipable");
@@ -165,7 +183,15 @@ function editLastHistory($string)
 function handleException(Exception $e)
 {
     editMana($e->getCode());
-    $_SESSION["response"] = $e->getMessage();
+
+    if ($e->getCode() == 0)
+    {
+        $_SESSION["response"] = colorizeString($e->getMessage(), "error");
+    }
+    else
+    {
+        $_SESSION["response"] = $e->getMessage();
+    }
 }
 function closeProcess()
 {
@@ -212,7 +238,7 @@ function cleanUp()
     $_SESSION["pipeCount"] = 0;
     unset(
         $_SESSION["promptData"],
-        $_SESSION["stdin"],
+        $_SESSION["stdout"],
     );
 }
 function mustPreserveState()

@@ -1,5 +1,5 @@
 
-<?php 
+<?php
 function getRoomOrItem($path, $tempRoom = null): mixed
 {
     try
@@ -164,7 +164,7 @@ function roleIsHigherThanRoomRecursive(Role $role, &$room)
     return true;
 }
 
-function updatePathsAfterMv(&$room)
+function updatePaths(&$room)
 {
     foreach ($room->doors as &$door)
     {
@@ -174,9 +174,10 @@ function updatePathsAfterMv(&$room)
             $item->path = array_merge($path, (array) $item->name);
         }
         $door->path = array_merge($path, array($door->name));
-        updatePathsAfterMv($door);
+        updatePaths($door);
     }
 }
+
 function updateItemPaths(&$room)
 {
     foreach ($room->items as $item)
@@ -236,13 +237,13 @@ function getLsArray($tempRoom)
                 $finalArray[$j] .= spaceOf((int)(($longest - strlen($tempLsArray[$j][$i])) * 0.6));
             }
         }
-        $_SESSION["stdin"] = $finalArray;
+        $_SESSION["stdout"] = $finalArray;
         $_SESSION["response"] = implode("<br> ", $finalArray);
     }
     else
     {
         $finalArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-        $_SESSION["stdin"] = $finalArray;
+        $_SESSION["stdout"] = $finalArray;
         $_SESSION["response"] = implode(", ", $finalArray);
     }
 }
@@ -275,9 +276,9 @@ function callCorrectGrepFunction($searchMatching, $searchRecursive, $isCaseInsen
             );
         }
     }
-    else if (isset($_SESSION["stdin"]))
+    else if (isset($_SESSION["stdout"]))
     {
-        foreach ($_SESSION["stdin"] as $key => $line)
+        foreach ($_SESSION["stdout"] as $key => $line)
         {
             if (grepLine(
                 $line,
@@ -340,32 +341,13 @@ function grepText(
     $isCaseInsensitive = false,
 )
 {
-    $matchingLines = [];
-    $contentLen = strlen($content);
-    $lineCounter = 0;
-    $strOffset = -1;
-
-    for ($i = 0; $i < $contentLen; $i++)
-    {
-        if ($content[$i] == "." || $i == $contentLen - 1)
-        {
-            $tempLine = substr($content, $strOffset + 1, $i - $strOffset);
-            if (grepLine(
-                $tempLine,
-                $condition,
-                $isCaseInsensitive,
-                $searchMatching,
-            ))
-            {
-                $matchingLines[implode('/', $path) . "&nbsp" . $lineCounter . ":"] = $tempLine;
-            }
-
-            $strOffset = $i + 1;
-            $lineCounter++;
-        }
-    }
-
-    return $matchingLines;
+    $lines = getLinesFromText($content);
+    return grepArray(
+        $lines,
+        $condition,
+        $searchMatching,
+        $isCaseInsensitive
+    );
 }
 
 function grepLine(
@@ -404,12 +386,32 @@ function grepArray($array, $condition, $searchMatching, $isCaseInsensitive)
             $searchMatching,
         ))
         {
-            $matchingLines[$key] = $line;
+            $matchingLines[$key . ": "] = $line;
         }
     }
     return $matchingLines;
 }
-function countNotEmpty($array)
+function getLinesFromText($text)
+{
+    $textLen = strlen($text);
+    $seperators = [".", "\n"];
+    $lineCount = 0;
+    $lines = [];
+    $strOffset = 0;
+    for ($i = 0; $i < $textLen; $i++)
+    {
+        if (in_array($text[$i], $seperators) || $i == $textLen - 1)
+        {
+            $line = substr($text, $strOffset + 1, $i - $strOffset);
+            if ($line == "") continue;
+            $lines[] = $line;
+            $strOffset = $i + 1;
+            $lineCount++;
+        }
+    }
+    return $lines;
+}
+function counNonEmpty($array)
 {
     $counter = 0;
     foreach ($array as $element)
@@ -442,13 +444,13 @@ function createPrompt($prompt, $validAnswers = ["y", "n"])
     writeNewHistory();
     throw new Exception("", 0);
 }
-function isNameValid($name, $suffix)
+function isNameValid($name, $suffix = "")
 {
-    $illegalBaseNames = ["..",];
-    if (!str_ends_with($name, $suffix)) return false;
+    $invalidChars = ["..", "*", "/", "&", "|", ""];
 
-    $baseName = substr($name, 0, strlen($suffix));
-    return !in_array($baseName, $illegalBaseNames);
+    return
+        str_ends_with($name, $suffix) &&
+        !(bool)getLastOccuringElementIn(substr($name, 0, strlen(string: $suffix)), $invalidChars);
 }
 
 function colorizeString($string, $class = "")
@@ -476,23 +478,63 @@ function callFunctionOnRoomRec($room, callable $function, ...$args)
     }
     return $result;
 }
-function findByName($room, $findFunction, $findString)
+function copyElementsTo($elements, &$destRoom)
+{
+    $shouldRename = !empty($_SESSION["tokens"]["misc"]);
+    $newName = $shouldRename ? $_SESSION["tokens"]["misc"] : "";
+    $result = array_diff(array_merge(array_keys($elements)), [$newName]);
+
+
+    if (wouldReplaceElemment($elements, $newName) && !isset($_SESSION["promptData"]))
+        createPrompt("replace existing elements?", ["y", "n"]);
+
+    for ($i = 0; $i < count($elements); $i++)
+    {
+        $name = $shouldRename ? $newName : $elements[$i]->name;
+
+        if (is_a($elements[$i], Room::class))
+        {
+            if (!isNameValid($name)) throw new Exception("invalid name");
+
+            $destRoom->doors[$name] = clone $elements[$i];
+            $destRoom->doors[$name]->name = $name;
+        }
+        else
+        {
+            if (!isNameValid($name, $elements[$i]->type->value)) throw new Exception("invalid name");
+
+            $destRoom->items[$name] = clone $elements[$i];
+            $destRoom->items[$name]->name = $name;
+            $destRoom->items[$name]->baseName = substr($name, 0, -4);
+        }
+    }
+}
+
+function wouldReplaceElemment($elements, $newName)
+{
+    $threshhold = empty($_SESSION["tokens"]["path"][1]) ? 1 : 0;
+    return count($elements) - count(array_diff(array_merge($elements, (array)[$newName]))) > $threshhold;
+}
+function getElementsByNameWild($room, $findFunction, $findString)
 {
     $matches = [];
     foreach (array_merge($room->doors, $room->items) as $element)
     {
-        if (
-            $findString == "" ||
-            $findFunction($element->name, $findString) ==
-            ($findFunction != "strcmp")
-        )
+        if (cmpStrWildcard($element->name, $findString, $findFunction))
         {
-            $matches[] = implode("/", $element->path);
+            $matches[] = $element;
         }
     }
     return $matches;
 }
-function getOptionsFind(&$findFunction, &$conditionString)
+function getMatchingElements()
+{
+    $cmpFunction = "";
+    $elementName = end($_SESSION["tokens"]["path"][0]);
+    getWildCardStringAndFunction($elementName, $cmpFunction);
+    return getElementsByNameWild(getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1)), $cmpFunction, $elementName);
+}
+function getOptionsFind(&$findFunction, &$substr)
 {
     if (empty($_SESSION["tokens"]["keyValueOptions"])) return;
     foreach ($_SESSION["tokens"]["keyValueOptions"] as $key => $value)
@@ -501,44 +543,7 @@ function getOptionsFind(&$findFunction, &$conditionString)
         {
             case "-name":
                 {
-                    switch (substr_count($value, "*"))
-                    {
-                        case 0:
-                            {
-                                $findFunction = "strcmp";
-                                $conditionString = $value;
-                                break;
-                            }
-                        case 1:
-                            {
-                                if (substr($value, 0, 1) == "*")
-                                {
-                                    $findFunction = "str_ends_with";
-                                    $conditionString = substr($value, 1);
-                                }
-                                else if (substr($value, -1, 1) == "*")
-                                {
-                                    $findFunction = "str_starts_with";
-                                    $conditionString = substr($value, 0, -1);
-                                }
-                                break;
-                            }
-                        case 2:
-                            {
-                                if (
-                                    substr($value, 0, 1) == "*"
-                                    && substr($value, -1) == "*"
-                                )
-                                {
-                                    $findFunction = "strstr";
-                                    $conditionString = substr($value, 1, -1);
-                                    echo "<br> CONDITION STRING" . $conditionString;
-                                    break;
-                                }
-                            }
-                        default:
-                            throw new Exception("false usage of '*' operator");
-                    }
+                    getWildCardStringAndFunction($substr, $findFunction);
                 }
         }
     }
@@ -557,5 +562,93 @@ function getOptionsGrep(&$searchMatching, &$searchRecursive, &$isCaseInsensitive
                 "-i" => $isCaseInsensitive = true,
             };
         }
+    }
+}
+function getWildCardStringAndFunction(&$substr, &$cmpFunction)
+{
+    switch (substr_count($substr, "*"))
+    {
+        case 0:
+            {
+                $cmpFunction = "strcmp";
+                break;
+            }
+        case 1:
+            {
+                if (substr($substr, 0, 1) == "*")
+                {
+                    $substr = substr($substr, 1);
+                    $cmpFunction = "str_ends_with";
+                }
+                else if (substr($substr, -1, 1) == "*")
+                {
+                    $substr = substr($substr, 0, -1);
+                    $cmpFunction = "str_starts_with";
+                }
+                break;
+            }
+        case 2:
+            {
+                if (
+                    substr($substr, 0, 1) == "*"
+                    && substr($substr, -1) == "*"
+                )
+                {
+                    $cmpFunction = "strstr";
+                    $substr = substr($substr, 1, -1);
+                    break;
+                }
+            }
+        default:
+            throw new Exception("false usage of '*' operator");
+    }
+}
+function cmpStrWildcard($baseStr, $substr, $cmpFunction)
+{
+    return
+        $substr == "" ||
+        $cmpFunction($baseStr, $substr) ==
+        ($cmpFunction != "strcmp");
+}
+function getCounts($lines)
+{
+    $counts = [];
+    if (empty($_SESSION["tokens"]["options"]))
+    {
+        $counts["lines"] = count($lines);
+        $counts["words"] = str_word_count(implode(" ", $lines));
+        $counts["characters"] = strlen(implode(" ", $lines));
+    }
+    foreach ($_SESSION["tokens"]["options"] as $option)
+    {
+        match ($option)
+        {
+            "-l" => $counts["lines"] = count($lines),
+            "-w" => $counts["words"] = str_word_count(implode(" ", $lines)),
+            "-c" => $counts["characters"] = strlen(implode(" ", $lines)),
+        };
+    }
+    return $counts;
+}
+function getLines()
+{
+    return isset($_SESSION["stdout"]) ?
+        $_SESSION["stdout"] :
+        getLinesFromText(getItem($_SESSION["tokens"]["path"][0])->content);
+}
+
+function getPartialArray($lines, $fromTop = true)
+{
+    $count = isset($_SESSION["tokens"]["keyValueOptions"]["-n"]) ? $_SESSION["tokens"]["keyValueOptions"]["-n"] : 10;
+    return $fromTop ?
+        $lines = array_slice($lines, 0, $count) :
+        $lines = array_slice($lines, -$count);
+}
+
+function openScrollIfIsScroll($textFile)
+{
+    if (is_a($textFile, Scroll::class))
+    {
+        $textFile->openScroll();
     }
 }

@@ -69,7 +69,7 @@ function executeLs()
 function executePwd()
 {
     $pwd = implode("/", $_SESSION["curRoom"]->path);
-    $_SESSION["stdin"] = $pwd;
+    $_SESSION["stdout"] = $pwd;
     $_SESSION["response"] = $pwd;
 }
 
@@ -83,19 +83,12 @@ function executeRm()
 
 function executeCp()
 {
-    $destinationRoom = getRoom($_SESSION["tokens"]["path"][1]);
-    $cpItem = getRoomOrItem($_SESSION["tokens"]["path"][0]);
-
-    if (is_a($cpItem, Room::class))
-    {
-        $destinationRoom->doors[$cpItem->name] = clone $cpItem;
-        updatePathsAfterMv($destinationRoom);
-    }
-    else
-    {
-        $destinationRoom->items[$cpItem->name] = clone $cpItem;
-        updateItemPaths($destinationRoom);
-    }
+    $destRoom = &getRoom($_SESSION["tokens"]["path"][1]);
+    copyElementsTo(
+        getMatchingElements(),
+        $destRoom
+    );
+    updatePaths($destRoom);
 }
 
 function executeMv()
@@ -108,7 +101,7 @@ function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
     $_SESSION["response"] = $catItem->content;
-    $_SESSION["stdin"] = $catItem->content;
+    $_SESSION["stdout"] = getLinesFromText($catItem->content);
 }
 
 function executeTouch()
@@ -123,11 +116,7 @@ function executeTouch()
     }
     if (key_exists($fileName, $destRoom->items))
     {
-        $touchFile = $destRoom->items[$fileName];
-        if (is_a($touchFile, Scroll::class))
-        {
-            $touchFile->openScroll();
-        }
+        $destRoom->items[$fileName]->timeOfLastChange = generateDate(true);
     }
     else
     {
@@ -160,13 +149,12 @@ function executeGrep()
         $isCaseInsensitive
     );
 
-    $_SESSION["stdin"] = $matchingLines;
-    $_SESSION["response"] = arrayToString($matchingLines);
+    $_SESSION["stdout"] = $matchingLines;
+    $_SESSION["response"] = arrayKeyValueToString($matchingLines);
 }
 
 function executeExecute()
 {
-
     $itemExec = &getItem(explode("/", substr($_SESSION["tokens"]["command"], 2)));
     if (is_a($itemExec, Alter::class) || is_a($itemExec, Spell::class))
     {
@@ -180,7 +168,7 @@ function executeExecute()
 
 function executeEcho()
 {
-    $_SESSION["stdin"] = $_SESSION["tokens"]["command"];
+    $_SESSION["stdout"] = getLinesFromText($_SESSION["tokens"]["command"]);
     $_SESSION["response"] = substr($_POST["command"], 5);
 }
 
@@ -194,6 +182,36 @@ function executeFind()
     getOptionsFind($findFunction, $findString,);
 
     $findResult = callFunctionOnRoomRec($startingRoom, "findByName", $findFunction, $findString);
-    $_SESSION["stdin"] = $findResult;
+    $_SESSION["stdout"] = $findResult;
     $_SESSION["response"] = implode("<br>", $findResult,);
+}
+
+function executeWc()
+{
+    $lines = getLines();
+    $counts = getCounts($lines);
+
+    $_SESSION["stdout"] = $counts;
+    $_SESSION["response"] = arrayKeyValueToString($counts, " ");
+}
+function executeHead()
+{
+    $lines = getLines();
+    $lines = getPartialArray($lines);
+    $_SESSION["stdout"] = $lines;
+    $_SESSION["response"] = arrayKeyValueToString($lines, " ");
+}
+function executeTail()
+{
+    $lines = getLines();
+    $lines = getPartialArray($lines, false);
+    $_SESSION["stdout"] = $lines;
+    $_SESSION["response"] = arrayKeyValueToString($lines, " ");
+}
+
+function executeNano()
+{
+    $textFile = getItem($_SESSION["tokens"]["path"][0]);
+
+    openScrollIfIsScroll($textFile);
 }

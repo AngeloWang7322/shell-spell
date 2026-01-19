@@ -54,7 +54,6 @@ function handleProfilePicUpload(): ?string
 
     $destFsPath = $uploadDir . "/" . $filename;
     $destUrlPath = "/uploads/profile_pics/" . $filename;
-
     if (!empty($_SESSION["profile_pic"]) && $_SESSION["profile_pic"] !== "/uploads/profile_pics/default.png") {
         $old = $publicDir . $_SESSION["profile_pic"];
         if (is_file($old)) {
