@@ -10,8 +10,8 @@ exitIfLoggedIn();
 $errors = [];
 $success = "";
 $title = "register";
-$extraCss[] = "/assets/css/auth.css";
 $extraCss[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
+$extraCss[] = "/assets/css/auth.css";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
 {
@@ -74,11 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         </div><br>
         <div class="form-group">
             <label>
-                Password:<br>
+                Password<br>
                 <input class="form-control" type="password" name="password">
             </label>
         </div><br>
-        <button class="btn btn-primary btn-lg" type="submit">Registrieren</button>
+        <button class="btn btn-danger btn-lg" type="submit">Registrieren</button>
     </form>
     <?php if (!empty($errors)): ?>
         <div class="errors" style="color:red;">
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     <br>
     <p>Already Registered?
     <form action="login">
-        <button class="btn btn-primary btn-md">Log In</button>
+        <button class="btn btn-danger btn-md">Log In</button>
     </form>
 
 </div>

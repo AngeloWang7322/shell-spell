@@ -8,7 +8,7 @@ function manageExecution()
         handlePrompt();
         return;
     }
-    match ($operator = findLastSpecialOperator())
+    match ($operator = getLastOccuringElementIn($_POST["command"]))
     {
         ">>", ">" => handleRedirect($operator),
         "|" => handlePipe($operator),
@@ -30,8 +30,16 @@ function handlePrompt()
     {
         case (in_array($_POST["command"], [$_SESSION["promptData"]["options"][0], ""])):
             {
-                executeCommand();
-                $answer = "y";
+                try
+                {
+                    executeCommand();
+                    $answer = "y";
+                }
+                catch (Exception $e)
+                {
+                    unset($_SESSION["promptData"]);
+                    throw new Exception($e->getMessage());
+                }
             }
         case (in_array($_POST["command"], ["n", "N"])):
             {
@@ -104,22 +112,21 @@ function arrayKeyValueToString($array, $seperator = "<br>")
     }
     return $finalString;
 }
-function findLastSpecialOperator()
+function getLastOccuringElementIn($needle, $haystack = [">>", ">", "||", "|", "&&",])
 {
-    $str = $_POST["command"];
-    $operators = [">>", ">", "||", "|", "&&",];
-    for ($i = strlen($str); $i > 0; $i--)
+    for ($i = strlen($needle); $i > 0; $i--)
     {
-        foreach ($operators as $operator)
+        foreach ($haystack as $element)
         {
-            $len = strlen($operator);
-            $substr = substr($str, $i - $len, $len);
-            if ($substr == $operator)
+            $len = strlen($element);
+            $substr = substr($needle, $i - $len, $len);
+            if ($substr == $element)
             {
-                return $operator;
+                return $element;
             }
         }
     }
+    return false;
 }
 function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperator)
 {
@@ -176,7 +183,15 @@ function editLastHistory($string)
 function handleException(Exception $e)
 {
     editMana($e->getCode());
-    $_SESSION["response"] = $e->getMessage();
+
+    if ($e->getCode() == 0)
+    {
+        $_SESSION["response"] = colorizeString($e->getMessage(), "error");
+    }
+    else
+    {
+        $_SESSION["response"] = $e->getMessage();
+    }
 }
 function closeProcess()
 {

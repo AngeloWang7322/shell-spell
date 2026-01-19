@@ -21,9 +21,9 @@ class Command
     public function __construct(
         $commandName,
         $tokenSyntax,
-        $validOptions,
-        $validKeyValueOptions,
-        $description,
+        $validOptions = [],
+        $validKeyValueOptions = [],
+        $description = "",
         $isWriter = false,
         $isReader = false,
         $commandParser = "parseCommand",
@@ -80,7 +80,7 @@ class Command
                 case TokenType::PATH:
                     {
                         $function = $this->pathParser;
-                        if (self::$function(explode("/", $arg),  $syntaxArray, $i) != false)
+                        if ((bool)self::$function(explode("/", $arg), $tokens, $syntaxArray, $i))
                         {
                             $_SESSION["tokens"]["path"][] = explode("/", $arg);
                         }
@@ -184,10 +184,6 @@ class Command
     static public function parsePath($path)
     {
         $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), ["hall", "/", "-", ".."]);
-        // if (countNonEmpty($path) != count($path))
-        // {
-        //     throw new Exception("empty path provided");
-        // }
         if (in_array($path[0], $validPathArgs))
         {
             return $path;
@@ -272,9 +268,17 @@ class Command
                         }
                 }
             }
+            else
+            {
+                throw new Exception("incorrect option given");
+            }
         }
         else
         {
+            if (next($syntaxArray) == NULL)
+            {
+                throw new Exception("invalid syntax");
+            }
             $argIndex--;
         }
     }
@@ -309,6 +313,38 @@ class Command
         }
 
         return false;
+    }
+    static public function parsePathRename($path, $tokens, &$syntaxArray, &$argIndex)
+    {
+
+        // if (substr($tokens[$argIndex], -1) != "/")
+        // {
+        //     $_SESSION["tokens"]["path"][] = array_slice($path, 0, -1);
+
+        //     if (!empty($_SESSION["tokens"]["path"][0]))
+        //     {
+        //         $_SESSION["tokens"]["misc"] =  end($path);
+        //         $_SESSION["tokens"]["path"][] = array_slice($path, 0, -1);
+        //         return false;
+        //     }
+        // }
+        // return self::parsePath($path);
+        if (substr($tokens[$argIndex], -1) != "/" && !empty($_SESSION["tokens"]["path"][0]))
+        {
+            $_SESSION["tokens"]["misc"] =  end($path);
+            $_SESSION["tokens"]["path"][] = array_slice($path, 0, -1);
+            return false;
+        }
+        else
+        {
+            $end = end($path);
+            if (end($path) == "")
+            {
+                $_SESSION["tokens"]["path"][] = self::parsePath(array_slice($path, 0, -1));
+                return false;
+            }
+            return self::parsePath($path);
+        }
     }
 }
 
@@ -348,6 +384,7 @@ function getCommand($command)
             [],
             [],
             "",
+            pathParser: "parsePathRename"
         ),
         "pwd" == $command
         => new Command(
@@ -362,18 +399,18 @@ function getCommand($command)
         => new Command(
             "ls",
             [TokenTYPE::OPTION, TokenType::PATH],
-            ["-l"],
+            ["-l", "-a"],
             [],
             "",
             true,
         ),
         "cp" == $command
         => new Command(
-            "cp",
-            [TokenTYPE::OPTION, TokenType::PATH, TokenType::PATH],
-            [],
-            [],
-            "",
+            commandName: "cp",
+            tokenSyntax: [TokenTYPE::OPTION, TokenType::PATH, TokenType::PATH],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "",
         ),
         "grep" == $command
         => new Command(
@@ -438,7 +475,7 @@ function getCommand($command)
             [],
             "",
             true,
-            pathParser: "parsePathnew",
+            pathParser: "parsePathNew",
         ),
         "wc" == $command
         => new Command(
@@ -472,6 +509,14 @@ function getCommand($command)
             true,
             true,
             pathParser: "parsePathOptional"
+        ),
+        "nano" == $command
+        => new Command(
+            "nano",
+            [TokenType::PATH],
+            [],
+            [],
+            "",
         ),
         default => throw new Exception("unknown command")
     };

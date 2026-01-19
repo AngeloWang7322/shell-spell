@@ -3,7 +3,7 @@ require_once __DIR__ . "/dbHelper.php";
 
 $host   = "localhost";
 $dbname = "cligame_db";
-$dbuser = "root";
+$dbuser = "shellspelladmin";
 $dbpass = "";
 $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 $options = [
@@ -22,3 +22,4 @@ catch (PDOException $e)
     $_SESSION["hasDbConnection"] = false;
     echo "Datenbank-Verbindung fehlgeschlagen: " . $e->getMessage();
 }
+

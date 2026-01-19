@@ -150,7 +150,7 @@ class DBHelper
             "command" => "> Welcome to ShellSpell !",
             "response" => "> Cast <p1>cat [scrollname]</p1> to read the scroll"
         ];
-        $_SESSION["tokens"] = [];
+        $_SESSION["pipeCount"] = 0;
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["curRoom"] = &$_SESSION["map"];
         $_SESSION["maxMana"] = 100;
@@ -172,6 +172,15 @@ class DBHelper
             requiredRole: ROLE::WANDERER,
             curDate: false,
         );
+        $tempMap->doors["hidden"] = new Room(
+            "hidden",
+            [],
+            [],
+            [],
+            ROLE::WANDERER,
+            false,
+            true,
+        );
         $tempMap->items["rippedPage.txt"] = new Scroll(
             "",
             "rippedPage",
@@ -186,6 +195,14 @@ class DBHelper
             ["hall"],
             Role::WANDERER,
             "",
+            false,
+        );
+        $tempMap->items["bread.txt"] = new Scroll(
+            "",
+            "bread",
+            ["hall"],
+            Role::WANDERER,
+            "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
             false,
         );
         $tempMap->items["bread.txt"] = new Scroll(
@@ -223,9 +240,6 @@ class DBHelper
             Role::WANDERER,
             "i don't know",
         );
-
-
-
 
 
         // $tempMap = new Room(

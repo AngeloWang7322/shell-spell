@@ -8,7 +8,6 @@ require_once "./../src/db/dbhelper.php";
 exitIfLoggedIn();
 
 $extraCss[] = "/assets/css/auth.css";
-$extraCss[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
 $title = "Log In";
 $errors = [];
 
@@ -50,12 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         <br>
         <div class="form-group">
             <label>
-                Password:
+                Password
                 <input class="form-control" type="password" name="password">
             </label>
         </div>
         <br>
-        <button class="btn btn-primary btn-lg" type="submit">Log In</button>
+        <button class="btn btn-danger btn-lg" type="submit">Log In</button>
     </form> <?php if (!empty($errors)): ?>
         <div class="errors" style="color:red;">
             <?php foreach ($errors as $e): ?>
@@ -66,6 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     <br>
     <div class="well"> No Account Yet? </div>
     <form action="register">
-        <button class="btn btn-primary btn-md">Register</button>
+        <button class="btn btn-danger btn-md">Register</button>
     </form>
 </div>

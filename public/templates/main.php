@@ -52,6 +52,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
             // ROOMS
             foreach ($_SESSION["curRoom"]->doors as $door)
             {
+                if ($door->isHidden && isset($_SESSION["displayAll"])) continue;
                 echo "
                 <div class='element-container'>
                     <div class='element door'></div>                        

@@ -12,6 +12,7 @@ class Room
 
     public ROLE $requiredRole;
     public string $timeOfLastChange;
+    public bool $isHidden;
 
     function __construct(
         $name,
@@ -20,6 +21,8 @@ class Room
         $items = [],
         $requiredRole = ROLE::WANDERER,
         $curDate = true,
+        $isHidden = false,
+        $date = NULL,
     )
     {
         $this->name = $name;
@@ -27,7 +30,11 @@ class Room
         $this->doors = $doors;
         $this->items = $items;
         $this->timeOfLastChange = generateDate($curDate);
+        $this->isHidden = $isHidden;
 
+        $this->timeOfLastChange = ($date == NULL) ?
+            generateDate($curDate) :
+            $date;
         //if statement nur im development noetig
         if ($name != "hall")
         {
@@ -71,6 +78,7 @@ class Room
             $items,
             $requiredRole,
             $data->timeOflastChange,
+            $data->isHidden
         );
     }
 }

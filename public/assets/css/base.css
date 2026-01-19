@@ -1,6 +1,9 @@
 body {
     padding: 0;
     margin: 0;
+    background-color: black;
+    overflow-y: hidden;
+    color: white;
 }
 
 :root {
@@ -19,6 +22,7 @@ main {
     min-height: 100vh;
     margin: 2rem auto;
 }
+
 
 button {
     padding: .6rem 1rem;
@@ -135,9 +139,11 @@ input {
     p {
         font-size: 32px;
     }
+
     h1 {
         font-size: 72px;
     }
+
     .icon-small {
         width: 34px;
         height: 34px;
@@ -147,7 +153,8 @@ input {
         width: 66px;
         height: 66x;
     }
-    .icon-large{
+
+    .icon-large {
         width: 84px;
         height: 84px;
     }

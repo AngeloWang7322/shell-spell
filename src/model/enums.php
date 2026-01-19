@@ -54,6 +54,7 @@ enum Commands: string
     case WC = "wc";
     case HEAD = "head";
     case TAIL = "tail";
+    case NANO = "nano";
 }
 
 enum TokenType: string

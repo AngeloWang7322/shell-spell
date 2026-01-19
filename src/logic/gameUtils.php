@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 function closeScroll()
 {
-
     unset($_SESSION["openedScroll"]);
 }
 function editScroll()
@@ -37,4 +36,9 @@ function exitIfNotLoggedIn()
         header(header: "Location: " . "/");
         exit;
     }
+}
+
+function canDisplay($room)
+{
+    return !$room->isHidden || isset($_SESSION["displayAll"]);
 }

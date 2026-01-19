@@ -82,19 +82,12 @@ function executeRm()
 
 function executeCp()
 {
-    $destinationRoom = getRoom($_SESSION["tokens"]["path"][1]);
-    $cpItem = getRoomOrItem($_SESSION["tokens"]["path"][0]);
-
-    if (is_a($cpItem, Room::class))
-    {
-        $destinationRoom->doors[$cpItem->name] = clone $cpItem;
-        updatePathsAfterMv($destinationRoom);
-    }
-    else
-    {
-        $destinationRoom->items[$cpItem->name] = clone $cpItem;
-        updateItemPaths($destinationRoom);
-    }
+    $destRoom = &getRoom($_SESSION["tokens"]["path"][1]);
+    copyElementsTo(
+        getMatchingElements(),
+        $destRoom
+    );
+    updatePaths($destRoom);
 }
 
 function executeMv()
@@ -122,11 +115,7 @@ function executeTouch()
     }
     if (key_exists($fileName, $destRoom->items))
     {
-        $touchFile = $destRoom->items[$fileName];
-        if (is_a($touchFile, Scroll::class))
-        {
-            $touchFile->openScroll();
-        }
+        $destRoom->items[$fileName]->timeOfLastChange = generateDate(true);
     }
     else
     {
@@ -165,7 +154,6 @@ function executeGrep()
 
 function executeExecute()
 {
-
     $itemExec = &getItem(explode("/", substr($_SESSION["tokens"]["command"], 2)));
     if (is_a($itemExec, Alter::class) || is_a($itemExec, Spell::class))
     {
@@ -218,4 +206,11 @@ function executeTail()
     $lines = getPartialArray($lines, false);
     $_SESSION["stdout"] = $lines;
     $_SESSION["response"] = arrayKeyValueToString($lines, " ");
+}
+
+function executeNano()
+{
+    $textFile = getItem($_SESSION["tokens"]["path"][0]);
+
+    openScrollIfIsScroll($textFile);
 }

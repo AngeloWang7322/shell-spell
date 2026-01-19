@@ -8,15 +8,15 @@ require __DIR__ . '/../src/model/items.php';
 require __DIR__ . '/../src/model/exceptions.php';
 require __DIR__ . '/../src/model/command.php';
 require __DIR__ . '/../src/model/enums.php';
-require __DIR__ . "/../src/logic/game.php";
+require __DIR__ . "/../src/logic/gameUtils.php";
 require __DIR__ . "/../src/logic/api.php";
-require __DIR__ . "/../src/db/db.php";
+require_once __DIR__ . "/../src/db/db.php";;
 require_once __DIR__ . "/../src/logic/terminal.php";
 require_once __DIR__ . "/../src/logic/terminalController.php";
 require_once __DIR__ . "/../src/logic/terminalUtils.php";
 
 session_start();
-// session_unset();          
+// session_unset();
 
 echo "<div class='ui'>";
 

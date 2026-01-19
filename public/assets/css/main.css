@@ -18,6 +18,8 @@
     padding: 16px 24px;
     background-color: rgba(49, 49, 49, 0.363);
     z-index: 5;
+    font-family: "Jersey 10";
+    font-weight: 300;
 }
 
 .history-container {
@@ -228,6 +230,9 @@
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
+}
+.error{
+    color: red;
 }
 
 .alter-inactive {
