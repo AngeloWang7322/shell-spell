@@ -7,6 +7,7 @@ class Item
     public Role $requiredRole;
     public array $path;
     public string $content = "";
+    public string $timeOfLastChange;
 
     public function __construct(
         $name,
@@ -14,6 +15,8 @@ class Item
         $path,
         $requiredRole = Role::WANDERER,
         $content = "gibberish",
+        $curDate = true,
+        $date = "",
     )
     {
         $this->name = $name;
@@ -21,6 +24,15 @@ class Item
         $this->requiredRole = $requiredRole;
         $this->path = $path;
         $this->content = $content;
+        $this->timeOfLastChange = $date;
+        if (!$date == "")
+        {
+            $this->timeOfLastChange = $date;
+        }
+        else
+        {
+            $this->timeOfLastChange = generateDate($curDate);
+        }
 
         if (empty($name))
         {
@@ -41,7 +53,9 @@ class Scroll extends Item
         $baseName,
         array $path = [],
         $requiredRole = Role::WANDERER,
-        string $content = ""
+        string $content = "",
+        $curDate = true,
+        $date = "",
     )
     {
         $this->type = ItemType::SCROLL;
@@ -51,7 +65,9 @@ class Scroll extends Item
             $baseName,
             $path,
             $requiredRole,
-            $content
+            $content,
+            $curDate,
+            $date,
         );
     }
     public static function fromArray(array $data)
@@ -62,14 +78,15 @@ class Scroll extends Item
             baseName: $data["baseName"],
             path: pathFromArray($data["path"]),
             requiredRole: $requiredRole,
-            content: $data['content']
+            content: $data['content'],
+            date: $data["timeOfLastChange"],
         );
     }
     function openScroll()
     {
-        $_SESSION["openedScroll"]->header = $this->name;
-        $_SESSION["openedScroll"]->content = $this->content;
-        $_SESSION["openedScroll"]->isOpen = true;
+        $_SESSION["openedScroll"]["header"] = $this->name;
+        $_SESSION["openedScroll"]["content"] = $this->content;
+        $_SESSION["openedScroll"]["path"] = $this->path;
     }
 }
 class Alter extends Item
@@ -85,11 +102,14 @@ class Alter extends Item
         $baseName,
         array $path = [],
         $requiredRole = Role::WANDERER,
+        $content,
         $isActive = true,
         $requiredElements = [],
         $newDoor,
         $spellReward = "",
-        $xpReward = 0
+        $xpReward = 0,
+        $curDate = true,
+        $date = "",
     )
     {
         $this->type = ItemType::ALTER;
@@ -104,6 +124,9 @@ class Alter extends Item
             $baseName,
             $path,
             $requiredRole,
+            $content,
+            $curDate,
+            $date,
         );
     }
     public function executeAction()
@@ -138,11 +161,13 @@ class Alter extends Item
             baseName: $data["baseName"],
             path: pathFromArray($data["path"]),
             requiredRole: ROLE::from($data["requiredRole"]),
+            content: $data["content"],
             isActive: $data["isActive"],
             requiredElements: $data["requiredElements"],
             newDoor: Room::fromArray($data["newDoor"]),
             spellReward: $data["spellReward"],
-            xpReward: $data["xpReward"]
+            xpReward: $data["xpReward"],
+            date: $data["timeOfLastChange"],
         );
     }
 }
@@ -154,7 +179,9 @@ class Spell extends Item
         $baseName,
         $path,
         $action = null,
-        $requiredRole = Role::WANDERER
+        $requiredRole = Role::WANDERER,
+        $curDate = true,
+        $date = ""
     )
     {
         $this->action = $action;
@@ -164,7 +191,10 @@ class Spell extends Item
             $name,
             $baseName,
             $path,
-            $requiredRole
+            $requiredRole,
+            "",
+            $curDate,
+            $date,
         );
     }
     public function executeAction()
@@ -193,28 +223,8 @@ class Spell extends Item
             path: pathFromArray($data["path"]),
             action: $action,
             requiredRole: $requiredRole,
+            date: $data["timeOfLastChange"]
         );
-    }
-}
-class Log extends Item
-{
-
-    public function __construct(
-        $name,
-        $baseName,
-        $requiredRole = Role::WANDERER,
-        string $content,
-    )
-    {
-        $this->name = $name;
-        $this->baseName = $baseName;
-        $this->requiredRole = $requiredRole;
-        $this->content = $content;
-        $this->type = ItemType::LOG;
-        if (empty($name))
-        {
-            $this->name = $baseName . "." . ItemType::SPELL->value;
-        }
     }
 }
 function pathFromArray($path)
@@ -224,4 +234,19 @@ function pathFromArray($path)
         $path = array_slice($path, 0, -1);
     }
     return $path;
+}
+function generateDate($curDate)
+{
+    if ($curDate)
+    {
+        return date("Y-m-d H:i:s", NULL);
+    }
+    return date("Y-m-d H:i:s", mktime(
+        rand(0, 24),
+        rand(0, 60),
+        rand(0, 60),
+        rand(1, 12),
+        rand(1, 30),
+        rand(1980 - (rand(1, 30)), 1980),
+    ));
 }

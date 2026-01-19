@@ -28,7 +28,6 @@ enum ItemType: string
     case SCROLL = "txt";
     case SPELL = "sh";
     case ALTER = "exe";
-    case LOG = "log";
 }
 enum ActionType: string
 {
@@ -49,12 +48,16 @@ enum Commands: string
     case ECHO = "echo";
     case EXECUTE = "execute";
     case MAN = "man";
+    case CAT = "cat";
+    case TOUCH = "touch";
+    case FIND = "find";
 }
 
 enum TokenType: string
 {
     case COMMAND = "command";
     case OPTION = "option";
+    case KEYVALUEOPTION = "keyvalueoption";
     case PATH = "path";
     case STRING = "string";
     case MISC = "misc";

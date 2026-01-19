@@ -9,20 +9,14 @@ function startTerminalProcess()
 {
     try
     {
-        $_SESSION["preserveState"] = false;
-        checkAndHandleSpecialCases();
-        prepareCommandExecution();
-        executeCommand();
+        manageExecution();
     }
     catch (Exception $e)
     {
-        editMana($e->getCode());
-        $_SESSION["response"] = $e->getMessage();
+        handleException($e);
     }
 
-    if ($_SESSION["preserveState"]) return;
-    writeResponse();
-    cleanUp();
+    closeProcess();
 }
 
 function executeCd()
@@ -55,9 +49,10 @@ function executeMkdir()
         $roomName = end($_SESSION["tokens"]["path"][$i]);
         $tempRoom = &getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1));
 
-        if (in_array($roomName, array_keys($tempRoom->doors)) && !isset($_SESSION["prompt"]))
+        if (in_array($roomName, array_keys($tempRoom->doors)) && !isset($_SESSION["promptData"]))
         {
-            createPrompt($roomName . " exists, are you sure you want to replace it?<br>y/n");
+            echo "<br>creating prompt";
+            createPrompt($roomName . " exists, are you sure you want to replace it?",);
         }
         $tempRoom->doors[$roomName] = new Room(
             name: $roomName,
@@ -68,15 +63,16 @@ function executeMkdir()
 }
 function executeLs()
 {
-    $tempRoom = getRoom($_SESSION["tokens"]["path"][0], true);
-    $lsArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-    $_SESSION["stdin"] = $lsArray;
-    $_SESSION["response"] = "- " . implode(", ", $lsArray);
+    $path = isset($_SESSION["tokens"]["path"][0]) ? $_SESSION["tokens"]["path"][0] : NULL;
+    $tempRoom = getRoom($path, true);
+    getLsArray($tempRoom);
 }
 
 function executePwd()
 {
-    $_SESSION["response"] = implode("/", $_SESSION["curRoom"]->path);
+    $pwd = implode("/", $_SESSION["curRoom"]->path);
+    $_SESSION["stdin"] = $pwd;
+    $_SESSION["response"] = $pwd;
 }
 
 function executeRm()
@@ -113,77 +109,74 @@ function executeMv()
 function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
-    if (is_a($catItem, SCROLL::class))
+    $_SESSION["response"] = $catItem->content;
+    $_SESSION["stdin"] = $catItem->content;
+}
+
+function executeTouch()
+{
+    $fileName = array_pop($_SESSION["tokens"]["path"][0]);
+
+    $destRoom = &getRoom($_SESSION["tokens"]["path"][0]);
+
+    if (!isNameValid($fileName, "." . ItemType::SCROLL->value))
     {
-        $catItem->openScroll();
+        throw new Exception("invalid name given");
     }
-    else if (is_a($catItem, LOG::class))
+    if (key_exists($fileName, $destRoom->items))
     {
-        $_SESSION["response"] = $catItem->content;
+        $touchFile = $destRoom->items[$fileName];
+        if (is_a($touchFile, Scroll::class))
+        {
+            $touchFile->openScroll();
+        }
     }
     else
     {
-        throw new Exception("item not readable");
+        $destRoom->items[$fileName] = new Scroll(
+            name: $fileName,
+            baseName: "",
+            path: $destRoom->path,
+            requiredRole: $_SESSION["user"]["role"],
+            content: "",
+            curDate: true
+        );
     }
 }
-
 function executeGrep()
 {
-    $grepElement = getRoomOrItem($_SESSION["tokens"]["path"][0]);
     $matchingLines = [];
     $searchMatching = true;
     $searchRecursive = false;
-    $caseInsensitive = false;
+    $isCaseInsensitive = false;
 
-    foreach ($_SESSION["tokens"]["options"] as $flag)
-    {
-        match ($flag)
-        {
-            "-v" => $searchMatching = false,
-            "-r" => $searchRecursive = true,
-            "-i" => $caseInsensitive = true,
-        };
-    }
+    getOptionsGrep(
+        $searchMatching,
+        $searchRecursive,
+        $isCaseInsensitive
+    );
 
-    if (is_a($grepElement, Room::class)) 
-    {
-        $matchingLines = grepDirectory(
-            room: $grepElement,
-            condition: $_SESSION["tokens"]["strings"][0],
-            searchMatching: $searchMatching,
-            searchRecursive: $searchRecursive,
-            caseInsensitive: $caseInsensitive,
-        );
-    }
-    else
-    {
-        $matchingLines = grepItem(
-            $grepElement,
-            $_SESSION["tokens"]["strings"][0]
-        );
-    }
+    $matchingLines = callCorrectGrepFunction(
+        $searchMatching,
+        $searchRecursive,
+        $isCaseInsensitive
+    );
 
-    foreach ($matchingLines as $key => $line)
-        $_SESSION["response"] .= $key . " " . $line;
+    $_SESSION["stdin"] = $matchingLines;
+    $_SESSION["response"] = arrayToString($matchingLines);
 }
 
 function executeExecute()
 {
-    if (strncmp($_SESSION["tokens"]["command"], "./", 2) == 0)
+
+    $itemExec = &getItem(explode("/", substr($_SESSION["tokens"]["command"], 2)));
+    if (is_a($itemExec, Alter::class) || is_a($itemExec, Spell::class))
     {
-        $itemExec = &getItem(explode("/", substr($_SESSION["tokens"]["command"], 2)));
-        if (is_a($itemExec, Alter::class) || is_a($itemExec, Spell::class))
-        {
-            $itemExec->executeAction();
-        }
-        else
-        {
-            throw new Exception("item not executable");
-        }
+        $itemExec->executeAction();
     }
     else
     {
-        throw new Exception("invalid command");
+        throw new Exception("item not executable");
     }
 }
 
@@ -195,5 +188,14 @@ function executeEcho()
 
 function executeFind()
 {
-    // $_SESSION =
+    $findString = "";
+    $findFunction = "";
+    $startingRoom = getRoom($_SESSION["tokens"]["path"][0]);
+    $findResult = [];
+
+    getOptionsFind($findFunction, $findString,);
+
+    $findResult = callFunctionOnRoomRec($startingRoom, "findByName", $findFunction, $findString);
+    $_SESSION["stdin"] = $findResult;
+    $_SESSION["response"] = implode("<br>", $findResult,);
 }

@@ -11,19 +11,23 @@ class Room
     public array $items = [];
 
     public ROLE $requiredRole;
+    public string $timeOfLastChange;
 
     function __construct(
         $name,
         array $path = [],
         $doors = [],
         $items = [],
-        $requiredRole = ROLE::WANDERER
+        $requiredRole = ROLE::WANDERER,
+        $curDate = true,
     )
     {
         $this->name = $name;
         $this->path = $path;
         $this->doors = $doors;
         $this->items = $items;
+        $this->timeOfLastChange = generateDate($curDate);
+
         //if statement nur im development noetig
         if ($name != "hall")
         {
@@ -65,11 +69,11 @@ class Room
             $path,
             $doors,
             $items,
-            $requiredRole
+            $requiredRole,
+            $data->timeOflastChange,
         );
     }
-    
 }
-function copyRoom(Room $room){
-
+function copyRoom(Room $room)
+{
 }

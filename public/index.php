@@ -2,75 +2,40 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/model/room.php';
 require __DIR__ . '/../src/model/user.php';
 require __DIR__ . '/../src/model/items.php';
 require __DIR__ . '/../src/model/exceptions.php';
 require __DIR__ . '/../src/model/command.php';
-require_once __DIR__ . '/../src/db/db.php';
-require_once __DIR__ . '/../src/db/dbhelper.php';
 require __DIR__ . '/../src/model/enums.php';
 require __DIR__ . '/../src/logic/upload.php';
+require __DIR__ . "/../src/logic/game.php";
+require __DIR__ . "/../src/logic/api.php";
+require __DIR__ . "/../src/db/db.php";
 require_once __DIR__ . "/../src/logic/terminal.php";
-require_once __DIR__ . "/../src/logic/terminalHelper.php";
+require_once __DIR__ . "/../src/logic/terminalController.php";
+require_once __DIR__ . "/../src/logic/terminalUtils.php";
 
-if ($_SESSION["hasDbConnection"]) {
-    $dbHelper = new DBHelper($pdo);
-}
 session_start();
-session_unset();        
+// session_unset();          
 
-if (!isset($_SESSION["history"])) {
+echo "<div class='ui'>";
+
+if (!isset($_SESSION["map"]))
+{
     DBHelper::loadDefaultSession();
 }
 
-$_SESSION["curRoom"];
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"])) {
-    switch ($_POST["action"]) {
-        case "enterCommand": {
-
-                startTerminalProcess();
-                break;
-            }
-        case "loadMap": {
-            $dbHelper->loadGameState($_POST["mapId"]);
-            header("Location: /");
-            exit;
-        }
-        case "closeScroll": {
-            require __DIR__ . "/../src/logic/game.php";
-            break;
-        }
-        case "newMap": {
-            $dbHelper->createGameState($_POST["newMapName"]);
-            header("Location: /");
-            exit;
-        }
-        case "deleteMap": {
-            $dbHelper->deleteGameState($_POST["mapId"]);
-            break;
-        }
-        case "uploadFile": {
-
-        }
-            $dbHelper->deleteGameState($_POST["mapId"]);
-            break;
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
+{
+    if (in_array($_POST["action"], getValidActions()))
+    {
+        ($_POST["action"])($dbHelper);
     }
-
-    // header("Location: " . $_SERVER["REQUEST_URI"]);
+    // header(header: "Location: " . $_SERVER["REQUEST_URI"]);
     // exit;
 }
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-
-    if ($path === "profile" && isset($_POST["upload_profile_pic"])) {
-        handleProfilePicUpload();
-        header("Location: /profile");
-        exit;
-    }
-}
+echo "</div>";
 
 $routes = [
     '' => 'main.php',
@@ -85,11 +50,18 @@ $routes = [
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = trim($path, '/');
 
-if (isset($routes[$path])) {
+if (isset($routes[$path]))
+{
     require __DIR__ . '/templates//' . $routes[$path];
-} else {
+}
+else
+{
     require __DIR__ . '/templates//' . $routes['notfound'];
 }
 
-require __DIR__ . '/assets/footer.php';
+
+$start = hrtime(as_number: true);
 require __DIR__ . '/assets/layout.php';
+echo "<div class='ui'";
+$end = hrtime(true);
+echo "<br>layout: " . (($end - $start) / 1000000) . "ms</div>";

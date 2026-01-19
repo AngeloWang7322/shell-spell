@@ -1,6 +1,6 @@
 .game-container {
-    height: 100vh;
-    overflow: hidden;
+    max-height: 100vh;
+    overflow-y: scroll;
 }
 
 .spellbook-wrapper {
@@ -8,34 +8,38 @@
     flex-direction: column;
     justify-content: end;
     align-items: start;
-    position: absolute;
-    bottom: -8%;
+    position: fixed;
+    bottom: 50px;
     left: 50%;
-    transform: translate(-50%, -50%);
-    height: 340px;
-    width: 852px;
+    transform: translate(-50%, 0%);
+    width: 952px;
+    height: fit-content;
+    max-height: 300px;
     padding: 16px 24px;
     background-color: rgba(49, 49, 49, 0.363);
-    overflow: hidden;
     z-index: 5;
 }
 
 .history-container {
-    display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
-    word-break:break-all;
+    word-break: break-all;
     overflow-y: scroll;
+    overflow-x: normal;
+    overflow-wrap: anywhere;
+    white-space: normal;
     text-wrap-mode: wrap;
     justify-content: end;
     width: 100%;
-    height: 100%;
+    height: fit-content;
 }
-.base-string{
+
+.base-string {
     text-wrap-mode: nowrap;
     width: fit-content;
 }
-.input-line {
 
+.input-line {
     display: flex;
     flex-direction: row;
     align-items: end;
@@ -63,15 +67,15 @@
 }
 
 .mana-display-container {
-    display: flex;
+    display: fixed;
     flex-direction: row;
     position: absolute;
-    bottom: 0%;
+    bottom: -38px;
     left: 50%;
     transform: translate(-50%, -50%);
     align-items: center;
-    width: 700px;
-    height: 34px;
+    width: 100%;
+    height: 28px;
     background-color: rgba(255, 255, 255, 0.164);
 }
 
@@ -82,11 +86,13 @@
 
 .mana-text {
     position: absolute;
+    margin-top: -2px;
     left: 50%;
     transform: translate(-50%, 0%);
 }
 
 .scroll-container {
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -95,8 +101,8 @@
     padding: 16px 32px;
     top: 50%;
     left: 50%;
-    width: 700px;
-    height: 700px;
+    height: 80vh;
+    width: 80vh;
     transform: translate(-50%, -50%);
     image-rendering: pixelated;
     background-image: url("../images/scroll.png");
@@ -110,11 +116,13 @@
     width: 100%;
     font-size: 46px;
     text-align: center;
+    margin-top: -8vh;
+    color: white;
 }
 
 .scroll-content {
-    width: 55%;
     height: 100%;
+    width: 50%;
     font-size: 28px;
     text-align: center;
     text-justify: center;
@@ -122,8 +130,27 @@
     justify-content: center;
 }
 
+.file-text-input {
+    width: 100%;
+    height: 90%;
+    font-size: 18px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0px;
+    text-align: center;
+}
+
+.file-text-input:focus {
+    outline: none !important;
+    border: 0px;
+    border: rgba(255, 255, 255, 0.062);
+}
+
 .elements-container {
     margin-top: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .elements-wrapper {
@@ -131,6 +158,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    padding-bottom: 50vh;
 }
 
 .element-container {
@@ -138,7 +166,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 12px 84px;
+    margin: 12px 44px;
     min-width: 50px;
 }
 
@@ -212,11 +240,10 @@
 
 .header-wrapper {
     display: flex;
-    width: 98vw;
-    flex-direction: row;
-    margin-top: 16px;
-    position: absolute;
+    width: 95vw;
     justify-content: space-between;
+    flex-direction: row;
+    margin: 16px 24px;
     background-color: rgba(255, 255, 255, 0);
     font-size: 16px;
     height: 32px;
@@ -254,4 +281,48 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+}
+
+.backdrop {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.575);
+}
+
+@media (max-width: 1200px) {
+    .spellbook-wrapper {
+        max-height: 30vh;
+    }
+
+    .header-wrapper {
+        width: 92vw;
+    }
+
+    .door {
+        width: 22vw;
+        height: 22vw;
+        margin: 12px -34px;
+    }
+
+    .item {
+        width: 12vw;
+        height: 12vw;
+        margin: 12px -34px;
+    }
+
+    .title-container {
+        font-size: 32px;
+    }
+
+    .header-element {
+        height: 52px;
+        width: 160px;
+        font-size: 32px;
+    }
+
+    .command-input {
+        height: 34px;
+    }
 }

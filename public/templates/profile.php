@@ -1,24 +1,20 @@
 <?php
 
 declare(strict_types=1);
-
-$extraCss[] = "profile.css";
+exitIfNotLoggedIn();
+$extraCss[] = "/assets/css/profile.css";
 
 ?>
-<div class="page-content">
-
+<div class="page-content">  
     <div class="ui-wrapper">
         <a href="/">
             <div class="back-button">
-                <img class="icon-large" src="/assets/images/icon_back_white.png" alt="back">
+                <img class="icon-medium" src="/assets/images/icon_back_white.png" alt="back">
             </div>
         </a>
     </div>
     Profile
     <div class="profile-picture-container">
-        <?php 
-            $pic = $_SESSION["profile_pic"] ?? "/uploads/default.png";
-        ?>
         <?php
             $default = "/uploads/profile_pics/default.png";
             $pic = $_SESSION["profile_pic"] ?? $default;
@@ -30,4 +26,6 @@ $extraCss[] = "profile.css";
             <button type="submit" name="upload_profile_pic">Upload</button>
         </form>
     </div>
+
+    <h1>Profile</h1>
 </div>

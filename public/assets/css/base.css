@@ -1,3 +1,8 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
 :root {
     font-family:
         "Pixelify Sans"
@@ -9,11 +14,6 @@
     padding: 0;
 }
 
-body {
-    padding: 0;
-    margin: 0;
-}
-
 main {
     max-width: 800px;
     min-height: 100vh;
@@ -22,6 +22,11 @@ main {
 
 button {
     padding: .6rem 1rem;
+}
+
+.ui {
+    margin-top: 20px;
+    position: absolute;
 }
 
 .page-content {
@@ -53,16 +58,24 @@ button {
     height: 100vh;
 }
 
+p1 {
+    color: rgb(255, 201, 209);
+}
+
+.wanderer {
+    color: rgb(253, 250, 199);
+}
+
 .apprentice {
-    color: rgb(235, 206, 42);
+    color: rgb(171, 253, 139);
 }
 
 .archivist {
-    color: rgb(48, 181, 199);
+    color: rgb(109, 232, 248);
 }
 
 .conjurer {
-    color: rgb(150, 48, 218);
+    color: rgb(165, 117, 255);
 }
 
 .root {
@@ -98,19 +111,44 @@ form {
         "Pixelify Sans"
     ;
 }
-button{
-        font-family:
+
+button {
+    font-family:
         "Pixelify Sans"
     ;
     color: white;
 }
+
 input {
     font-family:
         "Pixelify Sans"
     ;
     font-size: 22px;
 }
-::-webkit-scrollbar{
+
+::-webkit-scrollbar {
     width: 4px;
     background-color: gray;
+}
+
+@media (max-width: 1200px) {
+    p {
+        font-size: 32px;
+    }
+    h1 {
+        font-size: 72px;
+    }
+    .icon-small {
+        width: 34px;
+        height: 34px;
+    }
+
+    .icon-medium {
+        width: 66px;
+        height: 66x;
+    }
+    .icon-large{
+        width: 84px;
+        height: 84px;
+    }
 }

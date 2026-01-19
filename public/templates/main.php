@@ -1,9 +1,9 @@
 <?php
 $title = "Shell spell";
-$extraCss[] = 'main.css';
+$extraCss[] = '/assets/css/main.css';
 $script = "main.js";
 
-$baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp";
+$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["user"]["role"]->value);
 ?>
 
 <div class="game-container">
@@ -11,23 +11,25 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
         <div class="header-group">
             <div class="title-container">
                 Shell Spell
-                <img src="../assets/images/favicon-32x32.png">
+                <img class="icon-medium" src="../assets/images/favicon-32x32.png">
             </div>
         </div>
         <div class="header-group">
             <?php
+            //HEADER
             if (!isset($_SESSION["user"]["id"]))
             {
-                echo '            <a href="register">
+                echo '            
+            <a href="register">
                 <div class="header-element">
                     Register
-                    <img class="icon" src="../assets/images/icon_register_white.png" alt="register_icon">
+                    <img class="icon-small" src="../assets/images/icon_register_white.png" alt="register_icon">
                 </div>
             </a>            
             <a href="login">
                 <div class="header-element">
                     Sign In
-                    <img class="icon" src="../assets/images/icon_profile_white.png" alt="profile_icon">
+                    <img class="icon-small" src="../assets/images/icon_profile_white.png" alt="profile_icon">
                 </div>
             </a>';
             }
@@ -37,7 +39,7 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
             <a href="profile">
                 <div class="header-element">
                     Profile
-                    <img class="icon-medium" src="../assets/images/icon_profile_white.png" alt="profile_icon">
+                    <img class="icon-small" src="../assets/images/icon_profile_white.png" alt="profile_icon">
                 </div>
             </a>';
             }
@@ -47,6 +49,7 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
     <div class="elements-container">
         <div class="elements-wrapper">
             <?php
+            // ROOMS
             foreach ($_SESSION["curRoom"]->doors as $door)
             {
                 echo "
@@ -55,17 +58,10 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
                     <p class='element-name " . $door->requiredRole->value . "'>" . $door->name . "</p> 
                 </div>";
             }
-            ?>
-        </div>
-        <div class="elements-wrapper">
-            <?php
             foreach ($_SESSION["curRoom"]->items as $item)
             {
                 $itemClasses = $item->type->value;
-                if ($item->type == ItemType::ALTER && !$item->isActive)
-                {
-                    $itemClasses .= " alter-inactive";
-                }
+                if ($item->type == ItemType::ALTER && !$item->isActive) $itemClasses .= " alter-inactive";
                 echo "
                 <div class='element-container'>
                     <div class='element item " . $itemClasses . "'> </div>
@@ -76,10 +72,28 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
             ?>
         </div>
     </div>
+    <?php
+    //SCROLL
+    if (isset($_SESSION["openedScroll"]))
+    {
+        echo '
+        <div class="backdrop"></div>
+        <div class="scroll-container">
+            <div class="header-container">
+                <h1 class="scroll-header">' . $_SESSION["openedScroll"]["header"] . '</h1>
+            </div>
+            <form class="scroll-content" method="post">
+                <input type="hidden" value="editScroll" name="action">
+                <input name="newFileContent" class="file-text-input" autofocus autocomplete="off" value="' . $_SESSION["openedScroll"]["content"] . '"></input>
+            </form>
+        </div>';
+    }
+    ?>
     <div class="ui-wrapper">
         <div class="spellbook-wrapper">
             <div class="history-container">
                 <?php
+                //HISTORY
                 for ($i = 0; $i < count($_SESSION["history"]); $i++)
                     echo "<p class='prev-command'>"
                         . $_SESSION["history"][$i]["directory"]
@@ -91,6 +105,7 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
             <div class="input-line">
                 <div class="base-string">
                     <?php
+                    //INPUT LINE
                     echo $baseString;
                     ?>
                 </div>
@@ -100,38 +115,32 @@ $baseString = " [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["r
                     <input name="command" class="command-input" type="text" autocomplete="off" autofocus>
                 </form>
             </div>
-        </div>
-        <div class="mana-display-container">
-            <div class="mana-bar" style="width:
-            <?php
-            echo $_SESSION["curMana"] / $_SESSION["maxMana"] * 100;
-            ?>%;">
+            <div class="mana-display-container">
+                <div class="mana-bar" style="width:
+                <?php
+                //MANA
+                echo $_SESSION["curMana"] / $_SESSION["maxMana"] * 100;
+                ?>%;">
+                    <h3 class="mana-text">
+                        MANA
+                    </h3>
+                </div>
+
             </div>
-            <h3 class="mana-text">
-                MANA
-            </h3>
         </div>
+
     </div>
-    <div class="scroll-container" style="visibility: 
-    <?php
-    if ($_SESSION["openedScroll"]->isOpen)
-    {
-        echo "visible";
-    }
-    else
-    {
-        echo "hidden";
-    }
-    ?>;">
-        <div class="header-container">
-            <h1 class="scroll-header">
-                <?php echo $_SESSION["openedScroll"]->header; ?>
-            </h1>
-        </div>
-        <div class="scroll-content">
-            <p>
-                <?php echo $_SESSION["openedScroll"]->content; ?>
-            </p>
-        </div>
-    </div>
+
 </div>
+<script>
+    window.addEventListener("load", () => {
+        const history = document.querySelector(".history-container");
+        const lastLine = history.lastElementChild;
+        if (lastLine) {
+            lastLine.scrollIntoView({
+                behavior: "auto",
+                block: "end"
+            });
+        }
+    });
+</script>

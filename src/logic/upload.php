@@ -12,8 +12,8 @@ function handleProfilePicUpload(): void
 
     $file = $_FILES["profile_pic"];
 
-    if (($file["size"] ?? 0) > 3 * 1024 * 1024) {
-        $_SESSION["upload_error"] = "File too large (max 3MB).";
+    if (($file["size"] ?? 0) > 10 * 1024 * 1024) {
+        $_SESSION["upload_error"] = "File too large (max 10MB).";
         return;
     }
 
@@ -53,7 +53,14 @@ function handleProfilePicUpload(): void
     $filename = "profile_" . bin2hex(random_bytes(8)) . "." . $ext;
 
     $destFsPath = $uploadDir . "/" . $filename;            
-    $destUrlPath = "/uploads/profile_pics/" . $filename;   
+    $destUrlPath = "/uploads/profile_pics/" . $filename;  
+    
+    if (!empty($_SESSION["profile_pic"])) {
+    $old = $publicDir . $_SESSION["profile_pic"]; 
+    if (is_file($old)) {
+        @unlink($old);
+    }
+}
 
     if (!move_uploaded_file($file["tmp_name"], $destFsPath)) {
         $_SESSION["upload_error"] = "Server error: could not save file.";
