@@ -9,8 +9,10 @@ Funcionalities
     RM:
         - Remove Element
         - multiple at once
+        - select multiple via *wildcard
     MV:
         - move element
+        - rename files
         - prompt before replacing
     PWD:
         - print working directory
