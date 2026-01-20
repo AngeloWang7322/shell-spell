@@ -10,16 +10,17 @@ function getValidActions()
         "deleteMap",
         "loadMap",
         "newMap",
-        "uploadProfilePic"
+        "uploadProfilePic",
+        "logoutUser"
     ];
 }
 function enterCommand($dbHelper)
 {
     $_POST["command"] = trim($_POST["command"], " ");
     $_SESSION["inputCommand"] = $_POST["command"];
+    $_SESSION["backUpMap"] = $_SESSION["map"];
 
     if ($_POST["command"] == "") return;
-
 
     $start = hrtime(as_number: true);
     startTerminalProcess();
@@ -55,10 +56,17 @@ function newMap($dbHelper)
 }
 function uploadProfilePic($dbHelper)
 {
-    $path = handleProfilePicUpload(); 
-    if ($path !== null && !empty($_SESSION["isLoggedIn"])) {
+    $path = handleProfilePicUpload();
+    if ($path !== null && !empty($_SESSION["isLoggedIn"]))
+    {
         $dbHelper->setUserProfilePic($_SESSION["user"]["id"], $path);
     }
     header("Location: /profile");
+    exit;
+}
+
+function logoutUser(){
+    session_unset();
+    header("Location: /");
     exit;
 }

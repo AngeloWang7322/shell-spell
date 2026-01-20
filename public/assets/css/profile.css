@@ -1,34 +1,96 @@
-.ui-wrapper {
+.profile-picture-wrapper {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 95%;
+    flex-direction: column;
+    justify-content: center;
 }
-.page-content {
-    justify-content: start;
-    align-items: center;
-}
-.back-button {
-}
+
 .profile-picture-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    object-fit: cover;
+    width: 164px;
+    height: 164px;
+    position: relative
 }
+
 .profile-picture {
+    display: flex;
     width: 180px;
-    height:  180px;
+    height: 180px;
     object-fit: cover;
     border-radius: 50%;
     border: 3px solid #444;
     background-color: #222;
-
 }
+
+.upload-input {
+    position: absolute;
+}
+
 .profile-upload-form {
     margin-top: 20px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 12px;
+}
+
+.select-file-button {
+    position: absolute;
+    z-index: 10;
+    width: 42px;
+    height: 42px;
+    background-color: rgb(255, 255, 255);
+    image-rendering: pixelated;
+    top: 20%;
+    left: 80%;
+    transform: translate(-20%, -80%);
+    border-radius: 50%;
+    overflow: hidden;
+
+    .icon {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 20;
+        width: 90%;
+    }
+}
+
+.select-file-button:hover {
+    box-shadow: 2px 4px 0px rgb(82, 82, 82);
+    transform: translate(-22%, -82%);
+}
+
+
+.file-status-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .file-status{
+        margin: 0px;
+        padding: 0px;
+    }
+    .img-preview{
+        width: 34px;
+    }
+}
+.select-map-container{
+    display: flex;
+    position: fixed;
+    left: 50%;
+    top: 55%;
+    transform: translate(-50%, -50%);
+    justify-content: center;
+    margin-top: 64px;
+    font-size: 42px;
+}
+.name-container{
+    text-wrap-mode: nowrap;
 }

@@ -6,9 +6,15 @@ body {
     color: white;
 }
 
+button {
+    padding: .6rem 1rem;
+    border: 0px;
+    text-shadow: none;
+}
+
 :root {
     font-family:
-        "Pixelify Sans"
+        "Jersey 10"
     ;
     background-color: black;
     color: white;
@@ -17,15 +23,15 @@ body {
     padding: 0;
 }
 
+p,
+body {
+    font-family: "Jersey 10";
+}
+
 main {
     max-width: 800px;
     min-height: 100vh;
     margin: 2rem auto;
-}
-
-
-button {
-    padding: .6rem 1rem;
 }
 
 .ui {
@@ -35,23 +41,28 @@ button {
 
 .page-content {
     display: flex;
-    justify-content: center;
+    position: relative;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%, -50%);
     align-items: center;
     flex-direction: column;
     min-height: 100vh;
-    padding-top: 32px;
 }
 
 .icon-small {
     width: 18px;
+    image-rendering: pixelated;
 }
 
 .icon-medium {
-    width: 24px;
+    width: 30px;
+    image-rendering: pixelated;
 }
 
 .icon-large {
-    width: 36px;
+    width: 52px;
+    image-rendering: pixelated;
 }
 
 .center-wrapper {
@@ -61,6 +72,45 @@ button {
     align-items: center;
     height: 100vh;
 }
+
+.button-medium {
+    background-color: rgb(119, 25, 25);
+    text-shadow: 2px 4px 0px black;
+
+    * {
+        transform: translate(-1px, -2px);
+    }
+}
+
+.button-medium:hover {
+    box-shadow: 2px 4px 0px rgb(61, 11, 11);
+    transform: translate(-2px, -4px);
+    text-shadow: 1px 2px 4px black;
+
+    * {
+        transform: translate(1px, 2px);
+    }
+}
+
+.button-large {
+    background-color: rgb(119, 25, 25);
+    text-shadow: 4px 8px 0px rgba(0, 0, 0, 0.644);
+
+    * {
+        transform: translate(-2px, -4px);
+    }
+}
+
+.button-large:hover {
+    box-shadow: 4px 8px 0px rgb(61, 11, 11);
+    transform: translate(-4px, -8px);
+    text-shadow: 1px 2px 4px black;
+
+    * {
+        transform: translate(2px, 4px);
+    }
+}
+
 
 p1 {
     color: rgb(255, 201, 209);
@@ -88,9 +138,12 @@ p1 {
 
 .page-title {
     z-index: 9999;
-    position: fixed;
+    margin-bottom: 64px;
     top: 7vh;
-    font-size: 42px;
+    font-size: 57px;
+    font-family: "Jersey 10";
+    text-shadow: 2px 4px 0px rgb(102, 102, 102);
+    margin-top: -32px;
 }
 
 .hidden-button {
@@ -110,22 +163,16 @@ a {
     padding: 0;
 }
 
-form {
-    font-family:
-        "Pixelify Sans"
-    ;
-}
-
 button {
     font-family:
-        "Pixelify Sans"
+        "Jersey 10"
     ;
     color: white;
 }
 
 input {
     font-family:
-        "Pixelify Sans"
+        "Jersey 10"
     ;
     font-size: 22px;
 }
@@ -136,8 +183,8 @@ input {
 }
 
 @media (max-width: 1200px) {
-    p {
-        font-size: 32px;
+    body {
+        font-size: 40px;
     }
 
     h1 {

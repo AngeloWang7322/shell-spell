@@ -5,15 +5,19 @@ Funcionalities
     MKDIR:
         - Make Directory
         - multiple at one
-        - prompt before replacing
+        - throws if dir exists
     RM:
         - Remove Element
         - multiple at once
         - select multiple via *wildcard
+        - throws if would delete higher Ranked
+    CP:
+        - copy element
+        - prompt before replacing
     MV:
         - move element
         - rename files
-        - prompt before replacing
+        - prompt before replacingthrows if
     PWD:
         - print working directory
         - writes to stdout
@@ -21,8 +25,6 @@ Funcionalities
         - list elements 
         - -l long format 
         - writes to stdout 
-    CP:
-        - copy element
     GREP:
         - filter 
         - -r search recursively 
@@ -45,7 +47,7 @@ Funcionalities
         - get file content
         - writes to stdout
     FIND: 
-        - get all paths
+        - get all paths when no argument provided
         - filter by name 
         - search name wildcard
         - writes to stdout

@@ -18,7 +18,6 @@ require_once __DIR__ . "/../src/logic/terminalUtils.php";
 
 session_start();
 // session_unset();
-
 echo "<div class='ui'>";
 
 if (!isset($_SESSION["map"]))
@@ -42,7 +41,7 @@ $routes = [
     'login' => 'login.php',
     'register' => 'authentication.php',
     'profile' => 'profile.php',
-    'selection' => 'gameStateSelection.php',
+    'menu' => 'gameStateSelection.php',
     'notfound' => 'notfound.php',
     'newgame' => 'createNewGame.php',
 ];
@@ -52,6 +51,7 @@ $path = trim($path, '/');
 
 if (isset($routes[$path]))
 {
+    require __DIR__ . "/assets/header.php";
     require __DIR__ . '/templates//' . $routes[$path];
 }
 else

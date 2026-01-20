@@ -1,6 +1,7 @@
 .game-container {
-    max-height: 100vh;
+    max-height: 95vh;
     overflow-y: scroll;
+    font-family: "Jersey 10";
 }
 
 .spellbook-wrapper {
@@ -9,16 +10,17 @@
     justify-content: end;
     align-items: start;
     position: fixed;
-    bottom: 50px;
+    bottom: 5%;
     left: 50%;
     transform: translate(-50%, 0%);
     width: 952px;
     height: fit-content;
+    max-width: 80%;
     max-height: 300px;
     padding: 16px 24px;
     background-color: rgba(49, 49, 49, 0.363);
-    z-index: 5;
-    font-family: "Jersey 10";
+    border: 4px ;
+    z-index: 100;
     font-weight: 300;
 }
 
@@ -69,12 +71,11 @@
 }
 
 .mana-display-container {
-    display: fixed;
     flex-direction: row;
-    position: absolute;
-    bottom: -38px;
+    position: fixed;
+    bottom: -5%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 50%);
     align-items: center;
     width: 100%;
     height: 28px;
@@ -88,18 +89,19 @@
 
 .mana-text {
     position: absolute;
-    margin-top: -2px;
+    margin-top: 1px;
     left: 50%;
-    transform: translate(-50%, 0%);
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .scroll-container {
-    z-index: 9999;
+    position: absolute;
+    z-index: 1000;
     display: flex;
     flex-direction: column;
     justify-content: start;
     align-items: center;
-    position: absolute;
     padding: 16px 32px;
     top: 50%;
     left: 50%;
@@ -123,22 +125,33 @@
 }
 
 .scroll-content {
-    height: 100%;
-    width: 50%;
+    margin-left: 44px;
+    height: 90%;
+    width: 55%;
     font-size: 28px;
     text-align: center;
     text-justify: center;
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
 
 .file-text-input {
-    width: 100%;
+    width: 90%;
     height: 90%;
     font-size: 18px;
+    margin-top: 40px;
     background-color: rgba(0, 0, 0, 0);
+    word-break: normal;
+    text-wrap-mode: wrap;
+    overflow-wrap: anywhere;
+    overflow-y: scroll;
     border-width: 0px;
-    text-align: center;
+    text-align: left;
+}
+
+.file-text-input::-webkit-scrollbar {
+    width: 0px;
 }
 
 .file-text-input:focus {
@@ -147,8 +160,45 @@
     border: rgba(255, 255, 255, 0.062);
 }
 
+.save-scroll-button {
+    position: absolute;
+    width: fit-content;
+    z-index: 1000;
+    margin: 0;
+    padding: 12, 16px;
+    left: 50%;
+    bottom: 0%;
+    transform: translate(-50%, -5%);
+    background-color: rgba(240, 255, 255, 0);
+    border-width: 0px;
+}
+
+.save-scroll-button::before {
+    content: '';
+    z-index: -10;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.74);
+    /* background: radial-gradient(100deg, #3B53D6,#4AFAFA); */
+    filter: blur(15px);
+}
+
+.save-scroll-button:hover {
+    color: rgb(218, 218, 218);
+    font-size: 50px;
+
+}
+
+.save-scroll-button:hover::before {
+    background-color: rgba(56, 56, 56, 0.74);
+    filter: blur(25px);
+}
+
 .elements-container {
-    margin-top: 64px;
+    margin-top: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -165,12 +215,26 @@
 
 .element-container {
     display: flex;
+    z-index: 10;
     flex-direction: column;
-    justify-content: center;
+    justify-content: end;
+    font-size: 32px;
     align-items: center;
-    margin: 12px 44px;
+    margin: 12px 22px;
     min-width: 50px;
 }
+
+/* .element-container::before {
+    position: absolute;
+    z-index: -10;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.932);
+    background: radial-gradient(100deg, #3B53D6,#4AFAFA);
+    filter: blur(15px);
+} */
 
 .element-name {
     text-justify: center;
@@ -184,8 +248,8 @@
 
 .element {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: end;
+    align-items: end;
     height: 150px;
     min-width: 150px;
     text-align: center;
@@ -231,7 +295,8 @@
     background-size: contain;
     background-repeat: no-repeat;
 }
-.error{
+
+.error {
     color: red;
 }
 
@@ -243,88 +308,33 @@
     background-repeat: no-repeat;
 }
 
-.header-wrapper {
-    display: flex;
-    width: 95vw;
-    justify-content: space-between;
-    flex-direction: row;
-    margin: 16px 24px;
-    background-color: rgba(255, 255, 255, 0);
-    font-size: 16px;
-    height: 32px;
-}
-
-.header-group {
-    display: flex;
-    flex-direction: row;
-    margin: 0px 0px;
-    gap: 24px;
-}
-
-.header-element {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
-    padding: 4px 12px;
-    background-color: rgb(51, 51, 51);
-    border-radius: 2px;
-    gap: 12px;
-}
-
-.header-element:hover {
-    background-color: rgb(145, 145, 145);
-}
-
-.icon {
-    width: 28px;
-}
-
-.title-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-}
-
-.backdrop {
-    position: fixed;
-    top: 0;
-    height: 100vh;
-    width: 100vw;
-    background-color: rgba(0, 0, 0, 0.575);
-}
-
 @media (max-width: 1200px) {
     .spellbook-wrapper {
         max-height: 30vh;
     }
 
-    .header-wrapper {
-        width: 92vw;
+    .element-container {
+        font-size: 50px;
     }
 
     .door {
         width: 22vw;
         height: 22vw;
-        margin: 12px -34px;
+        margin: 12px -48px;
     }
 
     .item {
         width: 12vw;
         height: 12vw;
-        margin: 12px -34px;
+        margin: 12px -48px;
     }
 
-    .title-container {
-        font-size: 32px;
+    .mana-display-container {
+        height: 50px;
     }
 
-    .header-element {
-        height: 52px;
-        width: 160px;
-        font-size: 32px;
+    .mana-text {
+        font-size: 42px;
     }
 
     .command-input {

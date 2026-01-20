@@ -62,13 +62,13 @@ class Command
                 case TokenType::COMMAND:
                     {
                         $function = $this->commandParser;
-                        $_SESSION["tokens"]["command"] = self::$function($arg);
+                        $_SESSION["tokens"]["command"] = self::$function($arg, $tokens, $syntaxArray, $i);
                         break;
                     }
                 case TokenType::OPTION:
                     {
                         $function = $this->optionParser;
-                        self::$function($arg, $syntaxArray, $i);
+                        self::$function($arg, $tokens, $syntaxArray, $i);
                         break;
                     }
                 case TokenType::KEYVALUEOPTION:
@@ -83,6 +83,7 @@ class Command
                         if ((bool)self::$function(explode("/", $arg), $tokens, $syntaxArray, $i))
                         {
                             $_SESSION["tokens"]["path"][] = explode("/", $arg);
+                            $_SESSION["tokens"]["pathStr"][] = $arg;
                         }
                         break;
                     }
@@ -185,7 +186,7 @@ class Command
     {
         $validChars = array_merge($validChars, ["hall", "/", "-", ".."]);
         $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), $validChars);
-        
+
         return
             in_array($path[0], $validPathArgs) ||
             count($path) == 1 && !empty(getWildCardStringAndFunction($path[0]))
@@ -229,7 +230,7 @@ class Command
                 }
         }
     }
-    public function parseOption($arg, &$syntaxArray, &$argIndex)
+    public function parseOption($arg, $tokens, &$syntaxArray, &$argIndex)
     {
         if (substr($arg, 0, 1) == '-')
         {
@@ -237,6 +238,9 @@ class Command
             {
                 $_SESSION["tokens"]["options"][] = $arg;
                 prev($syntaxArray);
+            }
+            else{
+                throw new Exception ("invalid option '" . $tokens[$argIndex]. "'");
             }
         }
         else
@@ -320,15 +324,15 @@ class Command
         {
             $_SESSION["tokens"]["misc"] =  end($path);
             $_SESSION["tokens"]["path"][] = array_slice($path, 0, -1);
+            $_SESSION["tokens"]["pathStr"][] = $tokens[$argIndex];
             return false;
         }
         else
         {
-            //TODO fix inside loop
-            $end = end($path);
             if (end($path) == "")
             {
                 $_SESSION["tokens"]["path"][] = self::parsePath(array_slice($path, 0, -1), $tokens, $syntaxArray, $argIndex,);
+                $_SESSION["tokens"]["pathStr"][] = $tokens[$argIndex];
                 return false;
             }
             return self::parsePath($path, $tokens, $syntaxArray, $argIndex);

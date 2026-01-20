@@ -54,7 +54,7 @@ function executeMkdir()
 }
 function executeLs()
 {
-    $path = $_SESSION["tokens"]["path"][0];
+    $path = $_SESSION["tokens"]["path"][0] ?? [];
 
     getLsArray(
         getRoom(
@@ -106,8 +106,8 @@ function executeCat()
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
 
     writeOutput(
-        $catItem->content,
-        getLinesFromText($catItem->content)
+        getLinesFromText($catItem->content),
+        $catItem->content
     );
 }
 
@@ -169,22 +169,25 @@ function executeFind()
     $findString = "";
     $findFunction = "";
     $startingRoom = getRoom($_SESSION["tokens"]["path"][0]);
-    $findResult = [];
+    $matches = [];
 
     getOptionsFind(
-        $findFunction,
         $findString,
-    );
-    $findResult = callFunctionOnRoomRec(
-        $startingRoom,
-        "findByName",
         $findFunction,
-        $findString
+    );
+
+    $matches = pathArrayFromElements(
+        getElementsFind(
+            $startingRoom,
+            $findFunction,
+            $findString
+        )
     );
 
     writeOutput(
-        $findResult,
-        implode("<br", $findResult)
+        $matches,
+        implode("<br>", $matches)
+
     );
 }
 
