@@ -103,14 +103,13 @@ function &getItem($path)
         $tempRoom = &$_SESSION["curRoom"];
     }
 
-    if (in_array(end($path), array_keys($tempRoom->items)))
-    {
-        return $tempRoom->items[$path[count($path) - 1]];
-    }
-    else
-    {
-        throw new Exception("item not found");
-    }
+    return
+        in_array(
+            end($path),
+            array_keys($tempRoom->items)
+        )
+        ? $tempRoom->items[$path[count($path) - 1]]
+        : throw new Exception("item not found");
 }
 function deleteElements($paths, $rankRestrictive = true)
 {
@@ -149,17 +148,42 @@ function roleIsHigherThanRoomRecursive(Role $role, $room)
 
 function updatePaths(&$room)
 {
-    foreach ($room->items as &$item)
-    {
-        $item->path = array_merge($room->path, (array) $item->name);
-    }
+    updateItemPaths($room);
+
     foreach ($room->doors as &$door)
     {
         $door->path = array_merge($room->path, array($door->name));
         updatePaths($door);
     }
 }
-
+function moveWithCdOptions()
+{
+    switch (substr($_SESSION["inputCommand"], 3, 1))
+    {
+        case "-":
+            {
+                $_SESSION["curRoom"] = &getRoom(
+                    array_pop($_SESSION["lastPath"])
+                );
+                break;
+            }
+        case "/":
+            {
+                pushNewLastPath($_SESSION["curRoom"]->path);
+                $_SESSION["curRoom"] = &$_SESSION["map"];
+                break;
+            }
+        default:
+            {
+                pushNewLastPath($_SESSION["curRoom"]->path);
+                $_SESSION["curRoom"] = &getRoom(
+                    $_SESSION["tokens"]["path"][0],
+                    true
+                );
+                break;
+            }
+    }
+}
 function updateItemPaths(&$room)
 {
     foreach ($room->items as $item)
@@ -229,8 +253,19 @@ function getLsArray($tempRoom)
         $_SESSION["response"] = implode(", ", $finalArray);
     }
 }
-function callCorrectGrepFunction($searchMatching, $searchRecursive, $isCaseInsensitive)
+function callCorrectGrepFunction()
 {
+    $matchingLines = [];
+    $searchMatching = true;
+    $searchRecursive = false;
+    $isCaseInsensitive = false;
+
+    getOptionsGrep(
+        $searchMatching,
+        $searchRecursive,
+        $isCaseInsensitive
+    );
+
     $matchingLines = [];
     if (isset($_SESSION["tokens"]["path"][0]))
     {
@@ -426,6 +461,7 @@ function createPrompt($prompt, $validAnswers = ["y", "n"])
     writeNewHistory();
     throw new Exception("", 0);
 }
+
 function isNameValid($name, $suffix = "", $additionalInvalidChars = [])
 {
     $invalidChars = array_merge(["..", "*", "/", "&", "|", ""], $additionalInvalidChars);
@@ -551,6 +587,7 @@ function getOptionsGrep(&$searchMatching, &$searchRecursive, &$isCaseInsensitive
         }
     }
 }
+
 function getWildCardStringAndFunction(&$substr, &$cmpFunction = "")
 {
     switch (substr_count($substr, "*"))
@@ -652,4 +689,14 @@ function getPathsFromElements($elements)
         array_push($paths, $element->path);
     }
     return $paths;
+}
+
+function writeOutput($stdout, $response)
+{
+    $_SESSION["stdout"] = $stdout;
+    $_SESSION["response"] = $response;
+}
+function isExecutable($element)
+{
+    return is_a($element, Alter::class) || is_a($element, Spell::class);
 }

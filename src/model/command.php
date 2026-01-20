@@ -185,17 +185,12 @@ class Command
     {
         $validChars = array_merge($validChars, ["hall", "/", "-", ".."]);
         $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), $validChars);
-        if (
+        
+        return
             in_array($path[0], $validPathArgs) ||
             count($path) == 1 && !empty(getWildCardStringAndFunction($path[0]))
-        )
-        {
-            return $path;
-        }
-        else
-        {
-            throw new Exception("invalid path provided");
-        }
+            ?  $path
+            : throw new Exception("invalid path provided");
     }
     static public function parseString($arg): string
     {
@@ -329,13 +324,14 @@ class Command
         }
         else
         {
+            //TODO fix inside loop
             $end = end($path);
             if (end($path) == "")
             {
                 $_SESSION["tokens"]["path"][] = self::parsePath(array_slice($path, 0, -1), $tokens, $syntaxArray, $argIndex,);
                 return false;
             }
-            return self::parsePath($path, $tokens, $syntaxArray, $argIndex, ["*"]);
+            return self::parsePath($path, $tokens, $syntaxArray, $argIndex);
         }
     }
 }
