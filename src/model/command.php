@@ -371,21 +371,21 @@ function getCommand($command)
             [],
             [],
             "NAME<br>
-                          &\t\t\t\tcd - change current room<br>
+                              cd - change current room<br>
                         <br>
                         SYNOPSIS<br>
-                              cd <path><br>
+                              cd (path)<br>
                               cd ..<br>
                               cd /<br>
-                              cd -<br>
+                              cd -<br>   
                         <br>
                         DESCRIPTION<br>
                               Changes the current room to the given destination.<br>
                         <br>
-                              cd <path>    Move into the specified room if it exists.<br>
-                              cd ..        Move to the parent room.<br>
+                              cd (path)  Move into the specified room if it exists.<br>
+                              cd ..       Move to the parent room.<br>
                               cd /         Move to the root room.<br>
-                              cd -         Move back to the previous room.<br>
+                              cd -     Move back to the previous room.<br>
                         <br>
                               Movement may fail if the target room does not exist<br>
                               or your role is not high enough to enter it.",
@@ -396,14 +396,14 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             [],
             [],
-            "NAME
-                              mkdir - create a new room
-
-                          SYNOPSIS
-                              mkdir <path>
-
-                          DESCRIPTION
-                              Creates a new room at the given path.
+            "NAME<br>
+                              mkdir - create a new room<br>
+                        <br>
+                          SYNOPSIS<br>
+                              mkdir (path)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Creates a new room at the given path.<br>
                               The room will only be created if the parent room exists.
                               ",
             pathParser: "parsePathNew"
@@ -414,14 +414,14 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             [],
             [],
-            "NAME
-                              rm - remove a room or item
-
-                          SYNOPSIS
-                              rm <name>
-
-                          DESCRIPTION
-                              Deletes a room or an item from the current location
+            "NAME<br>
+                              rm - remove a room or item<br>
+                        <br>
+                          SYNOPSIS<br>
+                              rm (name)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Deletes a room or an item from the current location<br>
                               if it exists and permissions allow it.
                               ",
         ),
@@ -431,13 +431,13 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH, TokenType::PATH],
             [],
             [],
-            "NAME
-                              mv - move a room or item
-
-                          SYNOPSIS
-                              mv <source> <destination>
-
-                          DESCRIPTION
+            "NAME<br>
+                              mv - move a room or item<br>
+                        <br>
+                          SYNOPSIS<br>
+                              mv (source) (destination)<br>
+                        <br>
+                          DESCRIPTION<br>
                               Moves a room or item from source path to destination path.
                               ",
             pathParser: "parsePathRename"
@@ -448,13 +448,13 @@ function getCommand($command)
             [],
             [],
             [],
-            "NAME
-                              pwd - print current room path
-
-                          SYNOPSIS
-                              pwd
-
-                          DESCRIPTION
+            "NAME<br>
+                              pwd - print current room path<br>
+                        <br>
+                          SYNOPSIS<br>
+                              pwd<br>
+                        <br>
+                          DESCRIPTION<br>
                               Displays the full path of the current room.
                               ",
             true
@@ -465,18 +465,18 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             ["-l", "-a"],
             [],
-            "NAME
-                              ls - list rooms and items
-
-                          SYNOPSIS
-                              ls
-                              ls <path>
-
-                          DESCRIPTION
-                              Lists all visible rooms and items in the current room
-                              or in the specified path.
-
-                              Rooms are displayed as exits.
+            "NAME<br>
+                              ls - list rooms and items<br>
+                        <br>
+                          SYNOPSIS<br>
+                              ls<br>
+                              ls (path)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Lists all visible rooms and items in the current room<br>
+                              or in the specified path.<br>
+                        <br>
+                              Rooms are displayed as exits.<br>
                               Items (scrolls, objects) are displayed as files.
                               ",
             true,
@@ -487,13 +487,13 @@ function getCommand($command)
             tokenSyntax: [TokenTYPE::OPTION, TokenType::PATH, TokenType::PATH],
             validOptions: [],
             validKeyValueOptions: [],
-            description: "NAME
-                              cp - copy a file
-
-                          SYNOPSIS
-                              cp <source> <destination>
-
-                          DESCRIPTION
+            description: "NAME<br>
+                              cp - copy a file<br>
+                        <br>
+                          SYNOPSIS<br>
+                              cp (source) (destination)<br>
+                        <br>
+                          DESCRIPTION<br>
                               Copies a file from source path to destination path.
                               ",
         ),
@@ -503,15 +503,15 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::STRING, TokenType::PATH],
             ["-r", "-i", "-v"],
             [],
-            "NAME
-                              ./ - execute a file
-
-                          SYNOPSIS
-                              ./<filename>
-
-                          DESCRIPTION
-                              Executes a runnable item if it exists
-                              and your role allows execution.
+            "NAME<br>
+                              grep - search text in scrolls<br>
+                        <br>
+                          SYNOPSIS<br>
+                              grep (pattern) (scrollname)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Searches for a text pattern inside a scroll<br>
+                              and prints matching lines.
                               ",
             true,
         ),
@@ -521,14 +521,14 @@ function getCommand($command)
             [TokenType::PATH, TokenType::KEYVALUEOPTION],
             [],
             ["-name" => "string"],
-            "NAME
-                              find - search for rooms or items
-
-                          SYNOPSIS
-                              find <name>
-
-                          DESCRIPTION
-                              Searches the entire map for rooms or items
+            "NAME<br>
+                              find - search for rooms or items<br>
+                        <br>
+                          SYNOPSIS<br>
+                              find (name)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Searches the entire map for rooms or items<br>
                               matching the given name and prints their paths.
                               ",
             true,
@@ -540,7 +540,16 @@ function getCommand($command)
             [TokenType::PATH],
             [],
             [],
-            "",
+            "NAME<br>
+                              ./ - execute a file<br>
+                        <br>
+                          SYNOPSIS<br>
+                              ./(filename)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Executes a runnable item if it exists<br>
+                              and your role allows execution.<br>
+                              ",
         ),
         "echo" == $command
         => new Command(
@@ -548,13 +557,13 @@ function getCommand($command)
             [TokenType::STRING],
             [],
             [],
-            "NAME
-                              echo - print text
-
-                          SYNOPSIS
-                              echo <text>
-
-                          DESCRIPTION
+            "NAME<br>
+                              echo - print text<br>
+                        <br>
+                          SYNOPSIS<br>
+                              echo (test)<br>
+                        <br>
+                          DESCRIPTION<br>
                               Prints the given text into the terminal.
                               ",
             stringParser: "parseStringEcho",
@@ -566,18 +575,16 @@ function getCommand($command)
             [TokenTYPE::MISC],
             [],
             [],
-            "NAME
-                              man - display command manual
-
-                          SYNOPSIS
-                              man
-                              man <command>
-
-                          DESCRIPTION
-                              Displays the manual page for a command.
-
-                              man             Shows a list of available commands.
-                              man <command>   Shows detailed help for the given command.
+            "NAME<br>
+                              man - display command manual<br>
+                            <br>
+                          SYNOPSIS<br>
+                              man (command)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Displays the manual page for a command.<br>
+                        <br>
+                              man (command)  Shows detailed help for the given command.
                               ",
             true,
             miscParser: "parseMiscMan"
@@ -588,16 +595,16 @@ function getCommand($command)
             [TokenTYPE::PATH],
             [],
             [],
-            "NAME
-                              cat - read a scroll
-
-                          SYNOPSIS
-                              cat <scrollname>
-
-                          DESCRIPTION
-                              Opens and displays the contents of a scroll
-                              if it exists in the current room
-                              and your role is high enough to read it.
+            "NAME<br>
+                              cat - read a scroll<br>
+                        <br>
+                          SYNOPSIS<br>
+                              cat (scrollname)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Opens and displays the contents of a scroll<br>
+                              if it exists in the current room<br>
+                              and your level is high enough to read it.
                               ",
             true,
         ),
@@ -607,14 +614,14 @@ function getCommand($command)
             [TokenTYPE::PATH],
             [],
             [],
-            "NAME
-                              touch - create an empty file
-
-                          SYNOPSIS
-                              touch <filename>
-
-                          DESCRIPTION
-                              Creates a new empty item (file) in the current room.
+            "NAME<br>
+                              touch - create an empty file<br>
+                        <br>
+                          SYNOPSIS<br>
+                              touch (filename)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Creates a new empty item (file) in the current room.<br>
                               If the file already exists, nothing is changed.
                               ",
             true,
@@ -626,14 +633,14 @@ function getCommand($command)
             [TokenType::OPTION, TokenType::PATH],
             ["-l", "-w"],
             [],
-            "NAME
-                              wc - count words in a scroll
-
-                          SYNOPSIS
-                              wc <scrollname>
-
-                          DESCRIPTION
-                              Counts the number of words in a scroll
+            "NAME<br>
+                              wc - count words in a scroll<br>
+                        <br>
+                          SYNOPSIS<br>
+                              wc (scrollname)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Counts the number of words in a scroll<br>
                               if it exists in the current room.
                               ",
             true,
@@ -646,13 +653,13 @@ function getCommand($command)
             [TokenType::KEYVALUEOPTION, TokenType::PATH],
             [],
             ["-n" => 10],
-            "NAME
-                              head - show beginning of a scroll
-
-                          SYNOPSIS
-                              head <scrollname>
-
-                          DESCRIPTION
+            "NAME<br>
+                              head - show beginning of a scroll<br>
+                        <br>
+                          SYNOPSIS<br>
+                              head (scrollname)<br>
+                        <br>
+                          DESCRIPTION<br>
                               Displays the first few lines of a scroll.
                               ",
             true,
@@ -665,13 +672,13 @@ function getCommand($command)
             [TokenType::KEYVALUEOPTION, TokenType::PATH],
             [],
             ["-n" => 10],
-            "NAME
-                              tail - show end of a scroll
-
-                          SYNOPSIS
-                              tail <scrollname>
-
-                          DESCRIPTION
+            "NAME<br>
+                              tail - show end of a scroll<br>
+                        <br>
+                          SYNOPSIS<br>
+                              tail (scrollname)<br>
+                        <br>
+                          DESCRIPTION<br>
                               Displays the last few lines of a scroll.
                               ",
             true,
@@ -684,14 +691,14 @@ function getCommand($command)
             [TokenType::PATH],
             [],
             [],
-            "NAME
-                              nano - edit a scroll
-
-                          SYNOPSIS
-                              nano <scrollname>
-
-                          DESCRIPTION
-                              Opens a scroll for editing.
+            "NAME<br>
+                              nano - edit a scroll<br>
+                        <br>
+                          SYNOPSIS<br>
+                              nano (scrollname)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Opens a scroll for editing.<br>
                               If the scroll does not exist, it will be created.
                               ",
         ),
