@@ -326,6 +326,34 @@ class DBHelper
             ":id" => $userId
         ]);
     }
+    public function getMapByLvl($role)
+    {
+        $tempMap = new Room(
+            "hall",
+            curDate: false,
+        );
+        $_SESSION["curRoom"] = &$tempMap;
+        $tempMap->path = ["hall"];
+
+        switch ($role)
+        {
+            case Role::WANDERER:
+                {
+                }
+            case Role::APPRENTICE:
+                {
+                }
+            case Role::ARCHIVIST:
+                {
+                }
+            case Role::CONJURER:
+                {
+                }
+            case Role::ROOT:
+                {
+                }
+        }
+    }
 }
 function getRankFromXp($xp): Role
 {

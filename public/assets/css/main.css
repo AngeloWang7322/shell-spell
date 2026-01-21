@@ -257,10 +257,9 @@ span {
     margin: 0;
 }
 
-.alchemist {
-    color: tomato;
+.action-tip{
+    color:rgb(255, 199, 115);
 }
-
 .element {
     display: flex;
     justify-content: end;

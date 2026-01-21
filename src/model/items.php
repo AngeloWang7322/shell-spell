@@ -94,21 +94,17 @@ class Alter extends Item
     public bool $isActive;
     public $requiredElements;
     public Room $newDoor;
-    public string $spellReward;
-    public int $xpReward;
 
     public function __construct(
         $name,
         $baseName,
         array $path = [],
         $requiredRole = Role::WANDERER,
-        $content,
+        $newDoor,
+        $content = "",
         $isActive = true,
         $requiredElements = [],
-        $newDoor,
-        $spellReward = "",
-        $xpReward = 0,
-        $curDate = true,
+        $curDate = false,
         $date = "",
     )
     {
@@ -116,8 +112,6 @@ class Alter extends Item
         $this->isActive = $isActive;
         $this->requiredElements = $requiredElements;
         $this->newDoor = $newDoor;
-        $this->spellReward = $spellReward;
-        $this->xpReward = $xpReward;
 
         parent::__construct(
             $name,
@@ -165,8 +159,6 @@ class Alter extends Item
             isActive: $data["isActive"],
             requiredElements: $data["requiredElements"],
             newDoor: Room::fromArray($data["newDoor"]),
-            spellReward: $data["spellReward"],
-            xpReward: $data["xpReward"],
             date: $data["timeOfLastChange"],
         );
     }

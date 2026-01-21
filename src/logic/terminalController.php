@@ -8,6 +8,11 @@ function manageExecution()
         handlePrompt();
         return;
     }
+    else if (!empty($_SESSION["gameController"]->requiredCommand))
+    {
+        handleRequiredCommand();
+        return;
+    }
     match ($operator = getLastOccuringElementIn($_POST["command"]))
     {
         ">>", ">" => handleRedirect($operator),
@@ -21,6 +26,19 @@ function handleDefault()
 {
     prepareCommandExecution();
     executeCommand();
+}
+function handleRequiredCommand()
+{
+    prepareCommandExecution();
+    if ($_SESSION["tokens"]["command"] != $_SESSION["gameController"]->requiredCommand)
+    {
+        throw new Exception("must use: " . $_SESSION["gameController"]->requiredCommand);
+    }
+    //maybe check if conditions are actually valid
+    executeCommand();
+    writeResponse();
+    $_SESSION["gameController"]->handleLvlUp();
+    cleanUp();
 }
 function handlePrompt()
 {

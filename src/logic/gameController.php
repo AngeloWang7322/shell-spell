@@ -6,26 +6,25 @@ class GameController
     public static $levelData = [
         // &&
         Role::WANDERER->value => [
-            Commands::EXECUTE,
-            Commands::LS,
+            Commands::ECHO,
+            Commands::CAT,
             Commands::CD,
-            Commands::CAT
+            Commands::MAN,
+            Commands::EXECUTE,
         ],
         // ||
         Role::APPRENTICE->value => [
             Commands::MKDIR,
             Commands::RM,
             Commands::PWD,
-            Commands::ECHO,
-            Commands::MAN
+            Commands::LS,
         ],
         // >>, >
         Role::ARCHIVIST->value => [
             Commands::CP,
             Commands::MV,
-            Commands::MV,
             Commands::NANO,
-            Commands::TOUCH
+            Commands::TOUCH,
         ],
         // |
         Role::CONJURER->value => [
@@ -43,11 +42,15 @@ class GameController
     public array $currentLevelData = [];
     public array $unlockedCommands = [];
     public int $xpPercentage;
+    public string $userName;
+    public $requiredCommand;
     public function __construct(
-        $xp = 1
+        $xp = 1,
+        $userName = "wanderer",
     )
     {
         $this->xp = $xp;
+        $this->userName = $userName;
         $this->userRank = Role::getRoleFromRank((int) floor($xp / 100) + 1);
         $this->currentLevelData = self::$levelData[$this->userRank->value];
         $this->latestCommand = reset($this->currentLevelData);
@@ -109,4 +112,135 @@ class GameController
         }
         return current($this->currentLevelData);
     }
+    public function handleLvlUp(Commands $command)
+    {
+        self::levelUpUser();
+        switch ($command->value)
+        {
+            //LEVEL 1
+
+            case Commands::ECHO->value:
+                {
+                    $response =
+                        "A new Spellcaster!? not this again...<br>
+                    Well lets start by telling me your name wanderer?"
+                        . colorizeString("echo [your name]", "action-tip");
+                    $this->requiredCommand = Commands::ECHO->value;
+                    break;
+                }
+            case Commands::CAT->value:
+                {
+                    $this->userName = $_SESSION["tokens"]["misc"];
+                    $response =
+                        "who is called " . $this->userName . "?...<br>
+                        Your name accidentally just activated a rune?! maybe theres some potential... <br>
+                        Anyways, you should take a look at the old scrolls lying around and read something for once, you may learn something! "
+                        . colorizeString("cat [scrollname]", "action-tip");
+                    break;
+                }
+            case Commands::CD->value:
+                {
+                    $response = "Finally you learned how to walk, now you're a true wanderer,(Haha even more Puny now!)<br>
+                        How about you look around here and get used to your new spell.<br>"
+                        . colorizeString("SYNOPSIS<br> cd (path)<br> cd ..<br> cd /<br> cd -<br>   <br> DESCRIPTION<br> Changes the current room to the given destination.<br> <br> cd (path)  Move into the specified room if it exists.<br> cd ..       Move to the parent room.<br> cd /         Move to the root room.<br> cd -     Move back to the previous room.<br>", "action-tip");
+                    break;
+                }
+            case Commands::MAN->value:
+                {
+                    $response = "Since you wanderers love to forget how your spells work,<br>
+                        here's a little something hat can help even the most wandererrest of wanderers 
+                        And keep your eyes open for anything... interesting<br>"
+                        . colorizeString("man [command]<br>" . "action-tip");
+                    break;
+                }
+            case Commands::EXECUTE->value:
+                {
+                    $response = "You already got here? Thats a surprise...<br>
+                            Well then this should be no biggie, you'll figure out where, on what and how to use this one<br>
+                            (or not and you're still just a wanderer)"
+                        . colorizeString("./[name]<br>" . "action-tip");
+                    break;
+                }
+                //LEVEL 2         
+            case Commands::LS->value:
+                {
+                    $response = "who is called " . $this->userName . "?...<br>
+                        Your name accidentally just activated a rune?! maybe theres some potential... <br>
+                        Anyways, you should take a look at the old scrolls lying around and read something for once, you may learn something! "
+                        . colorizeString("cat [scrollname]", "action-tip");
+                    break;
+                }
+            case Commands::MKDIR->value:
+                {
+                }
+
+            case Commands::RM->value:
+                {
+                }
+            case Commands::PWD->value:
+                {
+                }
+                //LEVEL 3
+            case Commands::CP->value:
+                {
+                }
+            case Commands::MV->value:
+                {
+                }
+            case Commands::NANO->value:
+                {
+                }
+            case Commands::TOUCH->value:
+                {
+                }
+                //level 4
+            case Commands::GREP->value:
+                {
+                }
+            case Commands::FIND->value:
+                {
+                }
+            case Commands::WC->value:
+                {
+                }
+            case Commands::HEAD->value:
+                {
+                }
+            case Commands::TAIL->value:
+                {
+                }
+            default:
+                throw new Exception("unknownCommand");
+        }
+        self::writeMessage(colorizeString($response, "guide"));
+        $this->requiredCommand = "";
+    }
+    public function writeMessage($message)
+    {
+        $_SESSION["history"][] = [
+            "directory" => "insertGuideName",
+            "command" => "",
+            "response" => $message,
+        ];
+    }
 }
+/*
+cat scroll: 
+        Welcome, wanderer.
+
+        You have entered the realm of ShellSpell
+        a dungeon shaped like a command line.
+
+        Here, rooms are directories,
+        scrolls are files,
+        and knowledge is your only weapon.
+
+        Listen and read carefully to learn the spells the ancient shell
+        to explore, solve riddles
+        and uncover the secrets hidden in the depths of this dungeon.
+        You will find alters at the end of each level.
+
+        Type carefully — every command matters.
+
+        Your journey begins here.
+*/
