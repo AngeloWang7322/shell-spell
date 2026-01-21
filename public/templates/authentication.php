@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         {
             $dbHelper = new DBHelper($pdo);
             $dbHelper->registerUser($password, $email, $name);
-            header('Location: selection');
+            header('Location: menu');
         }
     }
 }

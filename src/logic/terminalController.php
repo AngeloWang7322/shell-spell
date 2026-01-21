@@ -207,6 +207,10 @@ function writeResponse()
 }
 function writeNewHistory()
 {
+    if (count($_SESSION["history"]) > 20)
+    {
+        $_SESSION["history"] = array_slice($_SESSION["history"], 1);
+    }
     $_SESSION["history"][] = [
         "directory" => $_POST["baseString"],
         "command" => $_SESSION["inputCommand"],

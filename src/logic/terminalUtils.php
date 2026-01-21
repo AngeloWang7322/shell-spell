@@ -697,6 +697,7 @@ function canDelete($path, $element = NULL)
     //check if would delete room 
     if (
         isset($_SESSION["tokens"]["path"][1]) &&
+        isset($_SESSION["tokens"]["command"]) != "rm" &&
         is_a($element, Room::class) &&
         count(array_diff($path, getRoom($_SESSION["tokens"]["path"][1])->path)) == 0
     )

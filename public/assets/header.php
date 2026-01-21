@@ -31,7 +31,7 @@ $extraCss[] = "assets/css/header.css";
                 <form class="header-group" method="post">
                     <input name="action" value="logoutUser" hidden>
                     <button type="submit" class="header-element">
-                        <div class="header-element">
+                        <div class="">
                             Logout
                             <img class="icon-small" src="../assets/images/icon_logout.png" alt="logout_icon">
                         </div>

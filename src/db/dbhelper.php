@@ -15,14 +15,16 @@ class DBHelper
         $query = $this->pdo->prepare(
             "UPDATE game_states SET 
             map_json = :mapJson,
-            xp = :xp,
+            history_json = :historyJson,
+            xp = :xp
             WHERE user_id = :userId"
         );
 
         $response = $query->execute([
             ":userId" => $_SESSION["user"]["id"],
             ":mapJson" => json_encode($_SESSION["map"]),
-            ":xp" => 200,
+            ":historyJson" => json_encode($_SESSION["history"]),
+            ":xp" => $_SESSION["gameController"]->xp,
         ]);
     }
     public function loginUser($password, $email)
@@ -75,7 +77,7 @@ class DBHelper
         $_SESSION["user"]["xp"] = $gameState["xp"];
         $_SESSION["gameController"] = new GameController($gameState["xp"]);
         $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
-        $_SESSION["history"] = json_decode($gameState["history_json"]);
+        parseHistory($gameState["history_json"]);
     }
     public function getGameStates()
     {
@@ -99,7 +101,7 @@ class DBHelper
     {
         $gameStateInsert = $this->pdo->prepare("
             INSERT INTO game_states ( user_id, name, map_json, history_json)
-            VALUES (:userId, :stateName, :historyJson)
+            VALUES (:userId, :stateName, :mapJson, :historyJson)
         ");
         $gameStateInsert->execute([
             "userId" => $_SESSION["user"]["id"],
@@ -342,4 +344,16 @@ function getRankFromXp($xp): Role
         }
     }
     throw new Exception("role not found?");
+}
+function parseHistory($historyJson)
+{
+    $_SESSION["history"] = [];
+    foreach ((array)json_decode($historyJson) as $element)
+    {
+        $_SESSION["history"][] = [
+            "directory" => $element->directory,
+            "command" => $element->command,
+            "response" => $element->response
+        ];
+    }
 }
