@@ -81,9 +81,9 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                     <input id="commandInputField" name="command" class="command-input" type="text" autocomplete="off" autofocus>
                 </form>
             </div>
-            <div class="mana-display-container">
-                <div class="mana-bar" style="width: <?= $_SESSION["gameController"]->xpPercentage ?>%;">
-                    <h4 class="mana-text">
+            <div class="xp-display-container">
+                <div class="xp-bar" style="width: <?= $_SESSION["gameController"]->xpPercentage ?>%;">
+                    <h4 class="xp-text">
                         <?=
                         $_SESSION["user"]["role"]->value
                         ?>

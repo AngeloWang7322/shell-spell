@@ -188,10 +188,6 @@ function updateItemPaths(&$room)
         $item->path = array_merge($room->path, (array) $item->name);
     }
 }
-function editMana($amount)
-{
-    $_SESSION["curMana"] -= $amount;
-}
 function pushNewLastPath(array $newPath)
 {
     $lastPathCount = count($_SESSION["lastPath"]);

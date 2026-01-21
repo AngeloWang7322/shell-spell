@@ -183,8 +183,6 @@ function editLastHistory($string)
 }
 function handleException(Exception $e)
 {
-    editMana($e->getCode());
-
     $_SESSION["response"] = colorizeString(colorizeResponseForRank($e->getMessage()), "error");
     $_SESSION["map"] = $_SESSION["backUpMap"];
 }

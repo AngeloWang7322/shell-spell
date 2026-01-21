@@ -47,9 +47,13 @@ class GameController
         $xp = 1
     )
     {
-        self::calculateGameStats($xp);
-        $this->xpPercentage = self::calculateLevelPercentage();
         $this->xp = $xp;
+        $this->userRank = Role::getRoleFromRank((int) floor($xp / 100) + 1);
+        $this->currentLevelData = self::$levelData[$this->userRank->value];
+        $this->latestCommand = reset($this->currentLevelData);
+        $this->latestCommand = current($this->currentLevelData);
+        $this->xpPercentage = self::calculateLevelPercentage();
+        $this->latestCommand = self::calculateGameStats($xp);
     }
 
     public function levelUpUser()
@@ -81,16 +85,11 @@ class GameController
             $counter++;
         }
 
-        // $currentCount = count(array_intersect(self::$levelData[$this->userRank->value], $this->current));
         return (int)round(($counter / $lvlCount) * 100);
     }
     public function calculateGameStats($xp)
     {
-        $this->userRank = Role::getRoleFromRank((int) floor($xp / 100) + 1);
-        $this->currentLevelData = self::$levelData[$this->userRank->value];
-        $this->latestCommand = reset($this->currentLevelData);
         $this->unlockedCommands = [];
-
         for ($i = 1; $i < $this->userRank->rank(); $i++)
         {
             foreach (current(self::$levelData) as $command)
@@ -102,12 +101,12 @@ class GameController
         reset($this->currentLevelData);
         $percentage = 100 / count($this->currentLevelData);
         $xp %= 100;
-         while ($xp > $percentage)
+        while ($xp > $percentage)
         {
             $xp -= $percentage;
             array_push($this->unlockedCommands, current($this->currentLevelData));
             next($this->currentLevelData);
         }
-        $this->latestCommand = current($this->currentLevelData);
+        return current($this->currentLevelData);
     }
 }

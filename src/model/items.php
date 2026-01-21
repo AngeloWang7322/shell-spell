@@ -202,17 +202,6 @@ class Spell extends Item
         $actionFunction = $this->action->value;
         $this->$actionFunction();
     }
-    function getMana()
-    {
-        match ($this->requiredRole)
-        {
-            ROLE::WANDERER => $_SESSION["curMana"] += 10,
-            ROLE::APPRENTICE => $_SESSION["curMana"] += 20,
-            ROLE::ARCHIVIST => $_SESSION["curMana"] += 30,
-            ROLE::CONJURER => $_SESSION["curMana"] += 40,
-            ROLE::ROOT => $_SESSION["curMana"] += 50,
-        };
-    }
     public static function fromArray(array $data)
     {
         $requiredRole = Role::from($data["requiredRole"]);

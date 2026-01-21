@@ -85,7 +85,7 @@ span {
     margin: 0;
 }
 
-.mana-display-container {
+.xp-display-container {
     flex-direction: row;
     position: fixed;
     bottom: -14px;
@@ -97,12 +97,12 @@ span {
     background-color: rgba(255, 255, 255, 0.164);
 }
 
-.mana-bar {
+.xp-bar {
     background-color: rgb(110, 70, 255);
     height: 100%;
 }
 
-.mana-text {
+.xp-text {
     position: absolute;
     margin-top: 1px;
     left: 50%;
@@ -346,12 +346,12 @@ span {
         margin: 12px -48px;
     }
 
-    .mana-display-container {
+    .xp-display-container {
         height: 50px;
     bottom: -25px;
     }
 
-    .mana-text {
+    .xp-text {
         font-size: 42px;
     }
 
