@@ -32,8 +32,7 @@ class Command
         $miscParser = "valiateMisc",
         $optionParser = "parseOption",
         $keyValueOptionParser = "parsekeyValueOption",
-    )
-    {
+    ) {
         $this->commandName = $commandName;
         $this->tokenSyntax = array_merge([TokenType::COMMAND], $tokenSyntax);
         $this->validOptions = $validOptions;
@@ -43,8 +42,8 @@ class Command
         $this->isReader = $isReader;
         $this->commandParser = $commandParser;
         $this->pathParser = $pathParser;
-        $this->stringParser =  $stringParser;
-        $this->miscParser =  $miscParser;
+        $this->stringParser = $stringParser;
+        $this->miscParser = $miscParser;
         $this->optionParser = $optionParser;
         $this->keyValueOptionParser = $keyValueOptionParser;
     }
@@ -53,54 +52,44 @@ class Command
         $syntaxArray = $this->tokenSyntax;
         $tokens = self::createTokens();
 
-        for ($i = 0; $i < count($tokens); $i++)
-        {
+        for ($i = 0; $i < count($tokens); $i++) {
             $arg = $tokens[$i];
 
-            switch (current($syntaxArray))
-            {
-                case TokenType::COMMAND:
-                    {
-                        $function = $this->commandParser;
-                        $_SESSION["tokens"]["command"] = self::$function($arg);
-                        break;
+            switch (current($syntaxArray)) {
+                case TokenType::COMMAND: {
+                    $function = $this->commandParser;
+                    $_SESSION["tokens"]["command"] = self::$function($arg);
+                    break;
+                }
+                case TokenType::OPTION: {
+                    $function = $this->optionParser;
+                    self::$function($arg, $syntaxArray, $i);
+                    break;
+                }
+                case TokenType::KEYVALUEOPTION: {
+                    $function = $this->keyValueOptionParser;
+                    self::$function($arg, $tokens, $syntaxArray, $i);
+                    break;
+                }
+                case TokenType::PATH: {
+                    $function = $this->pathParser;
+                    if ((bool) self::$function(explode("/", $arg), $tokens, $syntaxArray, $i)) {
+                        $_SESSION["tokens"]["path"][] = explode("/", $arg);
                     }
-                case TokenType::OPTION:
-                    {
-                        $function = $this->optionParser;
-                        self::$function($arg, $syntaxArray, $i);
-                        break;
-                    }
-                case TokenType::KEYVALUEOPTION:
-                    {
-                        $function = $this->keyValueOptionParser;
-                        self::$function($arg, $tokens, $syntaxArray, $i);
-                        break;
-                    }
-                case TokenType::PATH:
-                    {
-                        $function = $this->pathParser;
-                        if ((bool)self::$function(explode("/", $arg), $tokens, $syntaxArray, $i))
-                        {
-                            $_SESSION["tokens"]["path"][] = explode("/", $arg);
-                        }
-                        break;
-                    }
-                case TokenType::STRING:
-                    {
-                        $function = $this->stringParser;
-                        $_SESSION["tokens"]["strings"][] = self::$function($arg);
-                        break;
-                    }
-                case TokenType::MISC:
-                    {
-                        $function = $this->miscParser;
-                        $_SESSION["tokens"]["misc"] = self::$function($arg);
-                        break;
-                    }
+                    break;
+                }
+                case TokenType::STRING: {
+                    $function = $this->stringParser;
+                    $_SESSION["tokens"]["strings"][] = self::$function($arg);
+                    break;
+                }
+                case TokenType::MISC: {
+                    $function = $this->miscParser;
+                    $_SESSION["tokens"]["misc"] = self::$function($arg);
+                    break;
+                }
             }
-            if (next($syntaxArray) == false)
-            {
+            if (next($syntaxArray) == false) {
                 end($syntaxArray);
             }
         }
@@ -112,50 +101,33 @@ class Command
 
         $tempToken = "";
         $quoteCount = substr_count($inputStr, '"');
-        if ($quoteCount % 2 == 1)
-        {
+        if ($quoteCount % 2 == 1) {
             throw new Exception("incorrect string usage");
         }
 
-        foreach (array_slice(explode(" ", $inputStr), 1) as $word)
-        {
+        foreach (array_slice(explode(" ", $inputStr), 1) as $word) {
             $first = substr($word, 0, 1);
             $last = substr($word, -1, 1);
 
-            if ($tempToken == "")
-            {
-                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']) || ($first == $last && strlen($word) > 1))
-                {
+            if ($tempToken == "") {
+                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']) || ($first == $last && strlen($word) > 1)) {
                     array_push($tokens, $word);
-                }
-                else
-                {
-                    if (in_array($first, ["'", '"']))
-                    {
+                } else {
+                    if (in_array($first, ["'", '"'])) {
                         $tempToken = $word;
-                    }
-                    else
-                    {
+                    } else {
                         throw new Exception("incorrect string usage");
                     }
                 }
-            }
-            else
-            {
-                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']))
-                {
+            } else {
+                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"'])) {
                     $tempToken .= " " . $word;
-                }
-                else
-                {
-                    if (in_array($last, ["'", '"']))
-                    {
+                } else {
+                    if (in_array($last, ["'", '"'])) {
                         $tempToken .= " " . $word;
                         array_push($tokens, $tempToken);
                         $tempToken = "";
-                    }
-                    else
-                    {
+                    } else {
                         throw new Exception("incorrect string usage");
                     }
                 }
@@ -165,18 +137,12 @@ class Command
     }
     static public function parseCommand($arg)
     {
-        if (Commands::tryFrom($arg) != NULL)
-        {
+        if (Commands::tryFrom($arg) != NULL) {
             return $arg;
-        }
-        else
-        {
-            if (in_array($arg, Commands::cases()))
-            {
+        } else {
+            if (in_array($arg, Commands::cases())) {
                 throw new Exception("command not unlocked yet");
-            }
-            else
-            {
+            } else {
                 throw new Exception("unknown commandasdasd");
             }
         }
@@ -184,12 +150,9 @@ class Command
     static public function parsePath($path)
     {
         $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), ["hall", "/", "-", ".."]);
-        if (in_array($path[0], $validPathArgs))
-        {
+        if (in_array($path[0], $validPathArgs)) {
             return $path;
-        }
-        else
-        {
+        } else {
             throw new Exception("invalid path provided");
         }
     }
@@ -200,92 +163,68 @@ class Command
         if (
             (in_array("'", $firstAndLast) || in_array('"', $firstAndLast))
             && $firstAndLast[0] == $firstAndLast[1]
-        )
-        {
-            if (strlen($arg) <= 2)
-            {
+        ) {
+            if (strlen($arg) <= 2) {
                 throw new Exception("empty string given");
             }
             return substr($arg, 1, -1);
-        }
-        else
-        {
+        } else {
             throw new Exception("empty string given");
         }
     }
     static public function parseMisc($arg)
     {
-        switch ($_SESSION["tokens"]["command"])
-        {
-            case "man":
-                {
-                    if (in_array($arg, Commands::cases()))
-                    {
-                        return $arg;
-                    }
-                    else
-                    {
-                        throw new Exception("unknown misc");
-                    }
+        switch ($_SESSION["tokens"]["command"]) {
+            case "man": {
+                if (in_array($arg, Commands::cases())) {
+                    return $arg;
+                } else {
+                    throw new Exception("unknown misc");
                 }
+            }
         }
     }
     public function parseOption($arg, &$syntaxArray, &$argIndex)
     {
-        if (substr($arg, 0, 1) == '-')
-        {
-            if (in_array($arg, $this->validOptions))
-            {
+        if (substr($arg, 0, 1) == '-') {
+            if (in_array($arg, $this->validOptions)) {
                 $_SESSION["tokens"]["options"][] = $arg;
                 prev($syntaxArray);
             }
-        }
-        else
-        {
+        } else {
             $argIndex--;
         }
     }
     public function parseKeyValueOption($option, $tokens, &$syntaxArray, &$argIndex)
     {
-        if (substr($option, 0, 1) == '-' && $argIndex <= count($tokens))
-        {
-            if (in_array($option, array_keys($this->validKeyValueOptions)))
-            {
-                switch (gettype($this->validKeyValueOptions[$option]))
-                {
-                    case "string":
-                        {
-                            $_SESSION["tokens"]["keyValueOptions"][$option] = $this->parseString($tokens[$argIndex + 1]);
-                            $argIndex++;
-                            break;
-                        }
-                    case "integer":
-                        {
-                            $_SESSION["tokens"]["keyValueOptions"][$option] = is_numeric($tokens[$argIndex + 1])
-                                ? $tokens[$argIndex + 1]
-                                : throw new Exception(($option . "entered, no integer recieved"));
-                            $argIndex++;
-                        }
+        if (substr($option, 0, 1) == '-' && $argIndex <= count($tokens)) {
+            if (in_array($option, array_keys($this->validKeyValueOptions))) {
+                switch (gettype($this->validKeyValueOptions[$option])) {
+                    case "string": {
+                        $_SESSION["tokens"]["keyValueOptions"][$option] = $this->parseString($tokens[$argIndex + 1]);
+                        $argIndex++;
+                        break;
+                    }
+                    case "integer": {
+                        $_SESSION["tokens"]["keyValueOptions"][$option] = is_numeric($tokens[$argIndex + 1])
+                            ? $tokens[$argIndex + 1]
+                            : throw new Exception(($option . "entered, no integer recieved"));
+                        $argIndex++;
+                    }
                 }
-            }
-            else
-            {
+            } else {
                 throw new Exception("incorrect option given");
             }
-        }
-        else
-        {
-            if (next($syntaxArray) == NULL)
-            {
+        } else {
+            if (next($syntaxArray) == NULL) {
                 throw new Exception("invalid syntax");
             }
             $argIndex--;
         }
     }
-    static public function parsePathNew($mkdirPath,  &$syntaxArray, &$argIndex)
+    static public function parsePathNew($mkdirPath, &$syntaxArray, &$argIndex)
     {
-        return match (true)
-        {
+        return match (true) {
             $mkdirPath[0] == ""
             => throw new Exception("now argument provided"),
             count($mkdirPath) == 1
@@ -300,14 +239,10 @@ class Command
     }
     static public function parsePathOptional($path)
     {
-        if (!isset($_SESSION["stdout"]))
-        {
-            try
-            {
+        if (!isset($_SESSION["stdout"])) {
+            try {
                 return self::parsePath($path);
-            }
-            catch (Exception $e)
-            {
+            } catch (Exception $e) {
                 return false;
             }
         }
@@ -329,17 +264,13 @@ class Command
         //     }
         // }
         // return self::parsePath($path);
-        if (substr($tokens[$argIndex], -1) != "/" && !empty($_SESSION["tokens"]["path"][0]))
-        {
-            $_SESSION["tokens"]["misc"] =  end($path);
+        if (substr($tokens[$argIndex], -1) != "/" && !empty($_SESSION["tokens"]["path"][0])) {
+            $_SESSION["tokens"]["misc"] = end($path);
             $_SESSION["tokens"]["path"][] = array_slice($path, 0, -1);
             return false;
-        }
-        else
-        {
+        } else {
             $end = end($path);
-            if (end($path) == "")
-            {
+            if (end($path) == "") {
                 $_SESSION["tokens"]["path"][] = self::parsePath(array_slice($path, 0, -1));
                 return false;
             }
@@ -350,15 +281,32 @@ class Command
 
 function getCommand($command)
 {
-    return match (true)
-    {
+    return match (true) {
         "cd" == $command
         => new Command(
             "cd",
             [TokenType::PATH],
             [],
             [],
-            "movin around",
+            "NAME
+                              cd - change current room
+
+                        SYNOPSIS
+                              cd <path>
+                              cd ..
+                              cd /
+                              cd -
+
+                        DESCRIPTION
+                              Changes the current room to the given destination.
+
+                              cd <path>    Move into the specified room if it exists.
+                              cd ..        Move to the parent room.
+                              cd /         Move to the root room.
+                              cd -         Move back to the previous room.
+
+                              Movement may fail if the target room does not exist
+                              or your role is not high enough to enter it.",
         ),
         "mkdir" == $command
         => new Command(
@@ -366,7 +314,16 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             [],
             [],
-            "",
+            "NAME
+                              mkdir - create a new room
+
+                          SYNOPSIS
+                              mkdir <path>
+
+                          DESCRIPTION
+                              Creates a new room at the given path.
+                              The room will only be created if the parent room exists.
+                              ",
             pathParser: "parsePathNew"
         ),
         "rm" == $command
@@ -375,7 +332,16 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             [],
             [],
-            "",
+            "NAME
+                              rm - remove a room or item
+
+                          SYNOPSIS
+                              rm <name>
+
+                          DESCRIPTION
+                              Deletes a room or an item from the current location
+                              if it exists and permissions allow it.
+                              ",
         ),
         "mv" == $command
         => new Command(
@@ -383,7 +349,15 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH, TokenType::PATH],
             [],
             [],
-            "",
+            "NAME
+                              mv - move a room or item
+
+                          SYNOPSIS
+                              mv <source> <destination>
+
+                          DESCRIPTION
+                              Moves a room or item from source path to destination path.
+                              ",
             pathParser: "parsePathRename"
         ),
         "pwd" == $command
@@ -392,7 +366,15 @@ function getCommand($command)
             [],
             [],
             [],
-            "",
+            "NAME
+                              pwd - print current room path
+
+                          SYNOPSIS
+                              pwd
+
+                          DESCRIPTION
+                              Displays the full path of the current room.
+                              ",
             true
         ),
         "ls" == $command
@@ -401,7 +383,20 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::PATH],
             ["-l", "-a"],
             [],
-            "",
+            "NAME
+                              ls - list rooms and items
+
+                          SYNOPSIS
+                              ls
+                              ls <path>
+
+                          DESCRIPTION
+                              Lists all visible rooms and items in the current room
+                              or in the specified path.
+
+                              Rooms are displayed as exits.
+                              Items (scrolls, objects) are displayed as files.
+                              ",
             true,
         ),
         "cp" == $command
@@ -410,7 +405,15 @@ function getCommand($command)
             tokenSyntax: [TokenTYPE::OPTION, TokenType::PATH, TokenType::PATH],
             validOptions: [],
             validKeyValueOptions: [],
-            description: "",
+            description: "NAME
+                              cp - copy a file
+
+                          SYNOPSIS
+                              cp <source> <destination>
+
+                          DESCRIPTION
+                              Copies a file from source path to destination path.
+                              ",
         ),
         "grep" == $command
         => new Command(
@@ -418,7 +421,16 @@ function getCommand($command)
             [TokenTYPE::OPTION, TokenType::STRING, TokenType::PATH],
             ["-r", "-i", "-v"],
             [],
-            "",
+            "NAME
+                              ./ - execute a file
+
+                          SYNOPSIS
+                              ./<filename>
+
+                          DESCRIPTION
+                              Executes a runnable item if it exists
+                              and your role allows execution.
+                              ",
             true,
             true,
         ),
@@ -428,7 +440,16 @@ function getCommand($command)
             [TokenType::PATH, TokenType::KEYVALUEOPTION],
             [],
             ["-name" => "string"],
-            "",
+            "NAME
+                              find - search for rooms or items
+
+                          SYNOPSIS
+                              find <name>
+
+                          DESCRIPTION
+                              Searches the entire map for rooms or items
+                              matching the given name and prints their paths.
+                              ",
             true,
             pathParser: "parsePathFind"
         ),
@@ -446,7 +467,15 @@ function getCommand($command)
             [TokenType::STRING],
             [],
             [],
-            "",
+            "NAME
+                              echo - print text
+
+                          SYNOPSIS
+                              echo <text>
+
+                          DESCRIPTION
+                              Prints the given text into the terminal.
+                              ",
             true,
         ),
         "man" == $command
@@ -455,7 +484,19 @@ function getCommand($command)
             [TokenTYPE::MISC],
             [],
             [],
-            "",
+            "NAME
+                              man - display command manual
+
+                          SYNOPSIS
+                              man
+                              man <command>
+
+                          DESCRIPTION
+                              Displays the manual page for a command.
+
+                              man             Shows a list of available commands.
+                              man <command>   Shows detailed help for the given command.
+                              ",
             true,
         ),
         "cat" == $command
@@ -464,7 +505,17 @@ function getCommand($command)
             [TokenTYPE::PATH],
             [],
             [],
-            "",
+            "NAME
+                              cat - read a scroll
+
+                          SYNOPSIS
+                              cat <scrollname>
+
+                          DESCRIPTION
+                              Opens and displays the contents of a scroll
+                              if it exists in the current room
+                              and your role is high enough to read it.
+                              ",
             true,
         ),
         "touch" == $command
@@ -473,7 +524,16 @@ function getCommand($command)
             [TokenTYPE::PATH],
             [],
             [],
-            "",
+            "NAME
+                              touch - create an empty file
+
+                          SYNOPSIS
+                              touch <filename>
+
+                          DESCRIPTION
+                              Creates a new empty item (file) in the current room.
+                              If the file already exists, nothing is changed.
+                              ",
             true,
             pathParser: "parsePathNew",
         ),
@@ -483,7 +543,16 @@ function getCommand($command)
             [TokenType::OPTION, TokenType::PATH],
             ["-l", "-w"],
             [],
-            "",
+            "NAME
+                              wc - count words in a scroll
+
+                          SYNOPSIS
+                              wc <scrollname>
+
+                          DESCRIPTION
+                              Counts the number of words in a scroll
+                              if it exists in the current room.
+                              ",
             true,
             true,
             pathParser: "parsePathOptional"
@@ -494,7 +563,15 @@ function getCommand($command)
             [TokenType::KEYVALUEOPTION, TokenType::PATH],
             [],
             ["-n" => 10],
-            "",
+            "NAME
+                              head - show beginning of a scroll
+
+                          SYNOPSIS
+                              head <scrollname>
+
+                          DESCRIPTION
+                              Displays the first few lines of a scroll.
+                              ",
             true,
             true,
             pathParser: "parsePathOptional"
@@ -505,7 +582,15 @@ function getCommand($command)
             [TokenType::KEYVALUEOPTION, TokenType::PATH],
             [],
             ["-n" => 10],
-            "",
+            "NAME
+                              tail - show end of a scroll
+
+                          SYNOPSIS
+                              tail <scrollname>
+
+                          DESCRIPTION
+                              Displays the last few lines of a scroll.
+                              ",
             true,
             true,
             pathParser: "parsePathOptional"
@@ -516,7 +601,16 @@ function getCommand($command)
             [TokenType::PATH],
             [],
             [],
-            "",
+            "NAME
+                              nano - edit a scroll
+
+                          SYNOPSIS
+                              nano <scrollname>
+
+                          DESCRIPTION
+                              Opens a scroll for editing.
+                              If the scroll does not exist, it will be created.
+                              ",
         ),
         default => throw new Exception("unknown command")
     };
