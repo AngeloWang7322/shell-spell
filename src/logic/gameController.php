@@ -66,8 +66,8 @@ class GameController
 
     public function unlockNextCommand()
     {
-        $this->currentSubLvl++;
         $this->latestCommand = self::getNextSpell();
+        $this->currentSubLvl++;
         if ($this->latestCommand == NULL)
         {
             $this->levelUpUser();
@@ -123,7 +123,7 @@ class GameController
                 {
                     $response = "<br>A Spellcaster!? Haven't seen one of you people in years(fortunately...)<br>
                         Nobody was supposed to come here anymore.<br> Whats your name wanderer?<br>"
-                        . colorizeString("<br> > echo [your name]", "action-tip");
+                        . colorizeString("<br><br> > echo [your name]", "action-tip");
                     $this->requiredCommand = Commands::ECHO->value;
                     break;
                 }
@@ -136,7 +136,7 @@ class GameController
                         Activating one requires a skilled caster and the correct chant.
                         You should make good use of the your luck and use the spell you just gained<br>
                         take a look at the old scrolls lying around and read something for once, you may learn something!<br> "
-                        . colorizeString(getCommand($this->latestCommand->value)->description, "action-tip");
+                        . colorizeString("<br>" . getCommand($this->latestCommand->value)->description, "action-tip");
                     break;
                 }
             case Commands::CD->value:
@@ -248,7 +248,7 @@ class GameController
     {
         // $next =  $this->currentLevelData[$this->currentSubLvl + 1];
         return $this->currentSubLvl < count($this->currentLevelData)
-            ?  $this->currentLevelData[$this->currentSubLvl]
+            ?  $this->currentLevelData[$this->currentSubLvl + 1]
             : false;
     }
 }

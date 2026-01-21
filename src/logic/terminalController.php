@@ -43,7 +43,7 @@ function handleRequiredCommand()
             $_SESSION["gameController"]->requiredCommand = NULL;
             $_SESSION["gameController"]->unlockNextCommand();
             $_SESSION["gameController"]->getCurrentMessage();
-            return 5;
+            return -5;
         }
         executeCommand();
     }
