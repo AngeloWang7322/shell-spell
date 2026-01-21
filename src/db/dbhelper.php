@@ -271,6 +271,13 @@ class DBHelper
             requiredRole: ROLE::WANDERER,
             curDate: false
         ); 
+        $tempMap->doors["darkHall"]->doors["burntDoor"]->doors["spellGate"]->items["apprenticeAlter"] = new Alter(
+            name: "",
+            baseName:"apprenticeAlter",
+            path: ["hall", "darkHall", "burntDoor", "spellGate"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
 
         /* old map design:
 
