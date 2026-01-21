@@ -2,3 +2,5 @@
 .env
 public/.htaccess
 sql_queries.mhtml
+
+public/uploads/profile_pics

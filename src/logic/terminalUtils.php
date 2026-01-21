@@ -229,9 +229,9 @@ function getLsArray($tempRoom)
             $longest = 5;
             for ($j = 0; $j < count($tempLsArray); $j++)
             {
-                if (strlen($tempLsArray[$j][$i]) + 12 > $longest)
+                if (strlen($tempLsArray[$j][$i]) + 5 > $longest)
                 {
-                    $longest = strlen($tempLsArray[$j][$i]) + 15;
+                    $longest = strlen($tempLsArray[$j][$i]) + 5;
                 }
                 $finalArray[$j] .= $tempLsArray[$j][$i] . " ";
             }
