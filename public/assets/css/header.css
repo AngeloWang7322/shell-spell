@@ -17,8 +17,20 @@
 .header-group {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
     margin: 0px 0px;
     gap: 24px;
+}
+
+a {
+    color: white;
+    text-decoration: none !important;
+}
+
+a:visited {
+    color: white;
+
 }
 
 .header-element {
@@ -26,8 +38,8 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    min-width: fit-content;
-    width: 100px;
+    width: fit-content;
+    min-width: 128px;
     height: 40px;
     padding: 4px 12px;
     background-color: rgb(51, 51, 51);
@@ -35,8 +47,10 @@
     gap: 12px;
 }
 
+
 .header-element:hover {
     background-color: rgb(145, 145, 145);
+    margin-top: 8px
 }
 
 .title-container {
@@ -46,6 +60,10 @@
     justify-content: center;
     font-size: 36px;
     text-shadow: 2px 3px #07487e;
+}
+
+.title-container:hover {
+    margin-top: 8px;
 }
 
 @media (max-width: 1200px) {

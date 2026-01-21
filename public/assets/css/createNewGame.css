@@ -1,17 +1,31 @@
-.map-name-form{
+.map-name-form {
+    position: fixed;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     gap: 24px;
+    height: 84px;
 }
 
 .name-input {
-    width: 400px;
-    height: 64px;
+    height: 84px;
     font-size: 42px;
     background-color: rgb(69, 69, 69);
     border: 0;
     color: white;
 }
+
+.name-input:hover {
+    box-shadow: 4px 8px 0px rgb(17, 17, 17);
+
+}
+
+.name-input:focus {
+    border: 0px lined rgba(0, 0, 0, 0);
+}
+
 .name-submit-button {
     display: flex;
     align-items: center;
@@ -19,11 +33,12 @@
     height: 64px;
     width: 100px;
     border-width: 4px;
-    border-color: white; 
+    border-color: white;
     background-color: black;
-
-    p {
-    color: white;
-    font-size: 24px;
-    }
 }
+
+.button-create-map {
+    height: 100%;
+    font-size: 32px;
+}
+

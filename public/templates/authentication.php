@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     }
 }
 ?>
-<div class="form-wrapper .bs-scope">
+<div class="page-content form-wrapper">
     <h1>Register</h1>
 
     <?php if ($success): ?>
@@ -88,8 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         </div>
     <?php endif; ?>
     <br>
-    <p>Already Registered?
     <form action="login">
+Already Registered?
         <button class="btn btn-danger btn-md">Log In</button>
     </form>
 

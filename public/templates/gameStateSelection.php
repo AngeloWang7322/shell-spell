@@ -19,7 +19,7 @@ $gameStates = $dbHelper->getGameStates();
         {
             echo "
             <div class='option-wrapper'>
-            <form class='hidden-button' method='post' > 
+            <form class='state-option-wrapper' method='post' > 
                 <input type='hidden' value='loadMap' name='action'>
                 <input type='hidden' value='" . $id . "' name='mapId'>
                 <button class='hidden-button' type='submit'>
@@ -33,10 +33,10 @@ $gameStates = $dbHelper->getGameStates();
                     </div>
                 </button>
             </form>
-            <form class='hidden-button' method='post'>                    
+            <form class='delete-wrapper' method='post'>                    
                 <input type='hidden' value='deleteMap' name='action'>
                 <input type='hidden' value='" . $id . "' name='mapId'>
-                <button class='button-medium' type='submit'>
+                <button class='button-medium delete-button' type='submit'>
                     <div>delete</div>
                 </button>
             </form>

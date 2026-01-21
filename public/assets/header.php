@@ -28,7 +28,7 @@ $extraCss[] = "assets/css/header.css";
             </a>
         <?php else: ?>
             <?php if (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) == "/profile"): ?>
-                <form method="post">
+                <form class="header-group" method="post">
                     <input name="action" value="logoutUser" hidden>
                     <button type="submit" class="header-element">
                         <div class="header-element">

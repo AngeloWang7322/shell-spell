@@ -177,6 +177,7 @@ input {
     font-size: 22px;
 }
 
+
 ::-webkit-scrollbar {
     width: 4px;
     background-color: gray;
@@ -205,4 +206,8 @@ input {
         width: 84px;
         height: 84px;
     }
+    .button-medium{
+        
+    }
+    
 }

@@ -7,6 +7,7 @@ require_once "./../src/db/dbhelper.php";
 
 exitIfLoggedIn();
 
+$extraCss[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
 $extraCss[] = "/assets/css/auth.css";
 $title = "Log In";
 $errors = [];
@@ -36,9 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 }
 ?>
 
-<div class="form-wrapper container">
+<div class="page-content form-wrapper">
     <h1>Log In</h1>
-    <br>
     <form class="d-flex flex-column justify-content-center" method="post">
         <div class="form-group">
             <label>E-Mail
@@ -62,8 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         </div>
     <?php endif; ?>
     <br>
-    <div class="well"> No Account Yet? </div>
     <form action="register">
+        Have an Account?
         <button class="btn btn-danger btn-md">Register</button>
     </form>
 </div>

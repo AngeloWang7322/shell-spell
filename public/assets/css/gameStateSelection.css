@@ -14,10 +14,21 @@
     background-color: rgb(59, 59, 59);
 }
 
+.state-option-wrapper {
+    width: 75%;
+    height: 64px;
+}
+
+.delete-wrapper {
+    width: 25%;
+    height: 64px;
+}
+
 .state-option-container {
-    width: 320;
+    min-width: 100%;
     background-color: rgb(119, 25, 25);
     justify-content: space-evenly;
+    align-items: center;
     text-wrap-mode: nowrap;
 }
 
@@ -30,13 +41,11 @@
 .state-name {
     font-size: 48px;
     max-width: 66%;
-
 }
 
 .hidden-button {
     display: flex;
     flex-direction: row;
-    width: fit-content;
     /* text-wrap-mode: nowrap; */
 }
 
@@ -70,22 +79,19 @@
     align-items: space-between;
     justify-content: space-between;
     width: inherit;
+    height: 64px;
     gap: 16px;
 }
 
-.delete-button {
-    padding: 12px 16px;
-    margin: 0px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(119, 25, 25);
-    width: 64px;
-    height: 64px;
-}
 
-.delete-button:hover {
-    background-color: rgb(49, 0, 0);
+.delete-button {
+    height: 64px;
+    text-align: center;
+    text-justify: center;
+
+    div {
+        line-height: 24px;
+    }
 }
 
 .disabled {
@@ -94,5 +100,11 @@
     .state-option-container {
         background-color: rgba(59, 59, 59, 0.453);
         color: rgba(255, 255, 255, 0.178);
+    }
+}
+
+@media (max-width: 1200px) {
+    .selection-wrapper {
+        width: 600px;
     }
 }
