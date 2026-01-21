@@ -89,6 +89,7 @@ class DBHelper
                 }
             }
         }
+        $_SESSION["gameController"] = new GameController($gameState["xp"]);
         $_SESSION["user"]["xp"] = $gameState["xp"];
         $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
         $_SESSION["mapName"] = $gameState["name"];
@@ -140,7 +141,7 @@ class DBHelper
     public static function loadDefaultSession()
     {
         session_unset();
-        $_SESSION["gameController"] = new GameController(1);
+        $_SESSION["gameController"] = new GameController();
         $_SESSION["tokens"]["command"] = "";
         $_SESSION["tokens"]["path"] = [];
         $_SESSION["tokens"]["options"] = [];

@@ -232,3 +232,7 @@ function executeNano()
         $textFile
     );
 }
+
+// function executeMan(){
+//     get
+// }

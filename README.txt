@@ -76,10 +76,6 @@ Funcionalities
 
 
 
-
-
-
-
 //LEVEL 1 - Wanderer
     EXECUTE:
         - execute file 
