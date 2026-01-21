@@ -165,19 +165,22 @@ class Alter extends Item
 }
 class Spell extends Item
 {
-    public ActionType $action;
+    public Commands $spellReward;
+    public string $key;
     public function __construct(
         $name,
         $baseName,
         $path,
-        $action = null,
         $requiredRole = Role::WANDERER,
+        $spellReward,
+        $key = NULL,
         $curDate = true,
         $date = ""
     )
     {
-        $this->action = $action;
         $this->type = ItemType::SPELL;
+        $this->spellReward = $spellReward;
+        $this->key = empty($key) ? $spellReward->value : $key;
 
         parent::__construct(
             $name,
@@ -189,22 +192,18 @@ class Spell extends Item
             $date,
         );
     }
-    public function executeAction()
-    {
-        $actionFunction = $this->action->value;
-        $this->$actionFunction();
-    }
     public static function fromArray(array $data)
     {
         $requiredRole = Role::from($data["requiredRole"]);
-        $action = ActionType::from($data["action"]);
+        $spellReward = Commands::from($data["spellReward"]);
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
             path: pathFromArray($data["path"]),
-            action: $action,
             requiredRole: $requiredRole,
-            date: $data["timeOfLastChange"]
+            spellReward: $spellReward,
+            key: $data["key"],
+            date: $data["timeOfLastChange"],
         );
     }
 }

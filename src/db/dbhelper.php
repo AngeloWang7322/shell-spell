@@ -127,19 +127,21 @@ class DBHelper
         $_SESSION["tokens"]["keyValueOptions"] = [];
         $_SESSION["tokens"]["misc"] = [];
         $_SESSION["validCommands"] = ["cd", "cat"];
-        $_SESSION["history"] = [];
-        $_SESSION["history"][] = [
-            "directory" => "",
-            "command" => "> Welcome to ShellSpell !",
-            "response" => "> Cast <p1>cat [scrollname]</p1> to read the scroll"
-        ];
+        $_SESSION["mapName"] = "dungeon";
         $_SESSION["pipeCount"] = 0;
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["curRoom"] = &$_SESSION["map"];
         $_SESSION["user"]["role"] = ROLE::WANDERER;
         $_SESSION["user"]["username"] = "guest";
         $_SESSION["lastPath"] = [];
-        $_SESSION["mapName"] = "dungeon";
+        $_SESSION["response"] = "";
+        $_SESSION["history"] = [];
+        $_SESSION["history"][] = [
+            "directory" => "",
+            "command" => "",
+            "response" => "",
+        ];
+        $_SESSION["gameController"]->getCurrentMessage();
     }
     public static function getDefaultMap(): Room
     {
@@ -309,6 +311,15 @@ class DBHelper
             "secret",
             ["hall"],
             Role::ARCHIVIST,
+            "",
+            false,
+        );
+        $tempMap->items["cat.sh"] = new Spell(
+            "",
+            "cat",
+            ["hall"],
+            Role::WANDERER,
+            Commands::CAT,
             "",
             false,
         );

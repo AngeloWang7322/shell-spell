@@ -10,8 +10,7 @@ function manageExecution()
     }
     else if (!empty($_SESSION["gameController"]->requiredCommand))
     {
-        handleRequiredCommand();
-        return;
+        return handleRequiredCommand();
     }
     match ($operator = getLastOccuringElementIn($_POST["command"]))
     {
@@ -29,16 +28,32 @@ function handleDefault()
 }
 function handleRequiredCommand()
 {
-    prepareCommandExecution();
-    if ($_SESSION["tokens"]["command"] != $_SESSION["gameController"]->requiredCommand)
+    try
     {
-        throw new Exception("must use: " . $_SESSION["gameController"]->requiredCommand);
+        prepareCommandExecution();
+        if ($_SESSION["tokens"]["command"] != $_SESSION["gameController"]->requiredCommand)
+        {
+            editLastHistory("<br>" . $_POST["command"] . "<br>" . colorizeString("must use: " . $_SESSION["gameController"]->requiredCommand, "error"));
+            return;
+        }
+        else if ($_SESSION["gameController"]->requiredCommand == "echo")
+        {
+            writeNewHistory();
+
+            $_SESSION["gameController"]->requiredCommand = NULL;
+            $_SESSION["gameController"]->unlockNextCommand();
+            $_SESSION["gameController"]->getCurrentMessage();
+            return 5;
+        }
+        executeCommand();
     }
-    //maybe check if conditions are actually valid
-    executeCommand();
-    writeResponse();
-    $_SESSION["gameController"]->handleLvlUp();
-    cleanUp();
+    catch (Exception $e)
+    {
+        {
+            editLastHistory("<br>" . $_POST["command"] . "<br>" . colorizeString("must use: " . $_SESSION["gameController"]->requiredCommand, "error"));
+            return;
+        }
+    }
 }
 function handlePrompt()
 {
@@ -249,8 +264,8 @@ function cleanUp()
     $_SESSION["tokens"]["misc"] = [];
     $_SESSION["inputCommand"] = "";
     $_SESSION["response"] = "";
-
     $_SESSION["pipeCount"] = 0;
+
     unset(
         $_SESSION["promptData"],
         $_SESSION["stdout"],
@@ -260,5 +275,6 @@ function mustPreserveState()
 {
     return isset($_SESSION["pipeCount"])
         && $_SESSION["pipeCount"] > 0
-        || !empty(($_SESSION["promptData"]));
+        || isset(($_SESSION["promptData"]))
+        || !empty($_SESSION["gameController"]->requiredCommand);
 }
