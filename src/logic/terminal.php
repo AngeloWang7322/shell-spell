@@ -233,6 +233,12 @@ function executeNano()
     );
 }
 
-// function executeMan(){
-//     get
-// }
+function executeMan()
+{
+    $description = getCommand($_SESSION["tokens"]["misc"])->description;
+
+    writeOutput(
+        getLinesFromText($description),
+        $description
+    );
+}

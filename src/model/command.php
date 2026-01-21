@@ -354,6 +354,10 @@ class Command
             return implode(" ", array_slice($tokens, 1));
         }
     }
+    static public function parseMiscMan($arg)
+    {
+        return self::parseCommand($arg);
+    }
 }
 
 function getCommand($command)
@@ -366,24 +370,24 @@ function getCommand($command)
             [TokenType::PATH],
             [],
             [],
-            "NAME
-                              cd - change current room
-
-                        SYNOPSIS
-                              cd <path>
-                              cd ..
-                              cd /
-                              cd -
-
-                        DESCRIPTION
-                              Changes the current room to the given destination.
-
-                              cd <path>    Move into the specified room if it exists.
-                              cd ..        Move to the parent room.
-                              cd /         Move to the root room.
-                              cd -         Move back to the previous room.
-
-                              Movement may fail if the target room does not exist
+            "NAME<br>
+                          &\t\t\t\tcd - change current room<br>
+                        <br>
+                        SYNOPSIS<br>
+                              cd <path><br>
+                              cd ..<br>
+                              cd /<br>
+                              cd -<br>
+                        <br>
+                        DESCRIPTION<br>
+                              Changes the current room to the given destination.<br>
+                        <br>
+                              cd <path>    Move into the specified room if it exists.<br>
+                              cd ..        Move to the parent room.<br>
+                              cd /         Move to the root room.<br>
+                              cd -         Move back to the previous room.<br>
+                        <br>
+                              Movement may fail if the target room does not exist<br>
                               or your role is not high enough to enter it.",
         ),
         "mkdir" == $command
@@ -555,7 +559,6 @@ function getCommand($command)
                               ",
             stringParser: "parseStringEcho",
             isWriter: true,
-            true,
         ),
         "man" == $command
         => new Command(
@@ -577,6 +580,7 @@ function getCommand($command)
                               man <command>   Shows detailed help for the given command.
                               ",
             true,
+            miscParser: "parseMiscMan"
         ),
         "cat" == $command
         => new Command(
