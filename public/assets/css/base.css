@@ -1,0 +1,208 @@
+body {
+    padding: 0;
+    margin: 0;
+    background-color: black;
+    overflow-y: hidden;
+    color: white;
+}
+
+button {
+    padding: .6rem 1rem;
+    border: 0px;
+    text-shadow: none;
+}
+
+:root {
+    font-family:
+        "Jersey 10"
+    ;
+    background-color: black;
+    color: white;
+    font-size: 22px;
+    min-height: 100vh;
+    padding: 0;
+}
+
+p,
+body {
+    font-family: "Jersey 10";
+}
+
+main {
+    max-width: 800px;
+    min-height: 100vh;
+    margin: 2rem auto;
+}
+
+.ui {
+    margin-top: 20px;
+    position: absolute;
+}
+
+.page-content {
+    display: flex;
+    position: relative;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%, -50%);
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.icon-small {
+    width: 18px;
+    image-rendering: pixelated;
+}
+
+.icon-medium {
+    width: 30px;
+    image-rendering: pixelated;
+}
+
+.icon-large {
+    width: 52px;
+    image-rendering: pixelated;
+}
+
+.center-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.button-medium {
+    background-color: rgb(119, 25, 25);
+    text-shadow: 2px 4px 0px black;
+
+    * {
+        transform: translate(-1px, -2px);
+    }
+}
+
+.button-medium:hover {
+    box-shadow: 2px 4px 0px rgb(61, 11, 11);
+    transform: translate(-2px, -4px);
+    text-shadow: 1px 2px 4px black;
+
+    * {
+        transform: translate(1px, 2px);
+    }
+}
+
+.button-large {
+    background-color: rgb(119, 25, 25);
+    text-shadow: 4px 8px 0px rgba(0, 0, 0, 0.644);
+
+    * {
+        transform: translate(-2px, -4px);
+    }
+}
+
+.button-large:hover {
+    box-shadow: 4px 8px 0px rgb(61, 11, 11);
+    transform: translate(-4px, -8px);
+    text-shadow: 1px 2px 4px black;
+
+    * {
+        transform: translate(2px, 4px);
+    }
+}
+
+
+p1 {
+    color: rgb(255, 201, 209);
+}
+
+.wanderer {
+    color: rgb(253, 250, 199);
+}
+
+.apprentice {
+    color: rgb(171, 253, 139);
+}
+
+.archivist {
+    color: rgb(109, 232, 248);
+}
+
+.conjurer {
+    color: rgb(165, 117, 255);
+}
+
+.root {
+    color: tomato;
+}
+
+.page-title {
+    z-index: 9999;
+    margin-bottom: 64px;
+    top: 7vh;
+    font-size: 57px;
+    font-family: "Jersey 10";
+    text-shadow: 2px 4px 0px rgb(102, 102, 102);
+    margin-top: -32px;
+}
+
+.hidden-button {
+    background-color: rgba(0, 0, 0, 0);
+    width: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    display: inherit;
+    color: white;
+    text-decoration: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    font-family:
+        "Jersey 10"
+    ;
+    color: white;
+}
+
+input {
+    font-family:
+        "Jersey 10"
+    ;
+    font-size: 22px;
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+    background-color: gray;
+}
+
+@media (max-width: 1200px) {
+    body {
+        font-size: 40px;
+    }
+
+    h1 {
+        font-size: 72px;
+    }
+
+    .icon-small {
+        width: 34px;
+        height: 34px;
+    }
+
+    .icon-medium {
+        width: 66px;
+        height: 66x;
+    }
+
+    .icon-large {
+        width: 84px;
+        height: 84px;
+    }
+}

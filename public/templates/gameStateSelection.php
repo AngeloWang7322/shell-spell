@@ -10,7 +10,7 @@ $gameStates = $dbHelper->getGameStates();
 ?>
 
 <html>
-<div class="center-wrapper">
+<div class="page-content">
     <div class="page-title">SELECT GAME</div>
 
     <div class="selection-wrapper">
@@ -23,29 +23,26 @@ $gameStates = $dbHelper->getGameStates();
                 <input type='hidden' value='loadMap' name='action'>
                 <input type='hidden' value='" . $id . "' name='mapId'>
                 <button class='hidden-button' type='submit'>
-                    <div class='state-option-container'>
-                        <div class='state-name'>"
-                . $data['name'] .
-                "  </div>
-                            <p class='" . $data['rank'] . "'>"
+                    <div class='button-large state-option-container'>
+                        <div class='state-name'>" .
+                $data['name'] .
+                "</div>
+                        <div class='" . $data['rank'] . "'>"
                 . $data["rank"] .
-                "</p>
+                "</div>
                     </div>
                 </button>
             </form>
-            <form class='' method='post'>                    
+            <form class='hidden-button' method='post'>                    
                 <input type='hidden' value='deleteMap' name='action'>
                 <input type='hidden' value='" . $id . "' name='mapId'>
-                <button class='delete-button' type='submit'>
-                    delete
+                <button class='button-medium' type='submit'>
+                    <div>delete</div>
                 </button>
             </form>
             </div>
             ";
         }
-        ?>
-
-        <?php
         echo "</button></form>";
         for ($i = 0; $i < 3 - count($gameStates); $i++)
         {
@@ -56,15 +53,12 @@ $gameStates = $dbHelper->getGameStates();
             ";
         }
         ?>
-        <br>
-        <a href="newgame" class="<?php if (count($gameStates) >= 3) echo 'disabled' ?>">
-            <div class="state-option-container">
-                <div class="state-name"> NEW GAME</div>
+        <a class="new-game" href="newgame" class="<?php if (count($gameStates) >= 3) echo 'disabled' ?>">
+            <div class="button-large new-game-button">
+                <div>NEW GAME</div>
             </div>
         </a>
     </div>
-
-
 </div>
 
 </html>

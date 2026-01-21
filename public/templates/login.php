@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     try
     {
         $dbHelper->loginUser($password, $email);
-        header('Location: selection');
+        header('Location: menu');
     }
     catch (Exception $e)
     {
@@ -38,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
 <div class="form-wrapper container">
     <h1>Log In</h1>
-
     <br>
     <form class="d-flex flex-column justify-content-center" method="post">
         <div class="form-group">

@@ -1,0 +1,61 @@
+.header-wrapper {
+    display: flex;
+    width: 100vw;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    padding: 36px 24px;
+    margin: 0px;
+    background-color: rgba(255, 255, 255, 0);
+    text-wrap: no-wrap;
+    text-wrap-mode: nowrap;
+    height: 32px;
+    overflow: hidden;
+    font-family: "Jersey 10";
+}
+
+.header-group {
+    display: flex;
+    flex-direction: row;
+    margin: 0px 0px;
+    gap: 24px;
+}
+
+.header-element {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    min-width: fit-content;
+    width: 100px;
+    height: 40px;
+    padding: 4px 12px;
+    background-color: rgb(51, 51, 51);
+    border-radius: 2px;
+    gap: 12px;
+}
+
+.header-element:hover {
+    background-color: rgb(145, 145, 145);
+}
+
+.title-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    text-shadow: 2px 3px #07487e;
+}
+
+@media (max-width: 1200px) {
+    .title-container {
+        font-size: 64px;
+    }
+
+    .header-element {
+        height: 52px;
+        width: 200px;
+        font-size: 42px;
+    }
+}

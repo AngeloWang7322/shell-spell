@@ -17,7 +17,7 @@ function editScroll()
     }
     else
     {
-        $tempScroll->content = $_POST["newFileContent"];
+        $tempScroll->content = strip_tags($_POST["newFileContent"]);
     }
     closeScroll();
 }

@@ -78,8 +78,10 @@ function handleCommandChain($seperator)
     splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
     $_POST["command"] = $beforeSeperator;
     manageExecution();
+
     $_SESSION["tokens"] = [];
     $_POST["command"] = $afterSeperator;
+
     prepareCommandExecution();
     executeCommand();
 }
@@ -99,7 +101,6 @@ function handleRedirect($seperator)
     $_POST["command"] = $command;
     manageExecution();
     $_SESSION["response"] = "";
-
     checkIfCanRedirect($redirectFilePath, $seperator);
     addStdoutToFile($seperator, $redirectFilePath);
 }
@@ -136,12 +137,12 @@ function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperato
 }
 function checkIfCanRedirect($redirectFilePath, $seperator)
 {
-    Command::parsePath($redirectFilePath);
+    Command::parsePath($redirectFilePath,);
     if (!isset($_SESSION["stdout"])) throw new Exception("invalid usage of '" . $seperator . "' operator");
 }
 function addStdoutToFile($seperator, $redirectFilePath)
 {
-    $newStr = arrayKeyValueToString($_SESSION["stdout"]);
+    $newStr = strip_tags(arrayKeyValueToString($_SESSION["stdout"]));
     $destItem = &getItem($redirectFilePath);
     if ($seperator == ">>")
     {
@@ -184,14 +185,8 @@ function handleException(Exception $e)
 {
     editMana($e->getCode());
 
-    if ($e->getCode() == 0)
-    {
-        $_SESSION["response"] = colorizeString($e->getMessage(), "error");
-    }
-    else
-    {
-        $_SESSION["response"] = $e->getMessage();
-    }
+    $_SESSION["response"] = colorizeString(colorizeResponseForRank($e->getMessage()), "error");
+    $_SESSION["map"] = $_SESSION["backUpMap"];
 }
 function closeProcess()
 {

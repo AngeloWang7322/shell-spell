@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use FFI\CData;
+
 function startTerminalProcess()
 {
     try
@@ -19,39 +20,31 @@ function startTerminalProcess()
 
 function executeCd()
 {
-    switch ($_SESSION["tokens"]["path"][0][0])
-    {
-        case "/":
-            {
-                $_SESSION["curRoom"] = &$_SESSION["map"];
-                pushNewLastPath($_SESSION["curRoom"]->path);
-                break;
-            }
-        case "-":
-            {
-                $_SESSION["curRoom"] = &getRoom(array_pop($_SESSION["lastPath"]));
-                break;
-            }
-        default:
-            {
-                pushNewLastPath($_SESSION["curRoom"]->path);
-                $_SESSION["curRoom"] = &getRoom($_SESSION["tokens"]["path"][0], true);
-                break;
-            }
-    }
+    moveWithCdOptions();
 }
 function executeMkdir()
 {
     for ($i = 0; $i < count($_SESSION["tokens"]["path"]); $i++)
     {
         $roomName = end($_SESSION["tokens"]["path"][$i]);
-        $tempRoom = &getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1));
+        $tempRoom = &getRoom(
+            array_slice(
+                $_SESSION["tokens"]["path"][0],
+                0,
+                -1
+            )
+        );
 
-        if (in_array($roomName, array_keys($tempRoom->doors)) && !isset($_SESSION["promptData"]))
+        if (
+            in_array(
+                $roomName,
+                array_keys($tempRoom->doors)
+            ) && !isset($_SESSION["promptData"])
+        )
         {
-            echo "<br>creating prompt";
-            createPrompt($roomName . " exists, are you sure you want to replace it?",);
+            throw new Exception("room already exists");
         }
+
         $tempRoom->doors[$roomName] = new Room(
             name: $roomName,
             path: $tempRoom->path,
@@ -61,31 +54,37 @@ function executeMkdir()
 }
 function executeLs()
 {
-    $path = isset($_SESSION["tokens"]["path"][0]) ? $_SESSION["tokens"]["path"][0] : NULL;
-    $tempRoom = getRoom($path, true);
-    getLsArray($tempRoom);
+    $path = $_SESSION["tokens"]["path"][0] ?? [];
+
+    getLsArray(
+        getRoom(
+            $path,
+            true
+        )
+    );
 }
 
 function executePwd()
 {
     $pwd = implode("/", $_SESSION["curRoom"]->path);
-    $_SESSION["stdout"] = $pwd;
-    $_SESSION["response"] = $pwd;
+    writeOutput(
+        $pwd,
+        $pwd
+    );
 }
 
 function executeRm()
 {
-    for ($i = 0; $i < count($_SESSION["tokens"]["path"]); $i++)
-    {
-        deleteElement($_SESSION["tokens"]["path"][$i]);
-    }
+    deleteElements($_SESSION["tokens"]["path"]);
 }
 
 function executeCp()
 {
+    $matches = getMatchingElements();
     $destRoom = &getRoom($_SESSION["tokens"]["path"][1]);
+
     copyElementsTo(
-        getMatchingElements(),
+        $matches,
         $destRoom
     );
     updatePaths($destRoom);
@@ -93,33 +92,36 @@ function executeCp()
 
 function executeMv()
 {
+    $matches = getMatchingElements();
+
     executeCp();
-    deleteElement($_SESSION["tokens"]["path"][0], false);
+    deleteElements(
+        getPathsFromElements($matches),
+        false
+    );
 }
 
 function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
-    $_SESSION["response"] = $catItem->content;
-    $_SESSION["stdout"] = getLinesFromText($catItem->content);
+
+    writeOutput(
+        getLinesFromText($catItem->content),
+        $catItem->content
+    );
 }
 
 function executeTouch()
 {
     $fileName = array_pop($_SESSION["tokens"]["path"][0]);
-
     $destRoom = &getRoom($_SESSION["tokens"]["path"][0]);
 
     if (!isNameValid($fileName, "." . ItemType::SCROLL->value))
-    {
         throw new Exception("invalid name given");
-    }
+
     if (key_exists($fileName, $destRoom->items))
-    {
         $destRoom->items[$fileName]->timeOfLastChange = generateDate(true);
-    }
     else
-    {
         $destRoom->items[$fileName] = new Scroll(
             name: $fileName,
             baseName: "",
@@ -128,48 +130,38 @@ function executeTouch()
             content: "",
             curDate: true
         );
-    }
 }
 function executeGrep()
 {
-    $matchingLines = [];
-    $searchMatching = true;
-    $searchRecursive = false;
-    $isCaseInsensitive = false;
+    $matchingLines = callCorrectGrepFunction();
 
-    getOptionsGrep(
-        $searchMatching,
-        $searchRecursive,
-        $isCaseInsensitive
+    writeOutput(
+        $matchingLines,
+        arrayKeyValueToString($matchingLines)
     );
-
-    $matchingLines = callCorrectGrepFunction(
-        $searchMatching,
-        $searchRecursive,
-        $isCaseInsensitive
-    );
-
-    $_SESSION["stdout"] = $matchingLines;
-    $_SESSION["response"] = arrayKeyValueToString($matchingLines);
 }
 
 function executeExecute()
 {
-    $itemExec = &getItem(explode("/", substr($_SESSION["tokens"]["command"], 2)));
-    if (is_a($itemExec, Alter::class) || is_a($itemExec, Spell::class))
-    {
+    $itemExec = &getItem(
+        explode(
+            "/",
+            substr($_SESSION["tokens"]["command"], 2)
+        )
+    );
+
+    if (isExecutable($itemExec))
         $itemExec->executeAction();
-    }
     else
-    {
         throw new Exception("item not executable");
-    }
 }
 
 function executeEcho()
 {
-    $_SESSION["stdout"] = getLinesFromText($_SESSION["tokens"]["command"]);
-    $_SESSION["response"] = substr($_POST["command"], 5);
+    writeOutput(
+        getLinesFromText($_SESSION["tokens"]["command"]),
+        $_SESSION["tokens"]["strings"][0]
+    );
 }
 
 function executeFind()
@@ -177,13 +169,26 @@ function executeFind()
     $findString = "";
     $findFunction = "";
     $startingRoom = getRoom($_SESSION["tokens"]["path"][0]);
-    $findResult = [];
+    $matches = [];
 
-    getOptionsFind($findFunction, $findString,);
+    getOptionsFind(
+        $findString,
+        $findFunction,
+    );
 
-    $findResult = callFunctionOnRoomRec($startingRoom, "findByName", $findFunction, $findString);
-    $_SESSION["stdout"] = $findResult;
-    $_SESSION["response"] = implode("<br>", $findResult,);
+    $matches = pathArrayFromElements(
+        getElementsFind(
+            $startingRoom,
+            $findFunction,
+            $findString
+        )
+    );
+
+    writeOutput(
+        $matches,
+        implode("<br>", $matches)
+
+    );
 }
 
 function executeWc()
@@ -191,27 +196,49 @@ function executeWc()
     $lines = getLines();
     $counts = getCounts($lines);
 
-    $_SESSION["stdout"] = $counts;
-    $_SESSION["response"] = arrayKeyValueToString($counts, " ");
+    writeOutput(
+        $counts,
+        arrayKeyValueToString($counts, " ")
+    );
 }
 function executeHead()
 {
     $lines = getLines();
     $lines = getPartialArray($lines);
-    $_SESSION["stdout"] = $lines;
-    $_SESSION["response"] = arrayKeyValueToString($lines, " ");
+
+    writeOutput(
+        $lines,
+        arrayKeyValueToString($lines, " ")
+    );
 }
 function executeTail()
 {
-    $lines = getLines();
-    $lines = getPartialArray($lines, false);
-    $_SESSION["stdout"] = $lines;
-    $_SESSION["response"] = arrayKeyValueToString($lines, " ");
+    $lines = getPartialArray(
+        getLines(),
+        false
+    );
+
+    writeOutput(
+        $lines,
+        arrayKeyValueToString($lines, " ")
+    );
 }
 
 function executeNano()
 {
     $textFile = getItem($_SESSION["tokens"]["path"][0]);
 
-    openScrollIfIsScroll($textFile);
+    openScrollIfIsScroll(
+        $textFile
+    );
+}
+
+function executeMan()
+{
+    $description = getCommand($_SESSION["tokens"]["misc"])->description;
+
+    writeOutput(
+        getLinesFromText($description),
+        $description
+    );
 }

@@ -3,49 +3,10 @@ $title = "Shell spell";
 $extraCss[] = '/assets/css/main.css';
 $script = "main.js";
 
-$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["user"]["role"]->value . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["user"]["role"]->value);
+$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["mapName"] . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["user"]["role"]->value);
 ?>
 
 <div class="game-container">
-    <div class="header-wrapper">
-        <div class="header-group">
-            <div class="title-container">
-                Shell Spell
-                <img class="icon-medium" src="../assets/images/favicon-32x32.png">
-            </div>
-        </div>
-        <div class="header-group">
-            <?php
-            //HEADER
-            if (!isset($_SESSION["user"]["id"]))
-            {
-                echo '            
-            <a href="register">
-                <div class="header-element">
-                    Register
-                    <img class="icon-small" src="../assets/images/icon_register_white.png" alt="register_icon">
-                </div>
-            </a>
-            <a href="login">
-                <div class="header-element">
-                    Sign In
-                    <img class="icon-small" src="../assets/images/icon_profile_white.png" alt="profile_icon">
-                </div>
-            </a>';
-            }
-            else
-            {
-                echo '
-            <a href="profile">
-                <div class="header-element">
-                    Profile
-                    <img class="icon-small" src="../assets/images/icon_profile_white.png" alt="profile_icon">
-                </div>
-            </a>';
-            }
-            ?>
-        </div>
-    </div>
     <div class="elements-container">
         <div class="elements-wrapper">
             <?php
@@ -78,14 +39,18 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
     if (isset($_SESSION["openedScroll"]))
     {
         echo '
-        <div class="backdrop"></div>
         <div class="scroll-container">
             <div class="header-container">
                 <h1 class="scroll-header">' . $_SESSION["openedScroll"]["header"] . '</h1>
             </div>
             <form class="scroll-content" method="post">
                 <input type="hidden" value="editScroll" name="action">
-                <input name="newFileContent" class="file-text-input" autofocus autocomplete="off" value="' . htmlentities($_SESSION["openedScroll"]["content"]) . '"></input>
+                <textarea name="newFileContent" class="file-text-input">'
+            .
+            $_SESSION["openedScroll"]["content"]
+            .
+            '</textarea>
+            <button type="submit" class="save-scroll-button"><h3>SAVE</h3></button>
             </form>
         </div>';
     }
@@ -105,9 +70,9 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
             </div>
             <div class="input-line">
                 <div class="base-string">
-                    <?php
+                    <?=
                     //INPUT LINE
-                    echo $baseString;
+                    $baseString
                     ?>
                 </div>
                 <form class="command-input" method="post">
@@ -117,16 +82,13 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                 </form>
             </div>
             <div class="mana-display-container">
-                <div class="mana-bar" style="width:
-                <?php
-                //MANA
-                echo $_SESSION["curMana"] / $_SESSION["maxMana"] * 100;
-                ?>%;">
-                    <h3 class="mana-text">
-                        MANA
-                    </h3>
+                <div class="mana-bar" style="width: <?= $_SESSION["gameController"]->xpPercentage ?>%;">
+                    <h4 class="mana-text">
+                        <?=
+                        $_SESSION["user"]["role"]->value
+                        ?>
+                    </h4>
                 </div>
-
             </div>
         </div>
     </div>

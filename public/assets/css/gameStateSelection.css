@@ -1,63 +1,97 @@
-.state-option-container, .empty-option-container {
+.state-option-container,
+.empty-option-container {
     display: flex;
-    flex-direction: row;    
-    margin-bottom: 32px;
+    flex-direction: row;
+    padding: 12px 16px;
+    margin: 0px;
     align-items: center;
     justify-content: space-around;
     text-align: center;
     text-justify: center;
     width: 100%;
     height: 64px;
-    padding: 12px 0px;   
+    gap: 24px;
     background-color: rgb(59, 59, 59);
 }
-.state-option-container:hover{
-    background-color: rgb(29, 29, 29);
+
+.state-option-container {
+    width: 320;
+    background-color: rgb(119, 25, 25);
+    justify-content: space-evenly;
+    text-wrap-mode: nowrap;
 }
-.empty-option-container{
+
+.empty-option-container {
     background-color: rgba(63, 63, 63, 0.228);
     border: 4px dashed gray;
     font-size: 32px;
 }
+
 .state-name {
     font-size: 48px;
-    width: fit-content;
     max-width: 66%;
+
+}
+
+.hidden-button {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    /* text-wrap-mode: nowrap; */
+}
+
+.new-game {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.new-game-button {
+    padding: 6px 54px;
+    text-wrap-mode: nowrap;
+    font-size: 54px;
 }
 
 .selection-wrapper {
     height: fit-content;
     width: 420px;
+    gap: 32px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
+    font-family: "Jersey 10";
 }
-.option-wrapper{
+
+.option-wrapper {
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+    align-items: space-between;
+    justify-content: space-between;
+    width: inherit;
     gap: 16px;
 }
-.delete-button{
-    padding: 0;
-    margin: 0;
+
+.delete-button {
+    padding: 12px 16px;
+    margin: 0px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 0;
     background-color: rgb(119, 25, 25);
     width: 64px;
-    height: 42px;
+    height: 64px;
 }
+
 .delete-button:hover {
     background-color: rgb(49, 0, 0);
 }
-.disabled{
+
+.disabled {
     pointer-events: none;
-    .state-option-container{
+
+    .state-option-container {
         background-color: rgba(59, 59, 59, 0.453);
         color: rgba(255, 255, 255, 0.178);
     }

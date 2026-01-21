@@ -1,0 +1,10 @@
+.not-found {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 57px;
+    font-family: "Jersey 10";
+    text-shadow: 2px 4px 0px rgb(102, 102, 102);
+    text-align: center;
+}

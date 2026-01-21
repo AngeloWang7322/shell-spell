@@ -1,3 +1,8 @@
+<?php
+$extraCss[] = "/assets/css/notFound.css";
+?>
 <div class="page-content">
-    PAGE NOT FOUND !
+    <div class="not-found">
+        ! PAGE NOT FOUND !<br>404
+    </div>
 </div>
