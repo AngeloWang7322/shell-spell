@@ -31,29 +31,29 @@ function handleRequiredCommand()
     try
     {
         prepareCommandExecution();
-        if ($_SESSION["tokens"]["command"] != $_SESSION["gameController"]->requiredCommand)
-        {
-            editLastHistory("<br>" . $_POST["command"] . "<br>" . colorizeString("must use: " . $_SESSION["gameController"]->requiredCommand, "error"));
-            return;
-        }
-        else if ($_SESSION["gameController"]->requiredCommand == "echo")
-        {
-            writeNewHistory();
-
-            $_SESSION["gameController"]->requiredCommand = NULL;
-            $_SESSION["gameController"]->unlockNextCommand();
-            $_SESSION["gameController"]->getCurrentMessage();
-            return -5;
-        }
-        executeCommand();
     }
     catch (Exception $e)
     {
-        {
-            editLastHistory("<br>" . $_POST["command"] . "<br>" . colorizeString("must use: " . $_SESSION["gameController"]->requiredCommand, "error"));
-            return;
-        }
+        editLastHistory("<br>" . $_POST["command"] . "<br>" . colorizeString("must use: " . $_SESSION["gameController"]->requiredCommand, "error"));
+        throw new Exception("", -1);
     }
+    if ($_SESSION["tokens"]["command"] != $_SESSION["gameController"]->requiredCommand)
+    {
+        editLastHistory("<br>" . $_POST["command"] . "<br>" . colorizeString("must use: " . $_SESSION["gameController"]->requiredCommand, "error"));
+        return;
+    }
+    else if ($_SESSION["gameController"]->requiredCommand == "echo")
+    {
+        writeNewHistory();
+        $_SESSION["gameController"]->requiredCommand = NULL;
+        $_SESSION["gameController"]->unlockNextCommand();
+        $_SESSION["gameController"]->getCurrentMessage();
+        cleanUp();
+        throw new Exception("", -1);
+    }
+    executeCommand();
+
+    // throw new Exception("", -1);
 }
 function handlePrompt()
 {

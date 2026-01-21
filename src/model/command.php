@@ -167,7 +167,7 @@ class Command
     }
     static public function parseCommand($arg)
     {
-        if (Commands::tryFrom($arg) != NULL)
+        if (in_array($arg, $_SESSION["gameController"]->unlockedCommands))
         {
             return $arg;
         }
@@ -179,7 +179,7 @@ class Command
             }
             else
             {
-                throw new Exception("unknown commandasdasd");
+                throw new Exception("unknown command");
             }
         }
     }

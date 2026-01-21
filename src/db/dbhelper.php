@@ -124,7 +124,6 @@ class DBHelper
     public static function loadDefaultSession()
     {
         session_unset();
-        $_SESSION["gameController"] = new GameController();
         $_SESSION["tokens"]["command"] = "";
         $_SESSION["tokens"]["path"] = [];
         $_SESSION["tokens"]["options"] = [];
@@ -145,6 +144,7 @@ class DBHelper
             "command" => "",
             "response" => "",
         ];
+        $_SESSION["gameController"] = new GameController();
         $_SESSION["gameController"]->getCurrentMessage();
     }
     public static function getDefaultMap(): Room

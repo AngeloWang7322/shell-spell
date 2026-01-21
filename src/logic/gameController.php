@@ -68,6 +68,7 @@ class GameController
     {
         $this->latestCommand = self::getNextSpell();
         $this->currentSubLvl++;
+        array_push($this->unlockedCommands, $this->latestCommand->value);
         if ($this->latestCommand == NULL)
         {
             $this->levelUpUser();
@@ -95,9 +96,12 @@ class GameController
         $this->unlockedCommands = [];
         for ($i = 1; $i < $this->userRank->rank(); $i++)
         {
-            foreach (current(self::$levelData) as $command)
+            foreach (current(self::$levelData) as $level)
             {
-                array_push($this->unlockedCommands, $command);
+                foreach ($level as $command)
+                {
+                    array_push($this->unlockedCommands, $command->value);
+                }
             }
             next(self::$levelData);
         }
@@ -105,11 +109,12 @@ class GameController
         $percentage = 100 / count($this->currentLevelData);
         $xp %= 100;
         $this->currentSubLvl = 0;
+        $this->unlockedCommands[] = current($this->currentLevelData)->value;
         while ($xp > $percentage)
         {
             $this->currentSubLvl++;
             $xp -= $percentage;
-            array_push($this->unlockedCommands, current($this->currentLevelData));
+            array_push($this->unlockedCommands, current($this->currentLevelData)->value);
             next($this->currentLevelData);
         }
         return current($this->currentLevelData);
@@ -136,14 +141,14 @@ class GameController
                         Activating one requires a skilled caster and the correct chant.
                         You should make good use of the your luck and use the spell you just gained<br>
                         take a look at the old scrolls lying around and read something for once, you may learn something!<br> "
-                        . colorizeString("<br>" . getCommand($this->latestCommand->value)->description, "action-tip");
+                        . colorizeString("<br> cat [filename]", "action-tip");
                     break;
                 }
             case Commands::CD->value:
                 {
                     $response = "Finally you learned how to walk, now you're a true wanderer,(Haha even more Puny now!)<br>
                         How about you look around here and get used to your new spell.<br>"
-                        . colorizeString(getCommand($this->latestCommand->value)->description, "action-tip");
+                        . colorizeString("<br>cd [doorname]", "action-tip");
                     break;
                 }
             case Commands::MAN->value:
@@ -239,15 +244,15 @@ class GameController
     {
 
         $message =
-            " ------- strangevoice ------- <br><br>" .
+            " ------- strangevoice ------- <br" .
             $message .
-            "<br><br>------------------------------ <br>";
+            "<br>------------------------------ <br>";
         editLastHistory($message);
     }
     public function getNextSpell()
     {
         // $next =  $this->currentLevelData[$this->currentSubLvl + 1];
-        return $this->currentSubLvl < count($this->currentLevelData)
+        return $this->currentSubLvl <= count($this->currentLevelData)
             ?  $this->currentLevelData[$this->currentSubLvl + 1]
             : false;
     }

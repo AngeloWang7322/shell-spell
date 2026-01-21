@@ -8,10 +8,11 @@ function startTerminalProcess()
 {
     try
     {
-        if (manageExecution() == -5) return;
+        manageExecution();
     }
     catch (Exception $e)
     {
+        if ($e->getCode() == -1) return;
         handleException($e);
     }
 
