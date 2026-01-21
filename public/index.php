@@ -18,7 +18,7 @@ require_once __DIR__ . "/../src/logic/terminalUtils.php";
 require_once __DIR__ . "/../src/logic/gameController.php";
 
 session_start();
- session_unset();
+// session_unset();
 
 echo "<div class='ui'>";
 if (!isset($_SESSION["map"]))

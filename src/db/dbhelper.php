@@ -33,15 +33,12 @@ class DBHelper
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password_hash']))
-        {
+        if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['user']["name"] = $user['username'];
             $_SESSION["user"]["id"] = $user["id"];
             $_SESSION["isLoggedIn"] = true;
             $_SESSION["profile_pic"] = $user["profile_pic_path"] ?? null;
-        }
-        else
-        {
+        } else {
             throw new Exception("Email oder Passwort falsch");
         }
     }
@@ -90,8 +87,7 @@ class DBHelper
         ]);
         $statesData = [];
         $response = (array) $fetchStatesData->fetchAll();
-        foreach ($response as $data)
-        {
+        foreach ($response as $data) {
             $statesData[$data["id"]]["name"] = $data["name"];
             $statesData[$data["id"]]["rank"] = getRankFromXp($data["xp"])->value;
         }
@@ -149,7 +145,7 @@ class DBHelper
     }
     public static function getDefaultMap(): Room
     {
-         
+
         $tempMap = new Room(
             "hall",
             curDate: false,
@@ -164,8 +160,8 @@ class DBHelper
         $tempMap->path = ["hall"];
 
 
-        $tempMap->doors["dark_hall"] = new Room(
-            name: "dark_hall",
+        $tempMap->doors["darkHall"] = new Room(
+            name: "darkHall",
             path: ["hall"],
             requiredRole: Role::WANDERER,
             curDate: false
@@ -275,15 +271,39 @@ class DBHelper
             path: ["hall", "darkHall", "burntDoor"],
             requiredRole: ROLE::WANDERER,
             curDate: false
-        ); 
+        );
         $tempMap->doors["darkHall"]->doors["burntDoor"]->doors["spellGate"]->items["apprenticeAlter"] = new Alter(
             name: "",
-            baseName:"apprenticeAlter",
+            baseName: "apprenticeAlter",
             path: ["hall", "darkHall", "burntDoor", "spellGate"],
             requiredRole: ROLE::WANDERER,
             curDate: false
         );
+        $tempMap->doors["darkHall"]->doors["darkPassage"]->doors["mysteriousStaircase"] = new Room(
+            name: "",
+            path: ["hall", "darkHall", "darkPassage"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["rustyCell"]->doors["hidden"]->items["oldNotebook.txt"] = new Scroll(
+            name: "",
+            baseName: "oldNotebook",
+            path: ["hall", "darkHall", "rustyCell", "hidden"],
+            requiredRole: ROLE::WANDERER,
+            content: "Day 14.<br>
 
+                The door sealed behind me again.<br>  
+                I hear whispers in the walls, counting my breaths.<br>
+                <br>
+                I carved commands into stone, hoping someone would follow.<br>  
+                If you read this, do not trust the voices of the whispers.<br>  
+                <br>
+                Only the one who lists the unseen paths<br>  
+                will find the way out.<br>
+                <br>
+                May the shell guide you.",
+            curDate: false
+        );
 
         $tempMap->items["execute.sh"] = new Spell(
             "",
@@ -312,7 +332,7 @@ class DBHelper
             "",
             false
         );
-        
+
         /* old map design:
 
          $_SESSION["curRoom"] = &$tempMap;
@@ -542,12 +562,12 @@ class DBHelper
                 );
 
 
-                    $tempMap->items["mysteriousNote.txt"] = new Scroll(
-                        "",
-                        "mysteriousNote",
-                        ["hall"],
-                        Role::WANDERER,
-                        "Welcome, wanderer.<br>
+                $tempMap->items["mysteriousNote.txt"] = new Scroll(
+                    "",
+                    "mysteriousNote",
+                    ["hall"],
+                    Role::WANDERER,
+                    "Welcome, wanderer.<br>
                     <br>
                     You have entered the realm of ShellSpell<br> 
                     a dungeon shaped like a command line.<br>
@@ -802,14 +822,10 @@ class DBHelper
 }
 function getRankFromXp($xp): Role
 {
-    for ($i = 1; $i <= count(Role::cases()); $i++)
-    {
-        if ($xp <= $i * 100)
-        {
-            foreach (Role::cases() as $role)
-            {
-                if ($i == 1)
-                {
+    for ($i = 1; $i <= count(Role::cases()); $i++) {
+        if ($xp <= $i * 100) {
+            foreach (Role::cases() as $role) {
+                if ($i == 1) {
                     return $role;
                 }
                 $i--;
@@ -821,8 +837,7 @@ function getRankFromXp($xp): Role
 function parseHistory($historyJson)
 {
     $_SESSION["history"] = [];
-    foreach ((array) json_decode($historyJson) as $element)
-    {
+    foreach ((array) json_decode($historyJson) as $element) {
         $_SESSION["history"][] = [
             "directory" => $element->directory,
             "command" => $element->command,
