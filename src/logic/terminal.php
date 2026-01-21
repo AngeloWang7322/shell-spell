@@ -8,7 +8,7 @@ function startTerminalProcess()
 {
     try
     {
-        manageExecution();
+        if (manageExecution() == -5) return;
     }
     catch (Exception $e)
     {
@@ -158,8 +158,10 @@ function executeExecute()
 
 function executeEcho()
 {
+    checkForRune();
+
     writeOutput(
-        getLinesFromText($_SESSION["tokens"]["command"]),
+        getLinesFromText($_SESSION["tokens"]["strings"][0]),
         $_SESSION["tokens"]["strings"][0]
     );
 }
