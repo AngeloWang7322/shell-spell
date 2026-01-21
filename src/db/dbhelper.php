@@ -33,15 +33,12 @@ class DBHelper
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password_hash']))
-        {
+        if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['user']["name"] = $user['username'];
             $_SESSION["user"]["id"] = $user["id"];
             $_SESSION["isLoggedIn"] = true;
             $_SESSION["profile_pic"] = $user["profile_pic_path"] ?? null;
-        }
-        else
-        {
+        } else {
             throw new Exception("Email oder Passwort falsch");
         }
     }
@@ -90,8 +87,7 @@ class DBHelper
         ]);
         $statesData = [];
         $response = (array) $fetchStatesData->fetchAll();
-        foreach ($response as $data)
-        {
+        foreach ($response as $data) {
             $statesData[$data["id"]]["name"] = $data["name"];
             $statesData[$data["id"]]["rank"] = getRankFromXp($data["xp"])->value;
         }
@@ -149,6 +145,7 @@ class DBHelper
     }
     public static function getDefaultMap(): Room
     {
+
         $tempMap = new Room(
             "hall",
             curDate: false,
@@ -162,8 +159,9 @@ class DBHelper
 
         $tempMap->path = ["hall"];
 
-        $tempMap->doors["dark_hall"] = new Room(
-            name: "dark_hall",
+
+        $tempMap->doors["darkHall"] = new Room(
+            name: "darkHall",
             path: ["hall"],
             requiredRole: Role::WANDERER,
             curDate: false
@@ -202,6 +200,111 @@ class DBHelper
                     Your journey begins here.",
             false
         );
+
+        $tempMap->items["rippedPage.txt"] = new Scroll(
+            "",
+            "rippedPage",
+            ["hall"],
+            Role::WANDERER,
+            "...so in short, when using the Spell cd with a correct destination, you can quickly move around !",
+            false
+        );
+
+        $tempMap->doors["darkHall"]->doors["darkPassage"] = new Room(
+            name: "darkPassage",
+            path: ["hall", "darkHall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["rustyIronDoor"] = new Room(
+            name: "rustyIronDoor",
+            path: ["hall", "darkHall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["oldDoor"] = new Room(
+            name: "oldDoor",
+            path: ["hall", "darkHall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["burntDoor"] = new Room(
+            name: "burntDoor",
+            path: ["hall", "darkHall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["rustyCell"] = new Room(
+            name: "rustyCell",
+            path: ["hall", "darkHall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["oldDoor"]->items["hint.txt"] = new Scroll(
+            name: "",
+            baseName: "hint",
+            path: ["hall", "darkHall", "oldDoor"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+
+        $tempMap->doors["darkHall"]->doors["rustyIronDoor"]->doors["crackedDoor"] = new Room(
+            name: "crackedDoor",
+            path: ["hall", "darkHall", "rustyIronDoor"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["rustyIronDoor"]->doors["wornGate"] = new Room(
+            name: "wornGate",
+            path: ["hall", "darkHall", "rustyIronDoor"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["rustyCell"]->doors["hidden"] = new Room(
+            name: "hidden",
+            path: ["hall", "darkHall", "rustyCell"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["burntDoor"]->doors["spellGate"] = new Room(
+            name: "spellGate",
+            path: ["hall", "darkHall", "burntDoor"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["burntDoor"]->doors["spellGate"]->items["apprenticeAlter"] = new Alter(
+            name: "",
+            baseName: "apprenticeAlter",
+            path: ["hall", "darkHall", "burntDoor", "spellGate"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["darkPassage"]->doors["mysteriousStaircase"] = new Room(
+            name: "",
+            path: ["hall", "darkHall", "darkPassage"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["darkHall"]->doors["rustyCell"]->doors["hidden"]->items["oldNotebook.txt"] = new Scroll(
+            name: "",
+            baseName: "oldNotebook",
+            path: ["hall", "darkHall", "rustyCell", "hidden"],
+            requiredRole: ROLE::WANDERER,
+            content: "Day 14.<br>
+
+                The door sealed behind me again.<br>  
+                I hear whispers in the walls, counting my breaths.<br>
+                <br>
+                I carved commands into stone, hoping someone would follow.<br>  
+                If you read this, do not trust the voices of the whispers.<br>  
+                <br>
+                Only the one who lists the unseen paths<br>  
+                will find the way out.<br>
+                <br>
+                May the shell guide you.",
+            curDate: false
+        );
+
         $tempMap->items["execute.sh"] = new Spell(
             "",
             "execute",
@@ -229,43 +332,7 @@ class DBHelper
             "",
             false
         );
-        $tempMap->doors["dark_hall"]->doors["darkPassage"] = new Room(
-            name: "darkPassage",
-            path: ["hall", "dark_hall"],
-            requiredRole: ROLE::WANDERER,
-            curDate: false
-        );
-        $tempMap->doors["dark_hall"]->doors["rustyIronDoor"] = new Room(
-            name: "rustyIronDoor",
-            path: ["hall", "dark_hall"],
-            requiredRole: ROLE::WANDERER,
-            curDate: false
-        );
-        $tempMap->doors["dark_hall"]->doors["oldDoor"] = new Room(
-            name: "oldDoor",
-            path: ["hall", "dark_hall"],
-            requiredRole: ROLE::WANDERER,
-            curDate: false
-        );
-        $tempMap->doors["dark_hall"]->doors["redDoor"] = new Room(
-            name: "burntDoor",
-            path: ["hall", "dark_hall"],
-            requiredRole: ROLE::WANDERER,
-            curDate: false
-        );
-        $tempMap->doors["dark_hall"]->doors["blueDoor"] = new Room(
-            name: "frozenDoor",
-            path: ["hall", "dark_hall"],
-            requiredRole: ROLE::WANDERER,
-            curDate: false
-        );
-        $tempMap->doors["dark_hall"]->doors["oldDoor"]->items["hint.txt"] = new Scroll(
-            name: "",
-            baseName: "hint",
-            path: ["hall", "dark_hall", "newDoor3"],
-            requiredRole: ROLE::WANDERER,
-            curDate: false
-        );
+
         /* old map design:
 
          $_SESSION["curRoom"] = &$tempMap;
@@ -463,34 +530,44 @@ class DBHelper
         $_SESSION["curRoom"] = &$tempMap;
         $tempMap->path = ["hall"];
 
-        switch ($role)
-        {
-            case Role::WANDERER:
-                {
-                    $tempMap->path = ["hall"];
+        switch ($role) {
+            case Role::WANDERER: {
+                $tempMap = new Room(
+                    "hall",
+                    curDate: false,
+                );
+                $tempMap = new Room(
+                    "hall",
+                    curDate: false,
+                );
+                $_SESSION["curRoom"] = &$tempMap;
+                $tempMap->path = ["hall"];
 
-                    $tempMap->doors["dark_hall"] = new Room(
-                        name: "dark_hall",
-                        path: ["hall"],
-                        requiredRole: Role::WANDERER,
-                        curDate: false
-                    );
+                $tempMap->path = ["hall"];
 
-                    $tempMap->items["bread.txt"] = new Scroll(
-                        "",
-                        "bread",
-                        ["hall"],
-                        Role::WANDERER,
-                        "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
-                        false
-                    );
+                $tempMap->doors["darkHall"] = new Room(
+                    name: "darkHall",
+                    path: ["hall"],
+                    requiredRole: Role::WANDERER,
+                    curDate: false
+                );
 
-                    $tempMap->items["mysteriousNote.txt"] = new Scroll(
-                        "",
-                        "mysteriousNote",
-                        ["hall"],
-                        Role::WANDERER,
-                        "Welcome, wanderer.<br>
+                $tempMap->items["bread.txt"] = new Scroll(
+                    "",
+                    "bread",
+                    ["hall"],
+                    Role::WANDERER,
+                    "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
+                    false
+                );
+
+
+                $tempMap->items["mysteriousNote.txt"] = new Scroll(
+                    "",
+                    "mysteriousNote",
+                    ["hall"],
+                    Role::WANDERER,
+                    "Welcome, wanderer.<br>
                     <br>
                     You have entered the realm of ShellSpell<br> 
                     a dungeon shaped like a command line.<br>
@@ -507,43 +584,248 @@ class DBHelper
                     Type carefully — every command matters.<br>
                     <br>
                     Your journey begins here.",
-                        false
-                    );
+                    false
+                );
 
-                    $tempMap->items["rippedPage.txt"] = new Scroll(
-                        "",
-                        "rippedPage",
-                        ["hall"],
-                        Role::WANDERER,
-                        "",
-                        false
-                    );
-                }
-            case Role::APPRENTICE:
-                {
-                }
-            case Role::ARCHIVIST:
-                {
-                }
-            case Role::CONJURER:
-                {
-                }
-            case Role::ROOT:
-                {
-                }
+                $tempMap->items["rippedPage.txt"] = new Scroll(
+                    "",
+                    "rippedPage",
+                    ["hall"],
+                    Role::WANDERER,
+                    "...so in short, when using the Spell cd with a correct destination, you can quickly move around !",
+                    false
+                );
+
+                $tempMap->doors["darkHall"]->doors["darkPassage"] = new Room(
+                    name: "darkPassage",
+                    path: ["hall", "darkHall"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+                $tempMap->doors["darkHall"]->doors["rustyIronDoor"] = new Room(
+                    name: "rustyIronDoor",
+                    path: ["hall", "darkHall"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+                $tempMap->doors["darkHall"]->doors["oldDoor"] = new Room(
+                    name: "oldDoor",
+                    path: ["hall", "darkHall"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+                $tempMap->doors["darkHall"]->doors["burntDoor"] = new Room(
+                    name: "burntDoor",
+                    path: ["hall", "darkHall"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+                $tempMap->doors["darkHall"]->doors["rustyCell"] = new Room(
+                    name: "rustyCell",
+                    path: ["hall", "darkHall"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+                $tempMap->doors["darkHall"]->doors["oldDoor"]->items["hint.txt"] = new Scroll(
+                    name: "",
+                    baseName: "hint",
+                    path: ["hall", "darkHall", "oldDoor"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+
+                $tempMap->doors["darkHall"]->doors["rustyIronDoor"]->doors["crackedDoor"] = new Room(
+                    name: "crackedDoor",
+                    path: ["hall", "darkHall", "rustyIronDoor"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+                $tempMap->doors["darkHall"]->doors["rustyIronDoor"]->doors["wornGate"] = new Room(
+                    name: "wornGate",
+                    path: ["hall", "darkHall", "rustyIronDoor"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+                $tempMap->doors["darkHall"]->doors["rustyCell"]->doors["hidden"] = new Room(
+                    name: "hidden",
+                    path: ["hall", "darkHall", "rustyCell"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+                $tempMap->doors["darkHall"]->doors["burntDoor"]->doors["spellGate"] = new Room(
+                    name: "spellGate",
+                    path: ["hall", "darkHall", "burntDoor"],
+                    requiredRole: ROLE::WANDERER,
+                    curDate: false
+                );
+                break;
+
+            }
+            case Role::APPRENTICE: {
+                $tempMap = new Room("darkRoom", curDate: false);
+                $_SESSION["curRoom"] = &$tempMap;
+                $tempMap->path = ["darkRoom"];
+
+                $tempMap->doors["oakGate"] = new Room(
+                    name: "oakGate",
+                    path: ["darkRoom"],
+                    requiredRole: Role::APPRENTICE,
+                    curDate: false
+                );
+
+                $tempMap->doors["ironGate"] = new Room(
+                    name: "ironGate",
+                    path: ["darkRoom"],
+                    requiredRole: Role::APPRENTICE,
+                    curDate: false
+                );
+
+                $tempMap->doors["crystalDoor"] = new Room(
+                    name: "crystalDoor",
+                    path: ["darkRoom"],
+                    requiredRole: Role::APPRENTICE,
+                    curDate: false
+                );
+
+                $tempMap->doors["whisperingArch"] = new Room(
+                    name: "whisperingArch",
+                    path: ["darkRoom"],
+                    requiredRole: Role::APPRENTICE,
+                    curDate: false
+                );
+
+                $tempMap->doors["crystalDoor"]->items["listingscroll.txt"] = new Scroll(
+                    "",
+                    "listingscroll",
+                    ["darkRoom", "crystalDoor"],
+                    Role::APPRENTICE,
+                    "",
+                    false
+                );
+
+                $tempMap->doors["runeDoor"] = new Room(
+                    name: "runeDoor",
+                    path: ["darkRoom"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["ironGate"] = new Room(
+                    name: "ironGate",
+                    path: ["darkRoom"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["hiddenDoor"] = new Room(
+                    name: "hiddenDoor",
+                    path: ["darkRoom"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["arcaneGate"] = new Room(
+                    name: "arcaneGate",
+                    path: ["darkRoom"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["shadowDoor"] = new Room(
+                    name: "shadowDoor",
+                    path: ["darkRoom"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["runeDoor"]->doors["whisperGate"] = new Room(
+                    name: "whisperGate",
+                    path: ["darkRoom", "runeDoor"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["runeDoor"]->doors["sealedDoor"] = new Room(
+                    name: "sealedDoor",
+                    path: ["darkRoom", "runeDoor"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["ironGate"]->doors["prisonGate"] = new Room(
+                    name: "prisonGate",
+                    path: ["darkRoom", "ironGate"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["ironGate"]->doors["rustedGate"] = new Room(
+                    name: "rustedGate",
+                    path: ["darkRoom", "ironGate"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["hiddenDoor"]->doors["falseWall"] = new Room(
+                    name: "falseWall",
+                    path: ["darkRoom", "hiddenDoor"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["hiddenDoor"]->doors["slidingPanel"] = new Room(
+                    name: "slidingPanel",
+                    path: ["darkRoom", "hiddenDoor"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["arcaneGate"]->doors["spellDoor"] = new Room(
+                    name: "spellDoor",
+                    path: ["darkRoom", "arcaneGate"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["arcaneGate"]->doors["sigilGate"] = new Room(
+                    name: "sigilGate",
+                    path: ["darkRoom", "arcaneGate"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["shadowDoor"]->doors["cursedDoor"] = new Room(
+                    name: "cursedDoor",
+                    path: ["darkRoom", "shadowDoor"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+
+                $tempMap->doors["shadowDoor"]->doors["bloodGate"] = new Room(
+                    name: "bloodGate",
+                    path: ["darkRoom", "shadowDoor"],
+                    requiredRole: ROLE::APPRENTICE,
+                    curDate: false,
+                );
+                break;
+
+            }
+            case Role::ARCHIVIST: {
+            }
+            case Role::CONJURER: {
+            }
+            case Role::ROOT: {
+            }
+
         }
     }
 }
 function getRankFromXp($xp): Role
 {
-    for ($i = 1; $i <= count(Role::cases()); $i++)
-    {
-        if ($xp <= $i * 100)
-        {
-            foreach (Role::cases() as $role)
-            {
-                if ($i == 1)
-                {
+    for ($i = 1; $i <= count(Role::cases()); $i++) {
+        if ($xp <= $i * 100) {
+            foreach (Role::cases() as $role) {
+                if ($i == 1) {
                     return $role;
                 }
                 $i--;
@@ -555,8 +837,7 @@ function getRankFromXp($xp): Role
 function parseHistory($historyJson)
 {
     $_SESSION["history"] = [];
-    foreach ((array) json_decode($historyJson) as $element)
-    {
+    foreach ((array) json_decode($historyJson) as $element) {
         $_SESSION["history"][] = [
             "directory" => $element->directory,
             "command" => $element->command,
