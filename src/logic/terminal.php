@@ -160,7 +160,7 @@ function executeEcho()
 {
     writeOutput(
         getLinesFromText($_SESSION["tokens"]["command"]),
-        substr($_POST["command"], 5)
+        $_SESSION["tokens"]["strings"][0]
     );
 }
 

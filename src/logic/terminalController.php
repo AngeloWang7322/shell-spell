@@ -185,20 +185,8 @@ function handleException(Exception $e)
 {
     editMana($e->getCode());
 
-    switch ($e->getCode())
-    {
-        case 0:
-            {
-                //cancel terminal process and rollback
-                $_SESSION["response"] = colorizeString($e->getMessage(), "error");
-                $_SESSION["map"] = $_SESSION["backUpMap"];
-                break;
-            }
-        default:
-            {
-                $_SESSION["response"] = $e->getMessage();
-            }
-    }
+    $_SESSION["response"] = colorizeString(colorizeResponseForRank($e->getMessage()), "error");
+    $_SESSION["map"] = $_SESSION["backUpMap"];
 }
 function closeProcess()
 {

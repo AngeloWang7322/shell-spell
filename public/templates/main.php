@@ -70,9 +70,9 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
             </div>
             <div class="input-line">
                 <div class="base-string">
-                    <?php
+                    <?=
                     //INPUT LINE
-                    echo $baseString;
+                    $baseString
                     ?>
                 </div>
                 <form class="command-input" method="post">
@@ -82,18 +82,13 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                 </form>
             </div>
             <div class="mana-display-container">
-                <div class="mana-bar" style="width:
-                <?php
-                //MANA
-                echo $_SESSION["curMana"] / $_SESSION["maxMana"] * 100;
-                ?>%;">
+                <div class="mana-bar" style="width: <?= $_SESSION["gameController"]->xpPercentage ?>%;">
                     <h4 class="mana-text">
                         <?=
                         $_SESSION["user"]["role"]->value
                         ?>
                     </h4>
                 </div>
-
             </div>
         </div>
     </div>

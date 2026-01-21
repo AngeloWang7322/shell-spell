@@ -22,6 +22,17 @@ enum Role: string
     {
         return $this->rank() < $role->rank();
     }
+    public static function getRoleFromRank($lvl)
+    {
+        return match ($lvl)
+        {
+            1 => Role::WANDERER,
+            2 => Role::APPRENTICE,
+            3 => Role::ARCHIVIST,
+            4 => Role::CONJURER,
+            5 => Role::ROOT,
+        };
+    }
 }
 enum ItemType: string
 {

@@ -15,11 +15,12 @@ require_once __DIR__ . "/../src/db/db.php";;
 require_once __DIR__ . "/../src/logic/terminal.php";
 require_once __DIR__ . "/../src/logic/terminalController.php";
 require_once __DIR__ . "/../src/logic/terminalUtils.php";
+require_once __DIR__ . "/../src/logic/gameController.php";
 
 session_start();
-// session_unset();
-echo "<div class='ui'>";
+session_unset();
 
+echo "<div class='ui'>";
 if (!isset($_SESSION["map"]))
 {
     DBHelper::loadDefaultSession();

@@ -90,7 +90,7 @@ class Command
                 case TokenType::STRING:
                     {
                         $function = $this->stringParser;
-                        $_SESSION["tokens"]["strings"][] = self::$function($arg);
+                        $_SESSION["tokens"]["strings"][] = self::$function($arg, $tokens, $syntaxArray, $i);
                         break;
                     }
                 case TokenType::MISC:
@@ -239,8 +239,9 @@ class Command
                 $_SESSION["tokens"]["options"][] = $arg;
                 prev($syntaxArray);
             }
-            else{
-                throw new Exception ("invalid option '" . $tokens[$argIndex]. "'");
+            else
+            {
+                throw new Exception("invalid option '" . $tokens[$argIndex] . "'");
             }
         }
         else
@@ -336,6 +337,18 @@ class Command
                 return false;
             }
             return self::parsePath($path, $tokens, $syntaxArray, $argIndex);
+        }
+    }
+    static public function parseStringEcho($path, $tokens, &$syntaxArray, &$argIndex)
+    {
+        try
+        {
+            return self::parseString($tokens[$argIndex]);
+        }
+        catch (Exception $e)
+        {
+            
+            return implode(" ", array_slice($tokens, 1));
         }
     }
 }
@@ -439,7 +452,8 @@ function getCommand($command)
             [],
             [],
             "",
-            true,
+            stringParser: "parseStringEcho",
+            isWriter: true,
         ),
         "man" == $command
         => new Command(

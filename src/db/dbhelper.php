@@ -140,6 +140,7 @@ class DBHelper
     public static function loadDefaultSession()
     {
         session_unset();
+        $_SESSION["gameController"] = new GameController(1);
         $_SESSION["tokens"]["command"] = "";
         $_SESSION["tokens"]["path"] = [];
         $_SESSION["tokens"]["options"] = [];
@@ -172,7 +173,7 @@ class DBHelper
         $tempMap->path = ["hall"];
         $tempMap->doors["oldDoor"] = new Room(
             name: "oldDoor",
-            requiredRole: ROLE::WANDERER,
+            requiredRole: ROLE::ROOT,
             curDate: false,
         );
         $tempMap->doors["hidden"] = new Room(
@@ -196,7 +197,7 @@ class DBHelper
             "",
             "log",
             ["hall"],
-            Role::WANDERER,
+            Role::APPRENTICE,
             "",
             false,
         );
@@ -212,15 +213,7 @@ class DBHelper
             "",
             "bread",
             ["hall"],
-            Role::WANDERER,
-            "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
-            false,
-        );
-        $tempMap->items["bread.txt"] = new Scroll(
-            "",
-            "bread",
-            ["hall"],
-            Role::WANDERER,
+            Role::CONJURER,
             "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
             false,
         );

@@ -2,15 +2,10 @@
 <?php
 function &getRoomOrItem($path, $tempRoom = null): mixed
 {
-    try
-    {
-        $tempRoom = &getRoom($path);
+    if ($tempRoom = &getRoom($path))
         return $tempRoom;
-    }
-    catch (Exception $e)
-    {
+    else
         return getItem($path);
-    }
 }
 
 function &getRoom($path, $rankRestrictive = false): Room
@@ -80,7 +75,7 @@ function &getRoomRelative($path, $rankRestrictive = false): Room
         {
             if ($rankRestrictive && $_SESSION["user"]["role"]->isLowerThan($tempRoom->doors[$path[$i]]->requiredRole))
             {
-                throw (new Exception("rank too low"));
+                throw (new Exception("Rank too low, required Rank: " . $tempRoom->doors[$path[$i]]->requiredRole->value));
             }
             $tempRoom = &$tempRoom->doors[$path[$i]];
         }
@@ -102,7 +97,6 @@ function &getItem($path)
         $tempRoom = &$_SESSION["curRoom"];
     }
 
-
     if (in_array(
         end($path),
         array_keys($tempRoom->items)
@@ -118,8 +112,9 @@ function deleteElements($paths, $rankRestrictive = true)
         $parentRoom = &getRoomOrItem(array_slice($path, 0, -1));
         $element = &getRoomOrItem($path);
 
-        if ($rankRestrictive && !canDelete($path,  $element))
-            throw new Exception("rank too low");
+        $higherRank = canDelete($path,  $element);
+        if ($rankRestrictive && is_a($higherRank, Role::class))
+            throw new Exception("Rank to low, required Rank: " . $higherRank->value);
 
         if (is_a($element, Room::class))
         {
@@ -133,7 +128,7 @@ function deleteElements($paths, $rankRestrictive = true)
 function roleIsHigherThanRoomRecursive(Role $role, $room)
 {
     if ($role->isLowerThan($room->requiredRole))
-        return false;
+        return $room->requiredRole;
 
     if (!is_a($room, Room::class))
         return true;
@@ -142,7 +137,7 @@ function roleIsHigherThanRoomRecursive(Role $role, $room)
     {
         if (roleIsHigherThanRoomRecursive($role, $door))
         {
-            return false;
+            return $room->requiredRole;
         }
     }
     return true;
@@ -220,7 +215,7 @@ function getLsArray($tempRoom)
         foreach (array_merge($tempRoom->doors, $tempRoom->items) as $element)
         {
             $tempEntry = [];
-            $tempEntry[0] = colorizeString($element->requiredRole->value);
+            $tempEntry[0] = $element->requiredRole->value;
             $tempEntry[1] = $element->timeOfLastChange;
             $tempEntry[2] = $element->name;
 
@@ -242,17 +237,22 @@ function getLsArray($tempRoom)
             }
             for ($j = 0; $j < count($finalArray); $j++)
             {
-                $finalArray[$j] .= spaceOf((int)(($longest - strlen($tempLsArray[$j][$i])) * 0.6));
+                $finalArray[$j] .= spaceOf((int)(($longest - strlen($tempLsArray[$j][$i])) * 0.9));
             }
         }
-        $_SESSION["stdout"] = $finalArray;
-        $_SESSION["response"] = implode("<br> ", $finalArray);
+
+        writeOutput(
+            $finalArray,
+            implode("<br> ", $finalArray)
+        );
     }
     else
     {
         $finalArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-        $_SESSION["stdout"] = $finalArray;
-        $_SESSION["response"] = implode(", ", $finalArray);
+        writeOutput(
+            $finalArray,
+            implode(", ", $finalArray)
+        );
     }
 }
 function callCorrectGrepFunction()
@@ -573,7 +573,7 @@ function getMatchingElements()
     $matches = getElementsByNameWild(getRoom(array_slice($_SESSION["tokens"]["path"][0], 0, -1)), $cmpFunction, $elementName);
     return count($matches) > 0
         ? $matches
-        : throw new Exception("no matching names found");
+        : throw new Exception("No elements found");
 }
 function getOptionsFind(&$substr, &$findFunction)
 {
@@ -702,12 +702,13 @@ function canDelete($path, $element = NULL)
     if (
         isset($_SESSION["tokens"]["path"][1]) &&
         is_a($element, Room::class) &&
-        count(array_diff(getRoom($_SESSION["tokens"]["path"][1])->path, $path)) == 0
+        count(array_diff($path, getRoom($_SESSION["tokens"]["path"][1])->path)) == 0
     )
     {
-        throw new Exception("Cant move room into itsself", -1);
+        throw new Exception("Cant move room into itsself",);
     }
     $result = roleIsHigherThanRoomRecursive($_SESSION["user"]["role"], getRoomOrItem($path));
+
     return $result;
 }
 
@@ -734,9 +735,20 @@ function pathArrayFromElements($elements)
 function writeOutput($stdout, $response)
 {
     $_SESSION["stdout"] = $stdout;
-    $_SESSION["response"] = $response;
+    $_SESSION["response"] = colorizeResponseForRank($response);
 }
 function isExecutable($element)
 {
     return is_a($element, Alter::class) || is_a($element, Spell::class);
+}
+function colorizeResponseForRank($text)
+{
+    $colorizedResponse = "";
+    foreach (explode(" ", $text) as $word)
+    {
+        $colorizedResponse .= Role::tryFrom($word)
+            ? colorizeString($word) . " "
+            : $word . " ";
+    }
+    return $colorizedResponse;
 }

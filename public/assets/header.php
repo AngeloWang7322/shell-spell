@@ -5,6 +5,7 @@ $extraCss[] = "assets/css/header.css";
     <div class="header-group">
         <a href="/">
             <div class="title-container">
+                <img class="icon-large" src="../assets/images/favicon-32x32.png">
                 Shell Spell
                 <img class="icon-large" src="../assets/images/favicon-32x32.png">
             </div>
@@ -26,9 +27,6 @@ $extraCss[] = "assets/css/header.css";
                 </div>
             </a>
         <?php else: ?>
-            <?php
-            echo  parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
-            ?>
             <?php if (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) == "/profile"): ?>
                 <form method="post">
                     <input name="action" value="logoutUser" hidden>
