@@ -755,11 +755,11 @@ function checkForRune()
     $spells = [];
     foreach ($_SESSION["curRoom"]->items as $item)
     {
-        // $isA = is_a($item, Spell::class);
-        // $is2 = strtolower($item->key) == $arg;
-        // $lower = strtolower($item->key);
-        // $isSame = $_SESSION["gameController"]->getNextSpell()->value == $arg;
-        // $isSame = $_SESSION["gameController"]->getNextSpell()->value;
+        $isA = is_a($item, Spell::class);
+        $is2 = strtolower($item->key) == $arg;
+        $lower = strtolower($item->key);
+        $isSame = $_SESSION["gameController"]->getNextSpell()->value == $arg;
+        $str = $_SESSION["gameController"]->getNextSpell()->value;
         if (
             is_a($item, Spell::class) &&
             strtolower($item->key) == $arg &&

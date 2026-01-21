@@ -93,14 +93,12 @@ class Alter extends Item
 {
     public bool $isActive;
     public $requiredElements;
-    public Room $newDoor;
 
     public function __construct(
         $name,
         $baseName,
         array $path = [],
         $requiredRole = Role::WANDERER,
-        $newDoor,
         $content = "",
         $isActive = true,
         $requiredElements = [],
@@ -111,7 +109,6 @@ class Alter extends Item
         $this->type = ItemType::ALTER;
         $this->isActive = $isActive;
         $this->requiredElements = $requiredElements;
-        $this->newDoor = $newDoor;
 
         parent::__construct(
             $name,
@@ -123,31 +120,6 @@ class Alter extends Item
             $date,
         );
     }
-    public function executeAction()
-    {
-        if (!$this->isActive)
-        {
-            return;
-        }
-        foreach ($this->requiredElements as $element)
-        {
-
-            if (!array_key_exists($element, $_SESSION["curRoom"]->items) || $_SESSION["curRoom"]->items[$element]->requiredRole != $this->requiredRole)
-            {
-                throw new Exception("conditions demanded by the alter not met.");
-            }
-        }
-
-        $_SESSION["curRoom"]->doors[$this->newDoor->name] = $this->newDoor;
-        $this->isActive = false;
-
-        if (!empty($this->spellReward))
-        {
-        }
-        if (!empty($this->xpReward))
-        {
-        }
-    }
     public static function fromArray(array $data)
     {
         return new self(
@@ -158,7 +130,6 @@ class Alter extends Item
             content: $data["content"],
             isActive: $data["isActive"],
             requiredElements: $data["requiredElements"],
-            newDoor: Room::fromArray($data["newDoor"]),
             date: $data["timeOfLastChange"],
         );
     }

@@ -1,5 +1,6 @@
 .game-container {
     max-height: 95vh;
+    margin-top: -48px;
     overflow-y: scroll;
     font-family: "Jersey 10";
 }
@@ -16,7 +17,7 @@
     width: 952px;
     height: fit-content;
     max-width: 80%;
-    max-height: 300px;
+    max-height: 380px;
     padding: 16px 24px;
     background-color: rgba(27, 27, 27, 0.856);
     border: 4px;

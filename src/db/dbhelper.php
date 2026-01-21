@@ -33,12 +33,15 @@ class DBHelper
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password_hash'])) {
+        if ($user && password_verify($password, $user['password_hash']))
+        {
             $_SESSION['user']["name"] = $user['username'];
             $_SESSION["user"]["id"] = $user["id"];
             $_SESSION["isLoggedIn"] = true;
             $_SESSION["profile_pic"] = $user["profile_pic_path"] ?? null;
-        } else {
+        }
+        else
+        {
             throw new Exception("Email oder Passwort falsch");
         }
     }
@@ -87,7 +90,8 @@ class DBHelper
         ]);
         $statesData = [];
         $response = (array) $fetchStatesData->fetchAll();
-        foreach ($response as $data) {
+        foreach ($response as $data)
+        {
             $statesData[$data["id"]]["name"] = $data["name"];
             $statesData[$data["id"]]["rank"] = getRankFromXp($data["xp"])->value;
         }
@@ -156,30 +160,30 @@ class DBHelper
         $_SESSION["curRoom"] = &$tempMap;
         $tempMap->path = ["hall"];
 
-                $tempMap->path = ["hall"];
+        $tempMap->path = ["hall"];
 
-                $tempMap->doors["dark_hall"] = new Room(
-                    name: "dark_hall",
-                    path: ["hall"],
-                    requiredRole: Role::WANDERER,
-                    curDate: false
-                );
+        $tempMap->doors["dark_hall"] = new Room(
+            name: "dark_hall",
+            path: ["hall"],
+            requiredRole: Role::WANDERER,
+            curDate: false
+        );
 
-                $tempMap->items["bread.txt"] = new Scroll(
-                    "",
-                    "bread",
-                    ["hall"],
-                    Role::WANDERER,
-                    "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",   
-                    false
-                );
+        $tempMap->items["bread.txt"] = new Scroll(
+            "",
+            "bread",
+            ["hall"],
+            Role::WANDERER,
+            "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
+            false
+        );
 
-                $tempMap->items["mysteriousNote.txt"] = new Scroll(
-                    "",
-                    "mysteriousNote",
-                    ["hall"],
-                    Role::WANDERER,
-                    "Welcome, wanderer.<br>
+        $tempMap->items["mysteriousNote.txt"] = new Scroll(
+            "",
+            "mysteriousNote",
+            ["hall"],
+            Role::WANDERER,
+            "Welcome, wanderer.<br>
                     <br>
                     You have entered the realm of ShellSpell<br> 
                     a dungeon shaped like a command line.<br>
@@ -195,56 +199,73 @@ class DBHelper
                     <br> 
                     Type carefully — every command matters.<br>
                     <br>
-                    Your journey begins here.",   
-                    false
-                );
-
-                $tempMap->items["rippedPage.txt"] = new Scroll(
-                    "",
-                    "rippedPage",
-                    ["hall"],
-                    Role::WANDERER,
-                    "",   
-                    false
-                );
-
-                $tempMap->doors["dark_hall"]->doors["darkPassage"] = new Room(
-                    name: "darkPassage",
-                    path: ["hall", "dark_hall"],
-                    requiredRole: ROLE::WANDERER,
-                    curDate: false
-                );
-                $tempMap->doors["dark_hall"]->doors["rustyIronDoor"] = new Room(
-                    name: "rustyIronDoor",
-                    path: ["hall", "dark_hall"],
-                    requiredRole: ROLE::WANDERER,
-                    curDate: false
-                );
-                $tempMap->doors["dark_hall"]->doors["oldDoor"] = new Room(
-                    name: "oldDoor",
-                    path: ["hall", "dark_hall"],
-                    requiredRole: ROLE::WANDERER,
-                    curDate: false
-                );
-                $tempMap->doors["dark_hall"]->doors["redDoor"] = new Room(
-                    name: "burntDoor",
-                    path: ["hall", "dark_hall"],
-                    requiredRole: ROLE::WANDERER,
-                    curDate: false
-                );
-                $tempMap->doors["dark_hall"]->doors["blueDoor"] = new Room(
-                    name: "frozenDoor",
-                    path: ["hall", "dark_hall"],
-                    requiredRole: ROLE::WANDERER,
-                    curDate: false
-                );
-                $tempMap->doors["dark_hall"]->doors["oldDoor"]->items["hint.txt"] = new Scroll(
-                    name:"",
-                    baseName:"hint",
-                    path: ["hall","dark_hall","newDoor3"],
-                    requiredRole: ROLE::WANDERER,
-                    curDate: false
-                );
+                    Your journey begins here.",
+            false
+        );
+        $tempMap->items["execute.sh"] = new Spell(
+            "",
+            "execute",
+            ["hall"],
+            Role::WANDERER,
+            Commands::EXECUTE,
+            "",
+            false
+        );
+        $tempMap->items["cd.sh"] = new Spell(
+            "",
+            "cd",
+            ["hall"],
+            Role::WANDERER,
+            Commands::CD,
+            "",
+            false
+        );
+        $tempMap->items["man.sh"] = new Spell(
+            "",
+            "man",
+            ["hall"],
+            Role::WANDERER,
+            Commands::MAN,
+            "",
+            false
+        );
+        $tempMap->doors["dark_hall"]->doors["darkPassage"] = new Room(
+            name: "darkPassage",
+            path: ["hall", "dark_hall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["dark_hall"]->doors["rustyIronDoor"] = new Room(
+            name: "rustyIronDoor",
+            path: ["hall", "dark_hall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["dark_hall"]->doors["oldDoor"] = new Room(
+            name: "oldDoor",
+            path: ["hall", "dark_hall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["dark_hall"]->doors["redDoor"] = new Room(
+            name: "burntDoor",
+            path: ["hall", "dark_hall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["dark_hall"]->doors["blueDoor"] = new Room(
+            name: "frozenDoor",
+            path: ["hall", "dark_hall"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
+        $tempMap->doors["dark_hall"]->doors["oldDoor"]->items["hint.txt"] = new Scroll(
+            name: "",
+            baseName: "hint",
+            path: ["hall", "dark_hall", "newDoor3"],
+            requiredRole: ROLE::WANDERER,
+            curDate: false
+        );
         /* old map design:
 
          $_SESSION["curRoom"] = &$tempMap;
@@ -442,32 +463,34 @@ class DBHelper
         $_SESSION["curRoom"] = &$tempMap;
         $tempMap->path = ["hall"];
 
-        switch ($role) {
-            case Role::WANDERER: {
-                $tempMap->path = ["hall"];
+        switch ($role)
+        {
+            case Role::WANDERER:
+                {
+                    $tempMap->path = ["hall"];
 
-                $tempMap->doors["dark_hall"] = new Room(
-                    name: "dark_hall",
-                    path: ["hall"],
-                    requiredRole: Role::WANDERER,
-                    curDate: false
-                );
+                    $tempMap->doors["dark_hall"] = new Room(
+                        name: "dark_hall",
+                        path: ["hall"],
+                        requiredRole: Role::WANDERER,
+                        curDate: false
+                    );
 
-                $tempMap->items["bread.txt"] = new Scroll(
-                    "",
-                    "bread",
-                    ["hall"],
-                    Role::WANDERER,
-                    "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",   
-                    false
-                );
+                    $tempMap->items["bread.txt"] = new Scroll(
+                        "",
+                        "bread",
+                        ["hall"],
+                        Role::WANDERER,
+                        "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
+                        false
+                    );
 
-                $tempMap->items["mysteriousNote.txt"] = new Scroll(
-                    "",
-                    "mysteriousNote",
-                    ["hall"],
-                    Role::WANDERER,
-                    "Welcome, wanderer.<br>
+                    $tempMap->items["mysteriousNote.txt"] = new Scroll(
+                        "",
+                        "mysteriousNote",
+                        ["hall"],
+                        Role::WANDERER,
+                        "Welcome, wanderer.<br>
                     <br>
                     You have entered the realm of ShellSpell<br> 
                     a dungeon shaped like a command line.<br>
@@ -483,37 +506,44 @@ class DBHelper
                     <br> 
                     Type carefully — every command matters.<br>
                     <br>
-                    Your journey begins here.",   
-                    false
-                );
+                    Your journey begins here.",
+                        false
+                    );
 
-                $tempMap->items["rippedPage.txt"] = new Scroll(
-                    "",
-                    "rippedPage",
-                    ["hall"],
-                    Role::WANDERER,
-                    "",   
-                    false
-                );
-
-            }
-            case Role::APPRENTICE: {
-            }
-            case Role::ARCHIVIST: {
-            }
-            case Role::CONJURER: {
-            }
-            case Role::ROOT: {
-            }
+                    $tempMap->items["rippedPage.txt"] = new Scroll(
+                        "",
+                        "rippedPage",
+                        ["hall"],
+                        Role::WANDERER,
+                        "",
+                        false
+                    );
+                }
+            case Role::APPRENTICE:
+                {
+                }
+            case Role::ARCHIVIST:
+                {
+                }
+            case Role::CONJURER:
+                {
+                }
+            case Role::ROOT:
+                {
+                }
         }
     }
 }
 function getRankFromXp($xp): Role
 {
-    for ($i = 1; $i <= count(Role::cases()); $i++) {
-        if ($xp <= $i * 100) {
-            foreach (Role::cases() as $role) {
-                if ($i == 1) {
+    for ($i = 1; $i <= count(Role::cases()); $i++)
+    {
+        if ($xp <= $i * 100)
+        {
+            foreach (Role::cases() as $role)
+            {
+                if ($i == 1)
+                {
                     return $role;
                 }
                 $i--;
@@ -525,7 +555,8 @@ function getRankFromXp($xp): Role
 function parseHistory($historyJson)
 {
     $_SESSION["history"] = [];
-    foreach ((array) json_decode($historyJson) as $element) {
+    foreach ((array) json_decode($historyJson) as $element)
+    {
         $_SESSION["history"][] = [
             "directory" => $element->directory,
             "command" => $element->command,
