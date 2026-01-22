@@ -190,7 +190,6 @@ function executeFind()
     writeOutput(
         $matches,
         implode("<br>", $matches)
-
     );
 }
 

@@ -173,9 +173,9 @@ class Command
         }
         else
         {
-            if (in_array($arg, Commands::cases()))
+            if (Commands::tryFrom($arg))
             {
-                throw new Exception("command not unlocked yet");
+                throw new Exception("command not unlocked yet...");
             }
             else
             {

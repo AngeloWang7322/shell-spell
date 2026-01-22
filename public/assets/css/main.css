@@ -240,18 +240,6 @@ span {
     min-width: 50px;
 }
 
-/* .element-container::before {
-    position: absolute;
-    z-index: -10;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(255, 255, 255, 0.932);
-    background: radial-gradient(100deg, #3B53D6,#4AFAFA);
-    filter: blur(15px);
-} */
-
 .element-name {
     text-justify: center;
     text-align: center;
@@ -284,7 +272,7 @@ span {
 .item {
     font-size: 18px;
     background-color: rgb(122, 109, 35, 0);
-    height: 76px;
+    height: 84px;
 }
 
 .txt {

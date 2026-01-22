@@ -34,7 +34,7 @@ class GameController
             Commands::HEAD,
             Commands::TAIL
         ],
-        Role::ROOT->value => []
+        Role::ROOT->value => [[]]
     ];
     public Role $userRank;
     public int $xp;
@@ -88,6 +88,10 @@ class GameController
             next($tempLvlData);
             $counter++;
         }
+        if ($this->userRank->value == "root")
+        {
+            return 100;
+        }
 
         return (int)round(($counter / $lvlCount) * 100);
     }
@@ -100,7 +104,7 @@ class GameController
             {
                 foreach ($level as $command)
                 {
-                    array_push($this->unlockedCommands, $command->value);
+                    array_push($this->unlockedCommands, $command);
                 }
             }
             next(self::$levelData);
@@ -109,19 +113,19 @@ class GameController
         $percentage = 100 / count($this->currentLevelData);
         $xp %= 100;
         $this->currentSubLvl = 0;
-        $this->unlockedCommands[] = current($this->currentLevelData)->value;
+        $this->unlockedCommands[] = current($this->currentLevelData);
         while ($xp > $percentage)
         {
             $this->currentSubLvl++;
             $xp -= $percentage;
-            array_push($this->unlockedCommands, current($this->currentLevelData)->value);
+            array_push($this->unlockedCommands, current($this->currentLevelData));
             next($this->currentLevelData);
         }
         return current($this->currentLevelData);
     }
     public function getCurrentMessage()
     {
-        switch ($this->latestCommand->value)
+        switch ($this->latestCommand)
         {
             //LEVEL 1
             case Commands::ECHO->value:
@@ -236,7 +240,10 @@ class GameController
                 {
                 }
             default:
-                throw new Exception("unknownCommand");
+                {
+                    if($this->userRank->value == "root") return;
+                    throw new Exception("unknownCommand");
+                }
         }
         self::writeMessage(colorizeString($response, "guide"));
     }
@@ -244,7 +251,7 @@ class GameController
     {
 
         $message =
-            " ------- strangevoice ------- <br" .
+            " ------- strangevoice ------- <br>" .
             $message .
             "<br>------------------------------ <br>";
         editLastHistory($message);
@@ -255,6 +262,17 @@ class GameController
         return $this->currentSubLvl <= count($this->currentLevelData)
             ?  $this->currentLevelData[$this->currentSubLvl + 1]
             : false;
+    }
+    public function isUnlockableSpell($arg)
+    {
+        foreach ($this->currentLevelData as $spell)
+        {
+            if (!in_array($spell->value, $this->unlockedCommands,))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
 /*

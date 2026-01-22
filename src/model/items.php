@@ -143,6 +143,7 @@ class Spell extends Item
         $baseName,
         $path,
         $requiredRole = Role::WANDERER,
+        $content = "",
         $spellReward,
         $key = NULL,
         $curDate = true,
@@ -158,7 +159,7 @@ class Spell extends Item
             $baseName,
             $path,
             $requiredRole,
-            "",
+            $content,
             $curDate,
             $date,
         );

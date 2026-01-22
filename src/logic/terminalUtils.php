@@ -552,7 +552,7 @@ function wouldReplaceElemment($elements, $newName)
 function getElementsByNameWild($room, $findFunction, $findString)
 {
     $matches = [];
-    foreach (array_merge($room->doors, $room->items) as $element)
+    foreach (array_merge( $room->items, $room->doors,) as $element)
     {
         if (cmpStrWildcard($element->name, $findString, $findFunction))
         {
@@ -758,12 +758,11 @@ function checkForRune()
         // $isA = is_a($item, Spell::class);
         // $is2 = strtolower($item->key) == $arg;
         // $lower = strtolower($item->key);
-        // $isSame = $_SESSION["gameController"]->getNextSpell()->value == $arg;
-        // $str = $_SESSION["gameController"]->getNextSpell()->value;
+        // $isUnlockable = $_SESSION["gameController"]->isUnlockableSpell($item->key);
         if (
             is_a($item, Spell::class) &&
             strtolower($item->key) == $arg &&
-            $_SESSION["gameController"]->getNextSpell()->value == $arg
+            $_SESSION["gameController"]->isUnlockableSpell($item->key)
         )
         {
             writeNewHistory();

@@ -16,7 +16,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                 if ($door->isHidden && isset($_SESSION["displayAll"])) continue;
                 echo "
                 <div class='element-container'>
-                    <div class='element door'></div>                        
+                    <div class='element door'></div>
                     <p class='element-name " . $door->requiredRole->value . "'>" . $door->name . "</p> 
                 </div>";
             }
