@@ -144,7 +144,7 @@ class DBHelper
             "command" => "",
             "response" => "",
         ];
-        $_SESSION["gameController"] = new GameController(442);
+        $_SESSION["gameController"] = new GameController(410);
         $_SESSION["gameController"]->getCurrentMessage();
     }
     public static function getDefaultMap(): Room
@@ -210,19 +210,19 @@ class DBHelper
         $archives->doors["longpassage"] = new Room(
             "longpassage",
             $archives->path,
-            Role::WANDERER
+            requiredRole: Role::WANDERER
         );
         $longpassage = $archives->doors["longpassage"];
         $longpassage->doors["foyer"] = new Room(
             "foyer",
             $longpassage->path,
-            Role::WANDERER,
+            requiredRole: Role::WANDERER,
         );
         $foyer = $longpassage->doors["foyer"];
         $foyer->doors["ceremonialroom"] = new Room(
             "ceremonialroom",
             $foyer->path,
-            Role::WANDERER
+           requiredRole: Role::WANDERER
         );
         $foyer->items["execute.sh"] = new Spell(
             "",
@@ -241,7 +241,7 @@ class DBHelper
             "abracadabrasimsalabim",
             Commands::EXECUTE,
         );
-        $ceremonialroom = $longpassage->doors["ceremonialroom"];
+        $ceremonialroom = $foyer->doors["ceremonialroom"];
         $ceremonialroom->items["ancientAlter.exe"] = new Alter(
             name: "",
             baseName: "ancientAlter.exe",
