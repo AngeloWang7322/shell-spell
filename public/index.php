@@ -8,19 +8,18 @@ require __DIR__ . '/../src/model/items.php';
 require __DIR__ . '/../src/model/exceptions.php';
 require __DIR__ . '/../src/model/command.php';
 require __DIR__ . '/../src/model/enums.php';
+require __DIR__ . "/../src/db/db.php";
 require __DIR__ . '/../src/logic/upload.php';
 require __DIR__ . "/../src/logic/gameUtils.php";
 require __DIR__ . "/../src/logic/api.php";
-require_once __DIR__ . "/../src/db/db.php";;
-require_once __DIR__ . "/../src/logic/terminal.php";
-require_once __DIR__ . "/../src/logic/terminalController.php";
-require_once __DIR__ . "/../src/logic/terminalUtils.php";
-require_once __DIR__ . "/../src/logic/gameController.php";
+require __DIR__ . "/../src/logic/terminal.php";
+require __DIR__ . "/../src/logic/terminalController.php";
+require __DIR__ . "/../src/logic/terminalUtils.php";
+require __DIR__ . "/../src/logic/gameController.php";
 
 session_start();
 // session_unset();    
 
-echo "<div class='ui'>";
 if (!isset($_SESSION["map"]))
 {
     DBHelper::loadDefaultSession();
@@ -32,10 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
     {
         ($_POST["action"])($dbHelper);
     }
-    // header(header: "Location: " . $_SERVER["REQUEST_URI"]);
-    // exit;
+    header(header: "Location: " . $_SERVER["REQUEST_URI"]);
+    exit;
 }
-echo "</div>";
 
 $routes = [
     '' => 'main.php',
@@ -60,10 +58,4 @@ else
     require __DIR__ . '/templates//' . $routes['notfound'];
 }
 
-
-$start = hrtime(as_number: true);
 require __DIR__ . '/assets/layout.php';
-echo "<div class='ui'";
-$end = hrtime(true);
-echo "<br>layout: " . (($end - $start) / 1000000) . "ms</div>";
-echo "<div class='ui'>";

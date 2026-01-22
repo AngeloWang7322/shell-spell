@@ -22,17 +22,11 @@ function enterCommand($dbHelper)
 
     if ($_POST["command"] == "") return;
 
-    $start = hrtime(as_number: true);
     startTerminalProcess();
-    $end = hrtime(true);
-    echo "<br>Terminal: " . (($end - $start) / 1000000) . "ms";
 
     if (isset($_SESSION["isLoggedIn"]))
     {
-        $start = hrtime(as_number: true);
         $dbHelper->updateUserMap();
-        $end = hrtime(true);
-        echo "<br>Query: " . (($end - $start) / 1000000) . "ms";
     }
 }
 

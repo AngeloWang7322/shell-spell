@@ -62,6 +62,7 @@ class GameController
     {
         $_SESSION["user"]["role"] = $_SESSION["user"]["role"]->getRoleFromRank($_SESSION["user"]["role"]->rank() + 1);
         $this->latestCommand = reset(self::$levelData[$_SESSION["user"]["role"]->value]);
+        self::createRewardRoom();
     }
 
     public function unlockNextCommand()
@@ -241,7 +242,7 @@ class GameController
                 }
             default:
                 {
-                    if($this->userRank->value == "root") return;
+                    if ($this->userRank->value == "root") return;
                     throw new Exception("unknownCommand");
                 }
         }
@@ -273,6 +274,27 @@ class GameController
             }
         }
         return false;
+    }
+    public function createRewardRoom()
+    {
+        switch ($this->userRank->value)
+        {
+            case Role::APPRENTICE:
+                {
+                    $_SESSION["curRoom"]->doors["doorofwisdom"] =
+                        new Room(
+                            "doorofwisdom",
+                            [],
+                            $this->userRank
+                        );
+                }
+            case Role::ARCHIVIST:
+                {
+                }
+            default:
+                {
+                }
+        }
     }
 }
 /*
