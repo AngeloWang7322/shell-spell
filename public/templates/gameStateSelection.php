@@ -11,7 +11,15 @@ $gameStates = $dbHelper->getGameStates();
 
 <html>
 <div class="page-content">
-    <div class="page-title">SELECT GAME</div>
+
+    <div class="page-title">
+        <div class="title">
+            <img class="logo" src="../assets/images/favicon-32x32.png">
+            Shell Spell
+            <img class="logo" src="../assets/images/favicon-32x32.png">
+        </div>
+        <!-- SELECT GAME -->
+    </div>
 
     <div class="selection-wrapper">
         <?php

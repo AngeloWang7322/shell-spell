@@ -101,12 +101,11 @@ class GameController
         $this->unlockedCommands = [];
         for ($i = 1; $i < $this->userRank->rank(); $i++)
         {
-            foreach (current(self::$levelData) as $level)
+            foreach (current(self::$levelData) as $command)
             {
-                foreach ($level as $command)
-                {
-                    array_push($this->unlockedCommands, $command);
-                }
+
+                    array_push($this->unlockedCommands, $command->value);
+                
             }
             next(self::$levelData);
         }
@@ -114,19 +113,19 @@ class GameController
         $percentage = 100 / count($this->currentLevelData);
         $xp %= 100;
         $this->currentSubLvl = 0;
-        array_push($this->unlockedCommands, current($this->currentLevelData)->value);
+        array_push($this->unlockedCommands, current($this->currentLevelData));
         while ($xp > $percentage)
         {
             $this->currentSubLvl++;
             $xp -= $percentage;
-            array_push($this->unlockedCommands, current($this->currentLevelData)->value);
+            array_push($this->unlockedCommands, current($this->currentLevelData));
             next($this->currentLevelData);
         }
         return current($this->currentLevelData);
     }
     public function getCurrentMessage()
     {
-        switch ($this->latestCommand->value)
+        switch ($this->latestCommand)
         {
             //LEVEL 1
             case Commands::ECHO->value:

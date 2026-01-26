@@ -94,6 +94,16 @@
     }
 }
 
+.title {
+    font-size: 92px;
+    text-shadow: 4px 8px 0px rgb(85, 16, 16);
+
+    .logo {
+        width: 104px;
+        image-rendering: pixelated;
+    }
+}
+
 .disabled {
     pointer-events: none;
 

@@ -173,6 +173,7 @@ class Spell extends Item
             baseName: $data["baseName"],
             path: pathFromArray($data["path"]),
             requiredRole: $requiredRole,
+            content: $data["content"],
             spellReward: $spellReward,
             key: $data["key"],
             date: $data["timeOfLastChange"],

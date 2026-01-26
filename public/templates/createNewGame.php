@@ -12,8 +12,13 @@ $extraCss[] = "/assets/css/createNewGame.css";
 <div class="page-content">
     <div class="page-title">CREATE NEW GAME</div>
     <form class="map-name-form" method="post">
-        <input type="hidden" value="newMap" name="action">
-        <input maxlength="15" class="button-large name-input" name="newMapName" placeholder="New Game">
+        <div class="new-game-data">
+            <input type="hidden" value="newMap" name="action">
+            <input maxlength="15" class="button-large name-input" name="newMapName" placeholder="New Game">
+            <button class='button-large button-create-map' type="submit">
+                <div>CREATE</div>
+            </button>
+        </div>
         <button class='button-large button-create-map' type="submit">
             <div>CREATE</div>
         </button>
