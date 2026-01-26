@@ -6,35 +6,35 @@ class GameController
     public static $levelData = [
         // &&
         Role::WANDERER->value => [
-            Commands::ECHO,
-            Commands::CAT,
-            Commands::CD,
-            Commands::MAN,
-            Commands::EXECUTE,
+            Commands::ECHO->value,
+            Commands::CAT->value,
+            Commands::CD->value,
+            Commands::MAN->value,
+            Commands::EXECUTE->value,
         ],
         // ||
         Role::APPRENTICE->value => [
-            Commands::MKDIR,
-            Commands::RM,
-            Commands::PWD,
-            Commands::LS,
+            Commands::MKDIR->value,
+            Commands::RM->value,
+            Commands::PWD->value,
+            Commands::LS->value,
         ],
         // >>, >
         Role::ARCHIVIST->value => [
-            Commands::CP,
-            Commands::MV,
-            Commands::NANO,
-            Commands::TOUCH,
+            Commands::CP->value,
+            Commands::MV->value,
+            Commands::NANO->value,
+            Commands::TOUCH->value,
         ],
         // |
         Role::CONJURER->value => [
-            Commands::GREP,
-            Commands::FIND,
-            Commands::WC,
-            Commands::HEAD,
-            Commands::TAIL
+            Commands::GREP->value,
+            Commands::FIND->value,
+            Commands::WC->value,
+            Commands::HEAD->value,
+            Commands::TAIL->value
         ],
-        Role::ROOT->value => [[]]
+        Role::ROOT->value => []
     ];
     public Role $userRank;
     public int $xp;
@@ -104,8 +104,7 @@ class GameController
             foreach (current(self::$levelData) as $command)
             {
 
-                    array_push($this->unlockedCommands, $command->value);
-                
+                array_push($this->unlockedCommands, $command);
             }
             next(self::$levelData);
         }

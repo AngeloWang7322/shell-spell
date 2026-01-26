@@ -97,17 +97,19 @@ class DBHelper
         }
         return $statesData;
     }
-    public function createGameState($name)
+    public function createGameState($name, $rank)
     {
+
         $gameStateInsert = $this->pdo->prepare("
-            INSERT INTO game_states ( user_id, name, map_json, history_json)
-            VALUES (:userId, :stateName, :mapJson, :historyJson)
+            INSERT INTO game_states ( user_id, name, map_json, history_json, xp)
+            VALUES (:userId, :stateName, :mapJson, :historyJson, :xp)
         ");
         $gameStateInsert->execute([
             "userId" => $_SESSION["user"]["id"],
             "stateName" => $name,
             "mapJson" => json_encode(self::getDefaultMap()),
             "historyJson" => json_encode($_SESSION["history"]),
+            "xp" => Role::tryFrom($rank)->rank() * 100
         ]);
         $this->loadGameState($this->pdo->lastInsertId());
     }

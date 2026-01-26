@@ -12,6 +12,11 @@ button {
     text-shadow: none;
 }
 
+select {
+    border-width: 0px;
+}
+
+
 :root {
     font-family:
         "Jersey 10"
@@ -21,6 +26,9 @@ button {
     font-size: 22px;
     min-height: 100vh;
     padding: 0;
+    --primary: rgb(119, 25, 25);
+    --primary-bg: rgb(58, 52, 51);
+    --secondary: rgb(48, 95, 122);
 }
 
 p,
@@ -133,7 +141,7 @@ p1 {
 }
 
 .root {
-    color: tomato;
+    color: rgb(255, 99, 71);
 }
 
 .page-title {
@@ -206,8 +214,5 @@ input {
         width: 84px;
         height: 84px;
     }
-    .button-medium{
-        
-    }
-    
+
 }

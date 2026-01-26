@@ -33,6 +33,17 @@ enum Role: string
             5 => Role::ROOT,
         };
     }
+    public function getColor()
+    {
+        return match ($this->value)
+        {
+            Role::WANDERER->value => "rgb(253, 250, 199)",
+            Role::APPRENTICE->value => "rgb(171, 253, 139)",
+            Role::ARCHIVIST->value => "rgb(109, 232, 248)",
+            Role::CONJURER->value => "rgb(165, 117, 255)",
+            Role::ROOT->value => "rgb(255, 99, 71)",
+        };
+    }
 }
 enum ItemType: string
 {

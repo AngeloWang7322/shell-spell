@@ -44,7 +44,7 @@ function loadMap($dbHelper)
 
 function newMap($dbHelper)
 {
-    $dbHelper->createGameState($_POST["newMapName"]);
+    $dbHelper->createGameState($_POST["newMapName"], $_POST["rank"]);
     header("Location: /");
     exit;
 }
