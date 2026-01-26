@@ -77,8 +77,9 @@ class Room
             $doors,
             $items,
             $requiredRole,
-            $data->timeOflastChange,
-            $data->isHidden
+            true,
+            $data->isHidden,
+            $data->timeOfLastChange,
         );
     }
 }

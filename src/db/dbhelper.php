@@ -144,7 +144,7 @@ class DBHelper
             "command" => "",
             "response" => "",
         ];
-        $_SESSION["gameController"] = new GameController(410);
+        $_SESSION["gameController"] = new GameController(400);
         $_SESSION["gameController"]->getCurrentMessage();
     }
     public static function getDefaultMap(): Room
@@ -222,11 +222,11 @@ class DBHelper
         $foyer->doors["ceremonialroom"] = new Room(
             "ceremonialroom",
             $foyer->path,
-           requiredRole: Role::WANDERER
+            requiredRole: Role::WANDERER
         );
         $foyer->items["execute.sh"] = new Spell(
             "",
-            "execute.sh",
+            "execute",
             $foyer->path,
             Role::WANDERER,
             "brautkleidbleibtbrautkleidundblaukrautbleibtblaukraut",
@@ -239,7 +239,7 @@ class DBHelper
             $foyer->path,
             Role::WANDERER,
             "abracadabrasimsalabim",
-            Commands::EXECUTE,
+            false,
         );
         $ceremonialroom = $foyer->doors["ceremonialroom"];
         $ceremonialroom->items["ancientAlter.exe"] = new Alter(
