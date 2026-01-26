@@ -11,26 +11,36 @@ enum Role: string
     {
         return match ($this)
         {
-            self::WANDERER => 1,
-            self::APPRENTICE => 2,
-            self::ARCHIVIST => 3,
-            self::CONJURER => 4,
-            self::ROOT => 5,
+            self::WANDERER => 0,
+            self::APPRENTICE => 1,
+            self::ARCHIVIST => 2,
+            self::CONJURER => 3,
+            self::ROOT => 4,
+        };
+    }
+    public function next()
+    {
+        return match ($this)
+        {
+            self::WANDERER => Role::APPRENTICE,
+            self::APPRENTICE => Role::ARCHIVIST,
+            self::ARCHIVIST => Role::CONJURER,
+            default => Role::ROOT
         };
     }
     public function isLowerThan(Role $role): bool
     {
         return $this->rank() < $role->rank();
     }
-    public static function getRoleFromRank($lvl)
+    public static function getRoleFromXp($xp)
     {
-        return match ($lvl)
+        return match ((int)floor($xp / 100))
         {
-            1 => Role::WANDERER,
-            2 => Role::APPRENTICE,
-            3 => Role::ARCHIVIST,
-            4 => Role::CONJURER,
-            5 => Role::ROOT,
+            0 => Role::WANDERER,
+            1 => Role::APPRENTICE,
+            2 => Role::ARCHIVIST,
+            3 => Role::CONJURER,
+            4 => Role::ROOT,
         };
     }
     public function getColor()

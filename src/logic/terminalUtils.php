@@ -52,7 +52,7 @@ function &getRoomAbsolute($path, $rankRestrictive = false): Room
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["user"]["role"]->isLowerThan($tempRoom->doors[$path[$i]]->requiredRole))
+            if ($rankRestrictive && $_SESSION["gameController"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRole))
             {
                 throw (new Exception("rank too low"));
             }
@@ -73,7 +73,7 @@ function &getRoomRelative($path, $rankRestrictive = false): Room
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["user"]["role"]->isLowerThan($tempRoom->doors[$path[$i]]->requiredRole))
+            if ($rankRestrictive && $_SESSION["gameController"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRole))
             {
                 throw (new Exception("Rank too low, required Rank: " . $tempRoom->doors[$path[$i]]->requiredRole->value));
             }
@@ -552,7 +552,7 @@ function wouldReplaceElemment($elements, $newName)
 function getElementsByNameWild($room, $findFunction, $findString)
 {
     $matches = [];
-    foreach (array_merge( $room->items, $room->doors,) as $element)
+    foreach (array_merge($room->items, $room->doors,) as $element)
     {
         if (cmpStrWildcard($element->name, $findString, $findFunction))
         {
@@ -704,7 +704,7 @@ function canDelete($path, $element = NULL)
     {
         throw new Exception("Cant move room into itsself",);
     }
-    $result = roleIsHigherThanRoomRecursive($_SESSION["user"]["role"], getRoomOrItem($path));
+    $result = roleIsHigherThanRoomRecursive($_SESSION["gameController"]->userRank, getRoomOrItem($path));
 
     return $result;
 }
@@ -758,16 +758,16 @@ function checkForRune()
         // $isA = is_a($item, Spell::class);
         // $is2 = strtolower($item->key) == $arg;
         // $lower = strtolower($item->key);
-        // $isUnlockable = $_SESSION["gameController"]->isUnlockableSpell($item->key);
+        // $nextSpell = $_SESSION["gameController"]->getNextSpell();
+        // $isSame = $item->spellReward->value == $_SESSION["gameController"]->getNextSpell();
         if (
             is_a($item, Spell::class) &&
-            strtolower($item->key) == $arg &&
-            $_SESSION["gameController"]->isUnlockableSpell($item->key)
+            $item->key == $arg &&
+            $item->spellReward->value == $_SESSION["gameController"]->getNextSpell()
         )
         {
             writeNewHistory();
             $_SESSION["gameController"]->unlockNextCommand();
-            $_SESSION["gameController"]->getCurrentMessage();
             cleanUp();
             throw new Exception("", -1);
         }

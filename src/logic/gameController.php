@@ -38,63 +38,50 @@ class GameController
     ];
     public Role $userRank;
     public int $xp;
-    public $latestCommand;
+    public string $latestCommand;
     public int $currentSubLvl;
     public array $currentLevelData = [];
     public array $unlockedCommands = [];
-    public int $xpPercentage;
     public string $userName;
     public $requiredCommand;
     public function __construct(
-        $xp = 1,
+        $xp = 0,
         $userName = "wanderer",
     )
     {
         $this->xp = $xp;
         $this->userName = $userName;
-        $this->userRank = Role::getRoleFromRank((int) floor($xp / 100) + 1);
+        $this->userRank = Role::getRoleFromXp($xp);
         $this->currentLevelData = self::$levelData[$this->userRank->value];
-        $this->xpPercentage = self::calculateLevelPercentage();
         $this->latestCommand = self::calculateGameStats($xp);
     }
 
-    public function levelUpUser()
+    public function levelUpUser($alter)
     {
-        $_SESSION["user"]["role"] = $_SESSION["user"]["role"]->getRoleFromRank($_SESSION["user"]["role"]->rank() + 1);
-        $this->latestCommand = reset(self::$levelData[$_SESSION["user"]["role"]->value]);
+        if ($alter->requiredRole != $this->userRank->next()) return;
+        $alter->isActive = false;
+        $this->userRank = $this->userRank->next();
+        $this->currentLevelData = self::$levelData[$this->userRank->value];
+        $this->latestCommand = current($this->currentLevelData);
+        $this->currentSubLvl = 0;
+        $this->xp = $this->userRank->rank() * 100;
         self::createRewardRoom();
+        writeNewHistory();
+        self::getCurrentMessage();
+        throw new Exception("", -1);
     }
 
     public function unlockNextCommand()
     {
+        $this->xp += (int)(1 / count($this->currentLevelData) * 100);
         $this->latestCommand = self::getNextSpell();
         $this->currentSubLvl++;
-        array_push($this->unlockedCommands, $this->latestCommand->value);
-        if ($this->latestCommand == NULL)
-        {
-            $this->levelUpUser();
-        }
+        array_push($this->unlockedCommands, $this->latestCommand);
+        self::getCurrentMessage();
     }
-
-    public function calculateLevelPercentage()
+    public function calculateLvlProgress()
     {
-        $lvlCount = count($this->currentLevelData);
-        $counter = 1;
-        $tempLvlData = self::$levelData[$this->userRank->value];
-
-        while ($counter < $lvlCount)
-        {
-            $current = current($tempLvlData) == $this->latestCommand;
-            if ($current) break;
-            next($tempLvlData);
-            $counter++;
-        }
-        if ($this->userRank->value == "root")
-        {
-            return 100;
-        }
-
-        return (int)round(($counter / $lvlCount) * 100);
+        return (int)($this->currentSubLvl / count($this->currentLevelData) * 100);
     }
     public function calculateGameStats($xp)
     {
@@ -161,7 +148,7 @@ class GameController
                     $response = "Since you wanderers love to forget how your spells work,<br>
                         here's a little something hat can help even the most wandererrest of wanderers 
                         And keep your eyes open for anything... interesting<br>"
-                        . colorizeString(getCommand($this->latestCommand->value)->description . "action-tip");
+                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
                     break;
                 }
             case Commands::EXECUTE->value:
@@ -169,7 +156,7 @@ class GameController
                     $response = "You already got here? Thats a surprise...<br>
                             Well then this should be no biggie, you'll figure out where, on what and how to use this one<br>
                             (or not and you're still just a wanderer)"
-                        . colorizeString(getCommand($this->latestCommand->value)->description . "action-tip");
+                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
                     break;
                 }
                 //LEVEL 2
@@ -179,13 +166,13 @@ class GameController
                      you are now officially an APPRENTICE. Not too shabby " . $this->userName . "<br> 
                         as you can see (or rather, as you can't), invoking the alter transported you to this empty place.<br>
                         ...unless it isn't empty and you just learnt a new spell?<br>"
-                        . colorizeString(getCommand($this->latestCommand->value)->description, "action-tip");
+                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
                     break;
                 }
             case Commands::PWD->value:
                 {
                     $response = "this is a convenient one, use it when you're disoriented, or are wondering if you're inside a specific room <br>"
-                        . colorizeString(getCommand($this->latestCommand->value)->description, "action-tip");
+                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
                     break;
                 }
             case Commands::MKDIR->value:
@@ -193,14 +180,14 @@ class GameController
                     $response = "Now this slowly becomes interesting,<br>
                         you now can now create your own rooms.<br>
                         And i know its tempting, but make sure not to go crazy with creating your own maze you will never find your way out of!"
-                        . colorizeString(getCommand($this->latestCommand->value)->description, "action-tip");
+                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
                     break;
                 }
             case Commands::RM->value:
                 {
                     $response = "Now what is this?! You can even clean up after yourself!!. <br>
                         How about you practise by cleaning up some rooms here (please?)<br>"
-                        . colorizeString(getCommand($this->latestCommand->value)->description, "action-tip");
+                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
                     break;
                 }
                 //LEVEL 3
@@ -209,7 +196,7 @@ class GameController
                     $response = "Oh no...<br>
                         Like everytime we get here, i will tell you to always keep things clean and organized,<br>
                         and you will happily ignore me and contribute to this mess around here, but anyways, here it is"
-                        . colorizeString(getCommand($this->userRank->value)->description, "action-tip");
+                        . colorizeString(getCommand($this->userRank)->description, "action-tip");
                     break;
                 }
             case Commands::CP->value:
@@ -220,29 +207,36 @@ class GameController
                 }
             case Commands::MV->value:
                 {
+                    break;
                 }
             case Commands::NANO->value:
                 {
+                    break;
                 }
                 //level 4
             case Commands::GREP->value:
                 {
+                    break;
                 }
             case Commands::FIND->value:
                 {
+                    break;
                 }
             case Commands::WC->value:
                 {
+                    break;
                 }
             case Commands::HEAD->value:
                 {
+                    break;
                 }
             case Commands::TAIL->value:
                 {
+                    break;
                 }
             default:
                 {
-                    if ($this->userRank->value == "root") return;
+                    if ($this->userRank->value == "root") break;
                     throw new Exception("unknownCommand");
                 }
         }
@@ -259,22 +253,12 @@ class GameController
     }
     public function getNextSpell()
     {
-        // $next =  $this->currentLevelData[$this->currentSubLvl + 1];
+        $next =  $this->currentLevelData[$this->currentSubLvl + 1];
         return $this->currentSubLvl <= count($this->currentLevelData)
             ?  $this->currentLevelData[$this->currentSubLvl + 1]
             : false;
     }
-    public function isUnlockableSpell($arg)
-    {
-        foreach ($this->currentLevelData as $spell)
-        {
-            if (!in_array($spell->value, $this->unlockedCommands,))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+
     public function createRewardRoom()
     {
         switch ($this->userRank->value)
@@ -297,23 +281,3 @@ class GameController
         }
     }
 }
-/*
-cat scroll: 
-        Welcome, wanderer.
-
-        You have entered the realm of ShellSpell
-        a dungeon shaped like a command line.
-
-        Here, rooms are directories,
-        scrolls are files,
-        and knowledge is your only weapon.
-
-        Listen and read carefully to learn the spells the ancient shell
-        to explore, solve riddles
-        and uncover the secrets hidden in the depths of this dungeon.
-        You will find alters at the end of each level.
-
-        Type carefully — every command matters.
-
-        Your journey begins here.
-*/

@@ -49,7 +49,7 @@ function executeMkdir()
         $tempRoom->doors[$roomName] = new Room(
             name: $roomName,
             path: $tempRoom->path,
-            requiredRole: $_SESSION["user"]["role"]
+            requiredRole: $_SESSION["gameController"]->userRank
         );
     }
 }
@@ -127,7 +127,7 @@ function executeTouch()
             name: $fileName,
             baseName: "",
             path: $destRoom->path,
-            requiredRole: $_SESSION["user"]["role"],
+            requiredRole: $_SESSION["gameController"]->userRank,
             content: "",
             curDate: true
         );
@@ -147,12 +147,15 @@ function executeExecute()
     $itemExec = &getItem(
         explode(
             "/",
-            substr($_SESSION["tokens"]["command"], 2)
+            substr(
+                $_POST["command"],
+                2
+            )
         )
     );
 
-    if (isExecutable($itemExec))
-        $itemExec->executeAction();
+    if (is_a($itemExec, Alter::class))
+        $_SESSION["gameController"]->levelUpUser($itemExec);
     else
         throw new Exception("item not executable");
 }

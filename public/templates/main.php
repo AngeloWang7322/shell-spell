@@ -3,7 +3,7 @@ $title = "Shell spell";
 $extraCss[] = '/assets/css/main.css';
 $script = "main.js";
 
-$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["mapName"] . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["user"]["role"]->value);
+$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["mapName"] . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["gameController"]->userRank->value);
 ?>
 
 <div class="game-container">
@@ -82,10 +82,10 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                 </form>
             </div>
             <div class="xp-display-container">
-                <div class="xp-bar" style="width: <?= $_SESSION["gameController"]->xpPercentage ?>%;">
+                <div class="xp-bar" style="width: <?= $_SESSION["gameController"]->calculateLvlProgress()?>%;">
                     <h4 class="xp-text">
                         <?=
-                        $_SESSION["user"]["role"]->value
+                        $_SESSION["gameController"]->userRank->value
                         ?>
                     </h4>
                 </div>

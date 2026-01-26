@@ -83,7 +83,7 @@ class Command
                         if ((bool)self::$function(explode("/", $arg), $tokens, $syntaxArray, $i))
                         {
                             $_SESSION["tokens"]["path"][] = explode("/", $arg);
-                            $_SESSION["tokens"]["pathStr"][] = $arg;
+                            $_SESSION["tokens"]["pathStr"][] = $arg; 
                         }
                         break;
                     }
@@ -104,7 +104,7 @@ class Command
             if (next($syntaxArray) == false)
             {
                 end($syntaxArray);
-            }
+            } 
         }
     }
     public function createTokens(): array
@@ -534,7 +534,8 @@ function getCommand($command)
             true,
             pathParser: "parsePathFind"
         ),
-        "./" == substr($command, 0, 2)
+
+        "./" == substr($command, 0, 2) || "execute" == $command
         => new Command(
             "execute",
             [TokenType::PATH],

@@ -74,13 +74,12 @@ class DBHelper
             "id" => $stateId
         ]);
         $gameState = $fetchGameState->fetch();
-
         $_SESSION["mapId"] = $gameState["id"];
         $_SESSION["mapName"] = $gameState["name"];
-        $_SESSION["user"]["xp"] = $gameState["xp"];
         $_SESSION["gameController"] = new GameController($gameState["xp"]);
         $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
         parseHistory($gameState["history_json"]);
+        $_SESSION["gameController"]->getCurrentMessage();
     }
     public function getGameStates()
     {
@@ -96,13 +95,12 @@ class DBHelper
         foreach ($response as $data)
         {
             $statesData[$data["id"]]["name"] = $data["name"];
-            $statesData[$data["id"]]["rank"] = getRankFromXp($data["xp"])->value;
+            $statesData[$data["id"]]["rank"] = Role::getRoleFromXp($data["xp"])->value;
         }
         return $statesData;
     }
     public function createGameState($name, $rank)
     {
-
         $gameStateInsert = $this->pdo->prepare("
             INSERT INTO game_states ( user_id, name, map_json, history_json, xp)
             VALUES (:userId, :stateName, :mapJson, :historyJson, :xp)
@@ -129,6 +127,7 @@ class DBHelper
     public static function loadDefaultSession()
     {
         session_unset();
+        $_SESSION["gameController"] = new GameController(0);
         $_SESSION["tokens"]["command"] = "";
         $_SESSION["tokens"]["path"] = [];
         $_SESSION["tokens"]["options"] = [];
@@ -149,7 +148,6 @@ class DBHelper
             "command" => "",
             "response" => "",
         ];
-        $_SESSION["gameController"] = new GameController(400);
         $_SESSION["gameController"]->getCurrentMessage();
     }
     public static function getDefaultMap(): Room
@@ -160,7 +158,6 @@ class DBHelper
         );
         $_SESSION["curRoom"] = &$tempMap;
         $tempMap->path = ["hall"];
-
         $tempMap->doors["entrance"] = new Room(
             name: "entrance",
             path: ["hall"],
@@ -234,9 +231,9 @@ class DBHelper
             "execute",
             $foyer->path,
             Role::WANDERER,
-            "brautkleidbleibtbrautkleidundblaukrautbleibtblaukraut",
+            "wie heisst das zaubertwort?",
             Commands::EXECUTE,
-            "abracadabrasimsalabim",
+            "bitte",
         );
         $foyer->items["mantra.txt"] = new Scroll(
             "",
@@ -249,7 +246,7 @@ class DBHelper
         $ceremonialroom = $foyer->doors["ceremonialroom"];
         $ceremonialroom->items["ancientAlter.exe"] = new Alter(
             name: "",
-            baseName: "ancientAlter.exe",
+            baseName: "ancientAlter",
             path: $ceremonialroom->path,
             requiredRole: Role::APPRENTICE,
             curDate: false,
@@ -671,26 +668,9 @@ class DBHelper
         }
     }
 }
-function getRankFromXp($xp): Role
-{
-    for ($i = 1; $i <= count(Role::cases()); $i++)
-    {
-        if ($xp <= $i * 100)
-        {
-            foreach (Role::cases() as $role)
-            {
-                if ($i == 1)
-                {
-                    return $role;
-                }
-                $i--;
-            }
-        }
-    }
-    throw new Exception("role not found?");
-}
 function parseHistory($historyJson)
 {
+    unset($_SESSION["history"]);
     $_SESSION["history"] = [];
     foreach ((array) json_decode($historyJson) as $element)
     {

@@ -47,7 +47,6 @@ function handleRequiredCommand()
         writeNewHistory();
         $_SESSION["gameController"]->requiredCommand = NULL;
         $_SESSION["gameController"]->unlockNextCommand();
-        $_SESSION["gameController"]->getCurrentMessage();
         cleanUp();
         throw new Exception("", -1);
     }
@@ -262,6 +261,7 @@ function cleanUp()
     $_SESSION["tokens"]["keyValueOptions"] = [];
     $_SESSION["tokens"]["strings"] = [];
     $_SESSION["tokens"]["misc"] = [];
+    $_SESSION["tokens"]["pathStr"] = [];
     $_SESSION["inputCommand"] = "";
     $_SESSION["response"] = "";
     $_SESSION["pipeCount"] = 0;

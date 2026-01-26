@@ -20,7 +20,7 @@ $script = "newGame.js"
                 <?php foreach (Role::cases() as $role): ?>
                     <option style="color:<?= $role->getColor() ?>" value="<?= $role->value ?>">
                         <div class="rank-option">
-                            <span>Lvl <?= $role->rank() ?> - <?= strtoupper($role->value) ?></span>:&nbsp
+                            <span>Lvl <?= $role->rank() + 1 ?> - <?= strtoupper($role->value) ?></span>:&nbsp
                             <?php if ($role->value == "root"): ?>Sandbox Mode
                         <?php elseif ($role->value != "wanderer"): ?>
                         <?php endif; ?>

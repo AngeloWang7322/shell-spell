@@ -59,7 +59,8 @@ function uploadProfilePic($dbHelper)
     exit;
 }
 
-function logoutUser(){
+function logoutUser()
+{
     session_unset();
     header("Location: /");
     exit;
