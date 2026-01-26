@@ -109,7 +109,9 @@ class GameController
             next(self::$levelData);
         }
         reset($this->currentLevelData);
-        $percentage = 100 / count($this->currentLevelData);
+        $percentage = count($this->currentLevelData) == 0
+            ? 100
+            : 100 / count($this->currentLevelData);
         $xp %= 100;
         $this->currentSubLvl = 0;
         array_push($this->unlockedCommands, current($this->currentLevelData));

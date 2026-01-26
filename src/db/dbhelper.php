@@ -17,10 +17,12 @@ class DBHelper
             map_json = :mapJson,
             history_json = :historyJson,
             xp = :xp
-            WHERE user_id = :userId"
+            WHERE id = :mapId
+            AND user_id = :userId"
         );
 
         $response = $query->execute([
+            ":mapId" => $_SESSION["mapId"],
             ":userId" => $_SESSION["user"]["id"],
             ":mapJson" => json_encode($_SESSION["map"]),
             ":historyJson" => json_encode($_SESSION["history"]),
@@ -73,6 +75,7 @@ class DBHelper
         ]);
         $gameState = $fetchGameState->fetch();
 
+        $_SESSION["mapId"] = $gameState["id"];
         $_SESSION["mapName"] = $gameState["name"];
         $_SESSION["user"]["xp"] = $gameState["xp"];
         $_SESSION["gameController"] = new GameController($gameState["xp"]);

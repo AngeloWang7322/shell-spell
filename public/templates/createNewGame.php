@@ -14,7 +14,7 @@ $script = "newGame.js"
     <form class="map-name-form" method="post">
         <div class="new-game-data">
             <input type="hidden" value="newMap" name="action">
-            <input id="newMapNameInput" maxlength="15" class="button-large name-input" name="newMapName" placeholder="New Game">
+            <input id="newMapNameInput" autocomplete="off" maxlength="15" class="button-large name-input" name="newMapName" placeholder="New Game">
             <select id="rankSelect" name="rank" class="rank-select" required>
                 <option value="" disabled selected hidden>Select Commands To Learn</option>
                 <?php foreach (Role::cases() as $role): ?>
