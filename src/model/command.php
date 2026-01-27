@@ -146,7 +146,7 @@ function getCommand($command)
                               cd -     Move back to the previous room.<br>
                         <br>
                               Movement may fail if the target room does not exist<br>
-                              or your role is not high enough to enter it.",
+                              or your rank is not high enough to enter it.",
         ),
         "mkdir" == $command
         => new Command(
@@ -308,7 +308,7 @@ function getCommand($command)
                         <br>
                           DESCRIPTION<br>
                               Executes a runnable item if it exists<br>
-                              and your role allows execution.<br>
+                              and your rank allows execution.<br>
                               ",
         ),
         "echo" == $command

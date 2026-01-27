@@ -17,14 +17,14 @@ $script = "newGame.js"
             <input id="newMapNameInput" autocomplete="off" maxlength="15" class="button-large name-input" name="newMapName" placeholder="New Game">
             <select id="rankSelect" name="rank" class="rank-select" required>
                 <option value="" disabled selected hidden>Select Commands To Learn</option>
-                <?php foreach (Role::cases() as $role): ?>
-                    <option style="color:<?= $role->getColor() ?>" value="<?= $role->value ?>">
+                <?php foreach (Rank::cases() as $Rank): ?>
+                    <option style="color:<?= $Rank->getColor() ?>" value="<?= $Rank->value ?>">
                         <div class="rank-option">
-                            <span>Lvl <?= $role->rank() + 1 ?> - <?= strtoupper($role->value) ?></span>:&nbsp
-                            <?php if ($role->value == "root"): ?>Sandbox Mode
-                        <?php elseif ($role->value != "wanderer"): ?>
+                            <span>Lvl <?= $Rank->rank() + 1 ?> - <?= strtoupper($Rank->value) ?></span>:&nbsp
+                            <?php if ($Rank->value == "root"): ?>Sandbox Mode
+                        <?php elseif ($Rank->value != "wanderer"): ?>
                         <?php endif; ?>
-                        <?= implode(", ", array_values(GameController::$levelData[$role->value])) ?>
+                        <?= implode(", ", array_values(GameController::$levelData[$Rank->value])) ?>
                         </div>
                     </option>
                 <?php endforeach; ?>

@@ -10,10 +10,10 @@ function closeScroll()
 function editScroll()
 {
     $tempScroll = &getItem($_SESSION["openedScroll"]["path"]);
-    $userRole = $_SESSION["user"]["role"];
-    if ($userRole->isLowerThan($tempScroll->requiredRole))
+    $userRank = $_SESSION["user"]["Rank"];
+    if ($userRank->isLowerThan($tempScroll->requiredRank))
     {
-        editLastHistory("unable to change scroll, required role: " . colorizeString($tempScroll->requiredRole->value));
+        editLastHistory("unable to change scroll, required Rank: " . colorizeString($tempScroll->requiredRank->value));
     }
     else
     {
