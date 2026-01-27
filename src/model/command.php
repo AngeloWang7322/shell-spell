@@ -19,6 +19,7 @@ class Command
     public string $miscParser;
     public string $optionParser;
     public string $keyValueOptionParser;
+    public string $finalValidator;
 
     public function __construct(
         $commandName,
@@ -34,6 +35,7 @@ class Command
         $miscParser = "valiateMisc",
         $optionParser = "parseOption",
         $keyValueOptionParser = "parsekeyValueOption",
+        $finalValidator = "",
     )
     {
         $this->commandName = $commandName;
@@ -49,6 +51,7 @@ class Command
         $this->miscParser = $miscParser;
         $this->optionParser = $optionParser;
         $this->keyValueOptionParser = $keyValueOptionParser;
+        $this->finalValidator = $finalValidator;
     }
     public function parseInput()
     {
@@ -107,6 +110,11 @@ class Command
                 end($syntaxArray);
             }
         }
+        if ($this->finalValidator)
+        {
+            $validateFunction = $this->finalValidator;
+            $validateFunction($this);
+        }
     }
 }
 
@@ -116,11 +124,11 @@ function getCommand($command)
     {
         "cd" == $command
         => new Command(
-            "cd",
-            [TokenType::PATH],
-            [],
-            [],
-            "NAME<br>
+            commandName: "cd",
+            tokenSyntax: [TokenType::PATH],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               cd - change current room<br>
                         <br>
                         SYNOPSIS<br>
@@ -142,11 +150,11 @@ function getCommand($command)
         ),
         "mkdir" == $command
         => new Command(
-            "mkdir",
-            [TokenTYPE::OPTION, TokenType::PATH],
-            [],
-            [],
-            "NAME<br>
+            commandName: "mkdir",
+            tokenSyntax: [TokenTYPE::OPTION, TokenType::PATH],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               mkdir - create a new room<br>
                         <br>
                           SYNOPSIS<br>
@@ -160,11 +168,11 @@ function getCommand($command)
         ),
         "rm" == $command
         => new Command(
-            "rm",
-            [TokenTYPE::OPTION, TokenType::PATH],
-            [],
-            [],
-            "NAME<br>
+            commandName: "rm",
+            tokenSyntax: [TokenTYPE::OPTION, TokenType::PATH],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               rm - remove a room or item<br>
                         <br>
                           SYNOPSIS<br>
@@ -177,11 +185,11 @@ function getCommand($command)
         ),
         "mv" == $command
         => new Command(
-            "mv",
-            [TokenTYPE::OPTION, TokenType::PATH, TokenType::PATH],
-            [],
-            [],
-            "NAME<br>
+            commandName: "mv",
+            tokenSyntax: [TokenTYPE::OPTION, TokenType::PATH, TokenType::PATH],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               mv - move a room or item<br>
                         <br>
                           SYNOPSIS<br>
@@ -190,15 +198,16 @@ function getCommand($command)
                           DESCRIPTION<br>
                               Moves a room or item from source path to destination path.
                               ",
-            pathParser: "parsePathRename"
+            pathParser: "parsePathRename",
+            finalValidator: "finalValidateMv",
         ),
         "pwd" == $command
         => new Command(
-            "pwd",
-            [],
-            [],
-            [],
-            "NAME<br>
+            commandName: "pwd",
+            tokenSyntax: [],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               pwd - print current room path<br>
                         <br>
                           SYNOPSIS<br>
@@ -207,15 +216,15 @@ function getCommand($command)
                           DESCRIPTION<br>
                               Displays the full path of the current room.
                               ",
-            true
+            isWriter: true
         ),
         "ls" == $command
         => new Command(
-            "ls",
-            [TokenTYPE::OPTION, TokenType::PATH],
-            ["-l", "-a"],
-            [],
-            "NAME<br>
+            commandName: "ls",
+            tokenSyntax: [TokenTYPE::OPTION, TokenType::PATH],
+            validOptions: ["-l", "-a"],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               ls - list rooms and items<br>
                         <br>
                           SYNOPSIS<br>
@@ -229,7 +238,7 @@ function getCommand($command)
                               Rooms are displayed as exits.<br>
                               Items (scrolls, objects) are displayed as files.
                               ",
-            true,
+            isWriter: true,
         ),
         "cp" == $command
         => new Command(
@@ -249,11 +258,11 @@ function getCommand($command)
         ),
         "grep" == $command
         => new Command(
-            "grep",
-            [TokenTYPE::OPTION, TokenType::STRING, TokenType::PATH],
-            ["-r", "-i", "-v"],
-            [],
-            "NAME<br>
+            commandName: "grep",
+            tokenSyntax: [TokenTYPE::OPTION, TokenType::STRING, TokenType::PATH],
+            validOptions: ["-r", "-i", "-v"],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               grep - search text in scrolls<br>
                         <br>
                           SYNOPSIS<br>
@@ -263,15 +272,15 @@ function getCommand($command)
                               Searches for a text pattern inside a scroll<br>
                               and prints matching lines.
                               ",
-            true,
+            isWriter: true,
         ),
         "find" == $command
         => new Command(
-            "find",
-            [TokenType::PATH, TokenType::KEYVALUEOPTION],
-            [],
-            ["-name" => "string"],
-            "NAME<br>
+            commandName: "find",
+            tokenSyntax: [TokenType::PATH, TokenType::KEYVALUEOPTION],
+            validOptions: [],
+            validKeyValueOptions: ["-name" => "string"],
+            description: "NAME<br>
                               find - search for rooms or items<br>
                         <br>
                           SYNOPSIS<br>
@@ -281,17 +290,17 @@ function getCommand($command)
                               Searches the entire map for rooms or items<br>
                               matching the given name and prints their paths.
                               ",
-            true,
+            isWriter: true,
             pathParser: "parsePathFind"
         ),
 
         "./" == substr($command, 0, 2) || "execute" == $command
         => new Command(
-            "execute",
-            [TokenType::PATH],
-            [],
-            [],
-            "NAME<br>
+            commandName: "execute",
+            tokenSyntax: [TokenType::PATH],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               ./ - execute a file<br>
                         <br>
                           SYNOPSIS<br>
@@ -304,11 +313,11 @@ function getCommand($command)
         ),
         "echo" == $command
         => new Command(
-            "echo",
-            [TokenType::STRING],
-            [],
-            [],
-            "NAME<br>
+            commandName: "echo",
+            tokenSyntax: [TokenType::STRING],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               echo - print text<br>
                         <br>
                           SYNOPSIS<br>
@@ -322,11 +331,11 @@ function getCommand($command)
         ),
         "man" == $command
         => new Command(
-            "man",
-            [TokenTYPE::MISC],
-            [],
-            [],
-            "NAME<br>
+            commandName: "man",
+            tokenSyntax: [TokenTYPE::MISC],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               man - display command manual<br>
                             <br>
                           SYNOPSIS<br>
@@ -337,16 +346,17 @@ function getCommand($command)
                         <br>
                               man (command)  Shows detailed help for the given command.
                               ",
-            true,
-            miscParser: "parseMiscMan"
+            isWriter: true,
+            miscParser: "parseMiscMan",
+            finalValidator: "finalValidateMan"
         ),
         "cat" == $command
         => new Command(
-            "cat",
-            [TokenTYPE::PATH],
-            [],
-            [],
-            "NAME<br>
+            commandName: "cat",
+            tokenSyntax: [TokenTYPE::PATH],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               cat - read a scroll<br>
                         <br>
                           SYNOPSIS<br>
@@ -357,15 +367,15 @@ function getCommand($command)
                               if it exists in the current room<br>
                               and your level is high enough to read it.
                               ",
-            true,
+            isWriter: true,
         ),
         "touch" == $command
         => new Command(
-            "touch",
-            [TokenTYPE::PATH],
-            [],
-            [],
-            "NAME<br>
+            commandName: "touch",
+            tokenSyntax: [TokenTYPE::PATH],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               touch - create an empty file<br>
                         <br>
                           SYNOPSIS<br>
@@ -375,16 +385,16 @@ function getCommand($command)
                               Creates a new empty item (file) in the current room.<br>
                               If the file already exists, nothing is changed.
                               ",
-            true,
+            isWriter: true,
             pathParser: "parsePathNew",
         ),
         "wc" == $command
         => new Command(
-            "wc",
-            [TokenType::OPTION, TokenType::PATH],
-            ["-l", "-w"],
-            [],
-            "NAME<br>
+            commandName: "wc",
+            tokenSyntax: [TokenType::OPTION, TokenType::PATH],
+            validOptions: ["-l", "-w"],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               wc - count words in a scroll<br>
                         <br>
                           SYNOPSIS<br>
@@ -394,17 +404,17 @@ function getCommand($command)
                               Counts the number of words in a scroll<br>
                               if it exists in the current room.
                               ",
-            true,
-            true,
+            isWriter: true,
+            isReader: true,
             pathParser: "parsePathOptional"
         ),
         "head" == $command
         => new Command(
-            "head",
-            [TokenType::KEYVALUEOPTION, TokenType::PATH],
-            [],
-            ["-n" => 10],
-            "NAME<br>
+            commandName: "head",
+            tokenSyntax: [TokenType::KEYVALUEOPTION, TokenType::PATH],
+            validOptions: [],
+            validKeyValueOptions: ["-n" => 10],
+            description: "NAME<br>
                               head - show beginning of a scroll<br>
                         <br>
                           SYNOPSIS<br>
@@ -413,17 +423,17 @@ function getCommand($command)
                           DESCRIPTION<br>
                               Displays the first few lines of a scroll.
                               ",
-            true,
-            true,
+            isWriter: true,
+            isReader: true,
             pathParser: "parsePathOptional"
         ),
         "tail" == $command
         => new Command(
-            "tail",
-            [TokenType::KEYVALUEOPTION, TokenType::PATH],
-            [],
-            ["-n" => 10],
-            "NAME<br>
+            commandName: "tail",
+            tokenSyntax: [TokenType::KEYVALUEOPTION, TokenType::PATH],
+            validOptions: [],
+            validKeyValueOptions: ["-n" => 10],
+            description: "NAME<br>
                               tail - show end of a scroll<br>
                         <br>
                           SYNOPSIS<br>
@@ -432,17 +442,17 @@ function getCommand($command)
                           DESCRIPTION<br>
                               Displays the last few lines of a scroll.
                               ",
-            true,
-            true,
+            isWriter: true,
+            isReader: true,
             pathParser: "parsePathOptional"
         ),
         "nano" == $command
         => new Command(
-            "nano",
-            [TokenType::PATH],
-            [],
-            [],
-            "NAME<br>
+            commandName: "nano",
+            tokenSyntax: [TokenType::PATH],
+            validOptions: [],
+            validKeyValueOptions: [],
+            description: "NAME<br>
                               nano - edit a scroll<br>
                         <br>
                           SYNOPSIS<br>
@@ -453,6 +463,6 @@ function getCommand($command)
                               If the scroll does not exist, it will be created.
                               ",
         ),
-        default => throw new Exception("unknown command")
+        default => throw new Exception("unknown spell")
     };
 }

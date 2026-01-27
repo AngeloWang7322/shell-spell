@@ -133,7 +133,7 @@ class DBHelper
         $_SESSION["tokens"]["options"] = [];
         $_SESSION["tokens"]["keyValueOptions"] = [];
         $_SESSION["tokens"]["misc"] = [];
-        $_SESSION["validCommands"] = ["cd", "cat"];
+        $_SESSION["tokens"]["pathStr"] = [];
         $_SESSION["mapName"] = "dungeon";
         $_SESSION["pipeCount"] = 0;
         $_SESSION["map"] = self::getDefaultMap();

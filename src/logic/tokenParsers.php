@@ -215,7 +215,6 @@ function parsePathOptional($path, $tokens, &$syntaxArray, &$argIndex)
 }
 function parsePathRename($path, $tokens, &$syntaxArray, &$argIndex)
 {
-
     if (substr($tokens[$argIndex], -1) != "/" && !empty($_SESSION["tokens"]["path"][0]))
     {
         $_SESSION["tokens"]["misc"] =  end($path);
@@ -251,4 +250,13 @@ function parseStringEcho($path, $tokens, &$syntaxArray, &$argIndex)
 function parseMiscMan($arg)
 {
     return parseCommand($arg);
+}
+
+function finalValidateMan(Command $man)
+{
+    if (empty($_SESSION["tokens"]["misc"])) throw new Exception("No spell given");
+}
+function finalValidateMv(Command $man)
+{
+    if (count($_SESSION["tokens"]["path"]) != 2) throw new Exception("must provide 2 paths");
 }

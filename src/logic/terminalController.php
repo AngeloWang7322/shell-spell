@@ -177,13 +177,9 @@ function addStdoutToFile($seperator, $redirectFilePath)
     $newStr = strip_tags(arrayKeyValueToString($_SESSION["stdout"]));
     $destItem = &getItem($redirectFilePath);
     if ($seperator == ">>")
-    {
         $destItem->content .= $newStr;
-    }
     else
-    {
         $destItem->content = $newStr;
-    }
 }
 function prepareCommandExecution()
 {
@@ -207,8 +203,9 @@ function executeCommand()
     ("execute" . $_SESSION["tokens"]["command"])();
 }
 function editLastHistory($string)
-{   
-    if($_SESSION["history"] == NULL){
+{
+    if ($_SESSION["history"] == NULL)
+    {
         $_SESSION["response"] = $string;
         writeNewHistory();
         return;
