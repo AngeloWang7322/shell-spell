@@ -1,6 +1,6 @@
 .header-wrapper {
     display: flex;
-    width: 100vw;
+    max-width: 100vw;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
@@ -13,12 +13,31 @@
     overflow: hidden;
     font-family: "Jersey 10";
 }
-
+.logout-form{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0px;
+    margin: 0px;
+    
+    width: fit-content;
+    height: 32px;
+}
+.logout-button{
+    background-color: rgba(0, 0, 0, 0);
+    padding: 8px 4px;
+    margin: 0px;
+    font-size: 24px;
+    width: fit-content;
+    height: fit-content;
+}
 .header-group {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    width:fit-content;
     margin: 0px 0px;
     gap: 24px;
 }

@@ -14,7 +14,7 @@ $pic = $_SESSION["profile_pic"] ?? $default;
         <input type="hidden" name="action" value="uploadProfilePic" enctype="multipart/form-data">
         <div class="profile-picture-container">
             <img id="defaultPicture" class="profile-picture" src="<?= htmlspecialchars($pic) ?>">
-            <img id="profilePicture" hidden class="profile-picture" src="">
+            <img id="profilePicture" style="display:none" class="profile-picture" src="">
             <input id="fileInput" class="upload-input" type="file" hidden name="profile_pic" accept="image/png,image/jpeg,image/webp" required />
             <label class="select-file-button" for="fileInput">
                 <img class="icon" src="/assets/images/icon_edit.png">
@@ -25,7 +25,7 @@ $pic = $_SESSION["profile_pic"] ?? $default;
             <img id="preview" style="display:none; max-width:300px;">
             <p id="fileStatus" class="file-status"></p>
             <img id="imgPreview" class="img-preview">
-            <button id="uploadButton" class="button-medium" hidden type="submit">
+            <button id="uploadButton" class="button-medium" style="display:none" type="submit">
                 <div>Upload</div>
             </button>
         </div>

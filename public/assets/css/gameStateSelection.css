@@ -2,8 +2,8 @@
 .empty-option-container {
     display: flex;
     flex-direction: row;
-    padding: 12px 16px;
-    margin: 0px;
+    margin: 0px -4px;
+    padding: 8px 0px;
     align-items: center;
     justify-content: space-around;
     text-align: center;
@@ -20,14 +20,15 @@
 }
 
 .delete-wrapper {
-    width: 25%;
     height: 64px;
+    width: fit-content;
 }
 
 .state-option-container {
     min-width: 100%;
     background-color: rgb(119, 25, 25);
-    justify-content: space-evenly;
+    padding: 8px 12px;
+    justify-content: space-between;
     align-items: center;
     text-wrap-mode: nowrap;
 }
@@ -39,14 +40,15 @@
 }
 
 .state-name {
-    font-size: 48px;
+    font-size: 42px;
     max-width: 66%;
 }
-
+.rank{
+    font-size: 28px;
+}
 .hidden-button {
     display: flex;
     flex-direction: row;
-    /* text-wrap-mode: nowrap; */
 }
 
 .new-game {
@@ -57,6 +59,7 @@
 
 .new-game-button {
     padding: 6px 54px;
+    margin-top: 32px;
     text-wrap-mode: nowrap;
     font-size: 54px;
 }
@@ -65,6 +68,7 @@
     height: fit-content;
     width: 420px;
     gap: 32px;
+    margin: 32px 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -73,10 +77,12 @@
     font-family: "Jersey 10";
 }
 
+
 .option-wrapper {
     display: flex;
     flex-direction: row;
-    align-items: space-between;
+    max-width: 100%;
+    align-items: center;
     justify-content: space-between;
     width: inherit;
     height: 64px;
@@ -86,8 +92,11 @@
 
 .delete-button {
     height: 64px;
+    margin: 8px 0px;
+    padding: 0px 14px;
     text-align: center;
     text-justify: center;
+    font-size: 22px;
 
     div {
         line-height: 24px;
@@ -95,6 +104,10 @@
 }
 
 .title {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
     font-size: 92px;
     text-shadow: 4px 8px 0px rgb(85, 16, 16);
 

@@ -18,7 +18,6 @@ $gameStates = $dbHelper->getGameStates();
             Shell Spell
             <img class="logo" src="../assets/images/favicon-32x32.png">
         </div>
-        <!-- SELECT GAME -->
     </div>
 
     <div class="selection-wrapper">
@@ -27,27 +26,27 @@ $gameStates = $dbHelper->getGameStates();
         {
             echo "
             <div class='option-wrapper'>
-            <form class='state-option-wrapper' method='post' > 
-                <input type='hidden' value='loadMap' name='action'>
-                <input type='hidden' value='" . $id . "' name='mapId'>
-                <button class='hidden-button' type='submit'>
-                    <div class='button-large state-option-container'>
-                        <div class='state-name'>" .
-                $data['name'] .
-                "</div>
-                        <div class='" . $data['rank'] . "'>"
-                . $data["rank"] .
-                "</div>
-                    </div>
-                </button>
-            </form>
-            <form class='delete-wrapper' method='post'>                    
-                <input type='hidden' value='deleteMap' name='action'>
-                <input type='hidden' value='" . $id . "' name='mapId'>
-                <button class='button-medium delete-button' type='submit'>
-                    <div>delete</div>
-                </button>
-            </form>
+                <form class='state-option-wrapper' method='post' > 
+                    <input type='hidden' value='loadMap' name='action'>
+                    <input type='hidden' value='" . $id . "' name='mapId'>
+                    <button class='hidden-button' type='submit'>
+                        <div class='button-large state-option-container'>
+                            <div class='state-name'>" .
+                    $data['name'] .
+                    "</div>
+                            <div class='rank " . $data['rank'] . "'>"
+                    . $data["rank"] .
+                    "</div>
+                        </div>
+                    </button>
+                </form>
+                <form class='delete-wrapper' method='post'>                    
+                    <input type='hidden' value='deleteMap' name='action'>
+                    <input type='hidden' value='" . $id . "' name='mapId'>
+                    <button class='button-medium delete-button' type='submit'>
+                        <div>DELETE</div>
+                    </button>
+                </form>
             </div>
             ";
         }

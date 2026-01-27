@@ -28,13 +28,11 @@ $extraCss[] = "assets/css/header.css";
             </a>
         <?php else: ?>
             <?php if (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) == "/profile"): ?>
-                <form class="header-group" method="post">
+                <form class="logout-form" method="post">
                     <input name="action" value="logoutUser" hidden>
-                    <button type="submit" class="header-element">
-                        <div class="">
-                            Logout
-                            <img class="icon-small" src="../assets/images/icon_logout.png" alt="logout_icon">
-                        </div>
+                    <button type="submit" class="logout-button header-element">
+                        Logout
+                        <img class="icon-small" src="../assets/images/icon_logout.png" alt="logout_icon">
                     </button>
                 </form>
             <?php else: ?>

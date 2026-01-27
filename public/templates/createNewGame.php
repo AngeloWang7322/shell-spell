@@ -31,7 +31,7 @@ $script = "newGame.js"
             </select>
         </div>
         <button id="createGameButton" disabled class='button-create-map' type="submit">
-            <div>CREATE</div>
+            CREATE
         </button>
     </form>
     <br>

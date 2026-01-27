@@ -7,9 +7,7 @@ require_once "./../src/db/dbhelper.php";
 
 exitIfLoggedIn();
 
-$extraCss[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
 $extraCss[] = "/assets/css/auth.css";
-$title = "Log In";
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
@@ -37,9 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 }
 ?>
 
-<div class="page-content form-wrapper">
-    <h1>Log In</h1>
-    <form class="d-flex flex-column justify-content-center" method="post">
+<div class="page-content">
+    <div class="page-title">Log In</div>
+    <form class="form-wrapper" method="post">
         <div class="form-group">
             <label>E-Mail
                 <input class="form-control" type="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
@@ -53,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             </label>
         </div>
         <br>
-        <button class="btn btn-danger btn-lg" type="submit">Log In</button>
+        <button class="button-large" type="submit">Log In</button>
     </form> <?php if (!empty($errors)): ?>
         <div class="errors" style="color:red;">
             <?php foreach ($errors as $e): ?>
@@ -62,8 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         </div>
     <?php endif; ?>
     <br>
-    <form action="register">
-        Have an Account?
-        <button class="btn btn-danger btn-md">Register</button>
-    </form>
+    <div action="alternative-auth-wrapper">
+        <h3>Don't Have An Account?</h3>
+        <a href="/register">
+            <div class="button-medium">
+                Register
+            </div>
+        </a>
+    </div>
 </div>

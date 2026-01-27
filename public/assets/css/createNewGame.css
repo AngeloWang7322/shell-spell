@@ -1,13 +1,14 @@
 .map-name-form {
     position: fixed;
     left: 50%;
-    top: 30%;
+    top: 20%;
     transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 24px;
     height: 84px;
+    width: 340px;
 }
 
 .new-game-data {
@@ -41,6 +42,7 @@
     height: 42px;
     font-size: 24px;
     width: 100%;
+    font-family: "Jersey 10";
     background-color: var(--primary-bg);
     text-overflow: ellipsis;
     color: white;
@@ -72,6 +74,5 @@ option:hover {
 }
 
 .button-create-map {
-    height: 100%;
     font-size: 32px;
 }

@@ -7,12 +7,10 @@ const profilePic = document.getElementById("profilePicture");
 input.addEventListener('change', () => {
     if (input.files.length) {
         const file = input.files[0];
-        defaultPic.hidden = true;
-
+        defaultPic.style.display = "none";
+        profilePic.style.display = "flex";
         profilePic.src = URL.createObjectURL(file);
-        profilePic.hidden = false;
-        
-        uploadButton.hidden = false;
+        uploadButton.style.display = "flex";
     }
     else {
         fileStatus.textContent = 'No file chosen';

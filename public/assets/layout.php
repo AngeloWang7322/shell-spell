@@ -10,7 +10,6 @@
 
 
   <link rel="icon" type="image/png" href="assets/images/favicon-32x32.png">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/css/base.css">
 
   <?php if (!empty($extraCss) && count($extraCss) > 0)

@@ -46,9 +46,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
             <form class="scroll-content" method="post">
                 <input type="hidden" value="editScroll" name="action">
                 <textarea name="newFileContent" class="file-text-input">'
-            .
-            $_SESSION["openedScroll"]["content"]
-            .
+            .  $_SESSION["openedScroll"]["content"] .
             '</textarea>
             <button type="submit" class="save-scroll-button"><h3>SAVE</h3></button>
             </form>
