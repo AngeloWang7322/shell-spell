@@ -52,7 +52,7 @@ class Command
     {
         $syntaxArray = $this->tokenSyntax;
         $tokens = self::createTokens();
-
+        
         for ($i = 0; $i < count($tokens); $i++)
         {
             $arg = $tokens[$i];

@@ -207,7 +207,12 @@ function executeCommand()
     ("execute" . $_SESSION["tokens"]["command"])();
 }
 function editLastHistory($string)
-{
+{   
+    if($_SESSION["history"] == NULL){
+        $_SESSION["response"] = $string;
+        writeNewHistory();
+        return;
+    }
     $lastHistoryEntry = end($_SESSION["history"]);
     $lastHistoryEntry["response"] .=  $string;
     array_pop($_SESSION["history"]);

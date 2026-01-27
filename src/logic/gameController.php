@@ -90,7 +90,6 @@ class GameController
         {
             foreach (current(self::$levelData) as $command)
             {
-
                 array_push($this->unlockedCommands, $command);
             }
             next(self::$levelData);
@@ -202,7 +201,7 @@ class GameController
             case Commands::CP->value:
                 {
                     $response = ""
-                        . colorizeString("rm [name]", "action-tip");
+                        . colorizeString("cp [sourcepath] [destinationPath]", "action-tip");
                     break;
                 }
             case Commands::MV->value:
@@ -244,11 +243,10 @@ class GameController
     }
     public function writeMessage($message)
     {
-
-        $message =
-            " ------- strangevoice ------- <br>" .
-            $message .
-            "<br>------------------------------ <br>";
+        $message ="
+        -------- strangevoice -------- <br>" .
+            $message . "<br>
+        ------------------------------ <br>";
         editLastHistory($message);
     }
     public function getNextSpell()
@@ -271,6 +269,8 @@ class GameController
                             [],
                             $this->userRank
                         );
+
+                    break;
                 }
             case Role::ARCHIVIST:
                 {

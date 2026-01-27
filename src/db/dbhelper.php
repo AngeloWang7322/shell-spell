@@ -78,7 +78,8 @@ class DBHelper
         $_SESSION["mapName"] = $gameState["name"];
         $_SESSION["gameController"] = new GameController($gameState["xp"]);
         $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
-        parseHistory($gameState["history_json"]);
+        $_SESSION["history"] = [];
+        if($gameState["history_json"] != NULL) parseHistory($gameState["history_json"]);
         $_SESSION["gameController"]->getCurrentMessage();
     }
     public function getGameStates()
@@ -102,14 +103,13 @@ class DBHelper
     public function createGameState($name, $rank)
     {
         $gameStateInsert = $this->pdo->prepare("
-            INSERT INTO game_states ( user_id, name, map_json, history_json, xp)
-            VALUES (:userId, :stateName, :mapJson, :historyJson, :xp)
+            INSERT INTO game_states ( user_id, name, map_json, xp)
+            VALUES (:userId, :stateName, :mapJson,  :xp)
         ");
         $gameStateInsert->execute([
             "userId" => $_SESSION["user"]["id"],
             "stateName" => $name,
             "mapJson" => json_encode(self::getDefaultMap()),
-            "historyJson" => json_encode($_SESSION["history"]),
             "xp" => Role::tryFrom($rank)->rank() * 100
         ]);
         $this->loadGameState($this->pdo->lastInsertId());
