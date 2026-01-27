@@ -108,7 +108,10 @@ class GameController
             array_push($this->unlockedCommands, current($this->currentLevelData));
             next($this->currentLevelData);
         }
-        return current($this->currentLevelData);
+
+        return $this->userRank == Role::ROOT
+            ? current(self::$levelData[$this->userRank->prev()->value])
+            : current($this->currentLevelData);
     }
     public function getCurrentMessage()
     {
@@ -243,7 +246,7 @@ class GameController
     }
     public function writeMessage($message)
     {
-        $message ="
+        $message = "
         -------- strangevoice -------- <br>" .
             $message . "<br>
         ------------------------------ <br>";

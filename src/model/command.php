@@ -1,6 +1,8 @@
 <?php
 
-use function PHPSTORM_META\type;
+declare(strict_types=1);
+
+require __DIR__ . "/../logic/tokenParsers.php";
 
 class Command
 {
@@ -9,7 +11,7 @@ class Command
     public array $validOptions;
     public array $validKeyValueOptions;
     public string $description;
-    public string $isWriter;
+    public bool $isWriter;
     public bool $isReader;
     public string $commandParser;
     public string $pathParser;
@@ -51,8 +53,8 @@ class Command
     public function parseInput()
     {
         $syntaxArray = $this->tokenSyntax;
-        $tokens = self::createTokens();
-        
+        $tokens = array_merge([$this->commandName], createTokens());
+
         for ($i = 0; $i < count($tokens); $i++)
         {
             $arg = $tokens[$i];
@@ -62,301 +64,49 @@ class Command
                 case TokenType::COMMAND:
                     {
                         $function = $this->commandParser;
-                        $_SESSION["tokens"]["command"] = self::$function($arg, $tokens, $syntaxArray, $i);
+                        $_SESSION["tokens"]["command"] = $function($arg, $tokens, $syntaxArray, $i);
                         break;
                     }
                 case TokenType::OPTION:
                     {
                         $function = $this->optionParser;
-                        self::$function($arg, $tokens, $syntaxArray, $i);
+                        $function($arg, $tokens, $syntaxArray, $i, $this->validOptions);
                         break;
                     }
                 case TokenType::KEYVALUEOPTION:
                     {
                         $function = $this->keyValueOptionParser;
-                        self::$function($arg, $tokens, $syntaxArray, $i);
+                        $function($arg, $tokens, $syntaxArray, $i, $this->validOptions);
                         break;
                     }
                 case TokenType::PATH:
                     {
                         $function = $this->pathParser;
-                        if ((bool)self::$function(explode("/", $arg), $tokens, $syntaxArray, $i))
+                        if ((bool)$function(explode("/", $arg), $tokens, $syntaxArray, $i))
                         {
                             $_SESSION["tokens"]["path"][] = explode("/", $arg);
-                            $_SESSION["tokens"]["pathStr"][] = $arg; 
+                            $_SESSION["tokens"]["pathStr"][] = $arg;
                         }
                         break;
                     }
                 case TokenType::STRING:
                     {
                         $function = $this->stringParser;
-                        $_SESSION["tokens"]["strings"][] = self::$function($arg, $tokens, $syntaxArray, $i);
+                        $_SESSION["tokens"]["strings"][] = $function($arg, $tokens, $syntaxArray, $i);
                         break;
                     }
                 case TokenType::MISC:
                     {
                         $function = $this->miscParser;
-                        $_SESSION["tokens"]["misc"] = self::$function($arg);
+                        $_SESSION["tokens"]["misc"] = $function($arg);
                         break;
                     }
-                    break;
             }
             if (next($syntaxArray) == false)
             {
                 end($syntaxArray);
-            } 
-        }
-    }
-    public function createTokens(): array
-    {
-        $inputStr = $_POST["command"];
-        $tokens = [$this->commandName];
-
-        $tempToken = "";
-        $quoteCount = substr_count($inputStr, '"');
-        if ($quoteCount % 2 == 1)
-        {
-            throw new Exception("incorrect string usage");
-        }
-
-        foreach (array_slice(explode(" ", $inputStr), 1) as $word)
-        {
-            $first = substr($word, 0, 1);
-            $last = substr($word, -1, 1);
-
-            if ($tempToken == "")
-            {
-                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']) || ($first == $last && strlen($word) > 1))
-                {
-                    array_push($tokens, $word);
-                }
-                else
-                {
-                    if (in_array($first, ["'", '"']))
-                    {
-                        $tempToken = $word;
-                    }
-                    else
-                    {
-                        throw new Exception("incorrect string usage");
-                    }
-                }
-            }
-            else
-            {
-                if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']))
-                {
-                    $tempToken .= " " . $word;
-                }
-                else
-                {
-                    if (in_array($last, ["'", '"']))
-                    {
-                        $tempToken .= " " . $word;
-                        array_push($tokens, $tempToken);
-                        $tempToken = "";
-                    }
-                    else
-                    {
-                        throw new Exception("incorrect string usage");
-                    }
-                }
             }
         }
-        return $tokens;
-    }
-    static public function parseCommand($arg)
-    {
-        if (in_array($arg, $_SESSION["gameController"]->unlockedCommands))
-        {
-            return $arg;
-        }
-        else
-        {
-            if (Commands::tryFrom($arg))
-            {
-                throw new Exception("command not unlocked yet...");
-            }
-            else
-            {
-                throw new Exception("unknown command");
-            }
-        }
-    }
-    static public function parsePath($path, $tokens = "", &$syntaxArray = [], &$argIndex = NULL, $validChars = [])
-    {
-        $validChars = array_merge($validChars, ["hall", "/", "-", ".."]);
-        $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), $validChars);
-
-        return
-            in_array($path[0], $validPathArgs) ||
-            count($path) == 1 && !empty(getWildCardStringAndFunction($path[0]))
-            ?  $path
-            : throw new Exception("invalid path provided");
-    }
-    static public function parseString($arg): string
-    {
-        $firstAndLast = [substr($arg, 0, 1), substr($arg, -1, 1)];
-
-        if (
-            (in_array("'", $firstAndLast) || in_array('"', $firstAndLast))
-            && $firstAndLast[0] == $firstAndLast[1]
-        )
-        {
-            if (strlen($arg) <= 2)
-            {
-                throw new Exception("empty string given");
-            }
-            return substr($arg, 1, -1);
-        }
-        else
-        {
-            throw new Exception("empty string given");
-        }
-    }
-    static public function parseMisc($arg)
-    {
-        switch ($_SESSION["tokens"]["command"])
-        {
-            case "man":
-                {
-                    if (in_array($arg, Commands::cases()))
-                    {
-                        return $arg;
-                    }
-                    else
-                    {
-                        throw new Exception("unknown misc");
-                    }
-                }
-        }
-    }
-    public function parseOption($arg, $tokens, &$syntaxArray, &$argIndex)
-    {
-        if (substr($arg, 0, 1) == '-')
-        {
-            if (in_array($arg, $this->validOptions))
-            {
-                $_SESSION["tokens"]["options"][] = $arg;
-                prev($syntaxArray);
-            }
-            else
-            {
-                throw new Exception("invalid option '" . $tokens[$argIndex] . "'");
-            }
-        }
-        else
-        {
-            $argIndex--;
-        }
-    }
-    public function parseKeyValueOption($option, $tokens, &$syntaxArray, &$argIndex)
-    {
-        if (substr($option, 0, 1) == '-' && $argIndex <= count($tokens))
-        {
-            if (in_array($option, array_keys($this->validKeyValueOptions)))
-            {
-                switch (gettype($this->validKeyValueOptions[$option]))
-                {
-                    case "string":
-                        {
-                            $_SESSION["tokens"]["keyValueOptions"][$option] = $this->parseString($tokens[$argIndex + 1]);
-                            $argIndex++;
-                            break;
-                        }
-                    case "integer":
-                        {
-                            $_SESSION["tokens"]["keyValueOptions"][$option] = is_numeric($tokens[$argIndex + 1])
-                                ? $tokens[$argIndex + 1]
-                                : throw new Exception(($option . "entered, no integer recieved"));
-                            $argIndex++;
-                        }
-                }
-            }
-            else
-            {
-                throw new Exception("incorrect option given");
-            }
-        }
-        else
-        {
-            if (next($syntaxArray) == NULL)
-            {
-                throw new Exception("invalid syntax");
-            }
-            $argIndex--;
-        }
-    }
-    static public function parsePathNew($mkdirPath, $tokens, &$syntaxArray, &$argIndex)
-    {
-        return match (true)
-        {
-            $mkdirPath[0] == ""
-            => throw new Exception("now argument provided"),
-            count($mkdirPath) == 1
-            => $mkdirPath,
-            default
-            => self::parsePath(array_slice($mkdirPath, 0, -1), $tokens, $syntaxArray, $argIndex),
-        };
-    }
-    static public function parsePathFind($path, $tokens, &$syntaxArray, &$argIndex)
-    {
-        return $path[0] == "." ? $path : self::parsePath($path, $tokens, $syntaxArray, $argIndex);
-    }
-    static public function parsePathOptional($path, $tokens, &$syntaxArray, &$argIndex)
-    {
-        if (!isset($_SESSION["stdout"]))
-        {
-            try
-            {
-                return self::parsePath($path, $tokens, $syntaxArray, $argIndex);
-            }
-            catch (Exception $e)
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-    static public function parsePathRename($path, $tokens, &$syntaxArray, &$argIndex)
-    {
-
-        if (substr($tokens[$argIndex], -1) != "/" && !empty($_SESSION["tokens"]["path"][0]))
-        {
-            $_SESSION["tokens"]["misc"] =  end($path);
-
-            $_SESSION["tokens"]["path"][] = array_slice($path, 0, -1);
-            $_SESSION["tokens"]["pathStr"][] = $tokens[$argIndex];
-            return false;
-        }
-        else
-        {
-            if (end($path) == "")
-            {
-                $_SESSION["tokens"]["path"][] = self::parsePath(array_slice($path, 0, -1), $tokens, $syntaxArray, $argIndex,);
-                $_SESSION["tokens"]["pathStr"][] = $tokens[$argIndex];
-
-                return false;
-            }
-            return self::parsePath($path, $tokens, $syntaxArray, $argIndex);
-        }
-    }
-    static public function parseStringEcho($path, $tokens, &$syntaxArray, &$argIndex)
-    {
-        try
-        {
-            return self::parseString($tokens[$argIndex]);
-        }
-        catch (Exception $e)
-        {
-
-            return implode(" ", array_slice($tokens, 1));
-        }
-    }
-    static public function parseMiscMan($arg)
-    {
-        return self::parseCommand($arg);
     }
 }
 

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/dbHelper.php";
+require_once __DIR__ . "/dbhelper.php";
 
 $host   = "localhost";
 $dbname = "cligame_db";

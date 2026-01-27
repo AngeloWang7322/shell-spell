@@ -9,7 +9,6 @@ require __DIR__ . '/../src/model/exceptions.php';
 require __DIR__ . '/../src/model/command.php';
 require __DIR__ . '/../src/model/enums.php';
 require __DIR__ . "/../src/db/db.php";
-require __DIR__ . "/../src/db/dbHelper.php";
 require __DIR__ . '/../src/logic/upload.php';
 require __DIR__ . "/../src/logic/gameUtils.php";
 require __DIR__ . "/../src/logic/api.php";

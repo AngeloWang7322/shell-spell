@@ -169,7 +169,7 @@ function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperato
 }
 function checkIfCanRedirect($redirectFilePath, $seperator)
 {
-    Command::parsePath($redirectFilePath,);
+    parsePath($redirectFilePath,);
     if (!isset($_SESSION["stdout"])) throw new Exception("invalid usage of '" . $seperator . "' operator");
 }
 function addStdoutToFile($seperator, $redirectFilePath)

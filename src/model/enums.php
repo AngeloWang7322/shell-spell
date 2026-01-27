@@ -28,6 +28,18 @@ enum Role: string
             default => Role::ROOT
         };
     }
+    public function prev()
+    {
+        return match ($this)
+        {
+            self::WANDERER,
+            self::APPRENTICE => Role::WANDERER,
+            self::ARCHIVIST => Role::APPRENTICE,
+            self::CONJURER => Role::ARCHIVIST,
+            self::ROOT => Role::CONJURER,
+            default => Role::ROOT
+        };
+    }
     public function isLowerThan(Role $role): bool
     {
         return $this->rank() < $role->rank();
