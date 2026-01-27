@@ -34,8 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]))
     // header(header: "Location: " . $_SERVER["REQUEST_URI"]);
     // exit;
 }
-// echo "latestCommand: " . $_SESSION["gameController"]->latestCommand .
-//     "<br>currentSubLvl: " . $_SESSION["gameController"]->currentSubLvl;
+
 $routes = [
     '' => 'main.php',
     'login' => 'login.php',

@@ -49,7 +49,7 @@ function executeMkdir()
         $tempRoom->doors[$roomName] = new Room(
             name: $roomName,
             path: $tempRoom->path,
-            requiredRole: $_SESSION["gameController"]->userRank
+            requiredRank: $_SESSION["gameController"]->userRank
         );
     }
 }
@@ -127,7 +127,7 @@ function executeTouch()
             name: $fileName,
             baseName: "",
             path: $destRoom->path,
-            requiredRole: $_SESSION["gameController"]->userRank,
+            requiredRank: $_SESSION["gameController"]->userRank,
             content: "",
             curDate: true
         );

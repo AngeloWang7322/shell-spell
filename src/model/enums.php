@@ -1,5 +1,5 @@
 <?php
-enum Role: string
+enum Rank: string
 {
     case WANDERER = "wanderer";
     case APPRENTICE = "apprentice";
@@ -22,10 +22,10 @@ enum Role: string
     {
         return match ($this)
         {
-            self::WANDERER => Role::APPRENTICE,
-            self::APPRENTICE => Role::ARCHIVIST,
-            self::ARCHIVIST => Role::CONJURER,
-            default => Role::ROOT
+            self::WANDERER => Rank::APPRENTICE,
+            self::APPRENTICE => Rank::ARCHIVIST,
+            self::ARCHIVIST => Rank::CONJURER,
+            default => Rank::ROOT
         };
     }
     public function prev()
@@ -33,37 +33,37 @@ enum Role: string
         return match ($this)
         {
             self::WANDERER,
-            self::APPRENTICE => Role::WANDERER,
-            self::ARCHIVIST => Role::APPRENTICE,
-            self::CONJURER => Role::ARCHIVIST,
-            self::ROOT => Role::CONJURER,
-            default => Role::ROOT
+            self::APPRENTICE => Rank::WANDERER,
+            self::ARCHIVIST => Rank::APPRENTICE,
+            self::CONJURER => Rank::ARCHIVIST,
+            self::ROOT => Rank::CONJURER,
+            default => Rank::ROOT
         };
     }
-    public function isLowerThan(Role $role): bool
+    public function isLowerThan(Rank $Rank): bool
     {
-        return $this->rank() < $role->rank();
+        return $this->rank() < $Rank->rank();
     }
-    public static function getRoleFromXp($xp)
+    public static function getRankFromXp($xp)
     {
         return match ((int)floor($xp / 100))
         {
-            0 => Role::WANDERER,
-            1 => Role::APPRENTICE,
-            2 => Role::ARCHIVIST,
-            3 => Role::CONJURER,
-            4 => Role::ROOT,
+            0 => Rank::WANDERER,
+            1 => Rank::APPRENTICE,
+            2 => Rank::ARCHIVIST,
+            3 => Rank::CONJURER,
+            4 => Rank::ROOT,
         };
     }
     public function getColor()
     {
         return match ($this->value)
         {
-            Role::WANDERER->value => "rgb(253, 250, 199)",
-            Role::APPRENTICE->value => "rgb(171, 253, 139)",
-            Role::ARCHIVIST->value => "rgb(109, 232, 248)",
-            Role::CONJURER->value => "rgb(165, 117, 255)",
-            Role::ROOT->value => "rgb(255, 99, 71)",
+            Rank::WANDERER->value => "rgb(253, 250, 199)",
+            Rank::APPRENTICE->value => "rgb(171, 253, 139)",
+            Rank::ARCHIVIST->value => "rgb(109, 232, 248)",
+            Rank::CONJURER->value => "rgb(165, 117, 255)",
+            Rank::ROOT->value => "rgb(255, 99, 71)",
         };
     }
 }

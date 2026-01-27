@@ -4,7 +4,7 @@ class Item
     public string $name;
     public string $baseName;
     public ItemType $type;
-    public Role $requiredRole;
+    public Rank $requiredRank;
     public array $path;
     public string $content = "";
     public string $timeOfLastChange;
@@ -13,7 +13,7 @@ class Item
         $name,
         $baseName,
         $path,
-        $requiredRole = Role::WANDERER,
+        $requiredRank = Rank::WANDERER,
         $content = "gibberish",
         $curDate = true,
         $date = "",
@@ -21,7 +21,7 @@ class Item
     {
         $this->name = $name;
         $this->baseName = $baseName;
-        $this->requiredRole = $requiredRole;
+        $this->requiredRank = $requiredRank;
         $this->path = $path;
         $this->content = $content;
         $this->timeOfLastChange = $date;
@@ -52,7 +52,7 @@ class Scroll extends Item
         $name,
         $baseName,
         array $path = [],
-        $requiredRole = Role::WANDERER,
+        $requiredRank = Rank::WANDERER,
         string $content = "",
         $curDate = true,
         $date = "",
@@ -64,7 +64,7 @@ class Scroll extends Item
             $name,
             $baseName,
             $path,
-            $requiredRole,
+            $requiredRank,
             $content,
             $curDate,
             $date,
@@ -72,12 +72,12 @@ class Scroll extends Item
     }
     public static function fromArray(array $data)
     {
-        $requiredRole = ROLE::from($data["requiredRole"]);
+        $requiredRank = Rank::from($data["requiredRank"]);
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
             path: pathFromArray($data["path"]),
-            requiredRole: $requiredRole,
+            requiredRank: $requiredRank,
             content: $data['content'],
             date: $data["timeOfLastChange"],
         );
@@ -98,7 +98,7 @@ class Alter extends Item
         $name,
         $baseName,
         array $path = [],
-        $requiredRole = Role::WANDERER,
+        $requiredRank = Rank::WANDERER,
         $content = "",
         $isActive = true,
         $requiredElements = [],
@@ -114,7 +114,7 @@ class Alter extends Item
             $name,
             $baseName,
             $path,
-            $requiredRole,
+            $requiredRank,
             $content,
             $curDate,
             $date,
@@ -126,7 +126,7 @@ class Alter extends Item
             name: $data['name'],
             baseName: $data["baseName"],
             path: pathFromArray($data["path"]),
-            requiredRole: ROLE::from($data["requiredRole"]),
+            requiredRank: Rank::from($data["requiredRank"]),
             content: $data["content"],
             isActive: $data["isActive"],
             requiredElements: $data["requiredElements"],
@@ -142,7 +142,7 @@ class Spell extends Item
         $name,
         $baseName,
         $path,
-        $requiredRole = Role::WANDERER,
+        $requiredRank = Rank::WANDERER,
         $content = "",
         $spellReward,
         $key = NULL,
@@ -158,7 +158,7 @@ class Spell extends Item
             $name,
             $baseName,
             $path,
-            $requiredRole,
+            $requiredRank,
             $content,
             $curDate,
             $date,
@@ -166,13 +166,13 @@ class Spell extends Item
     }
     public static function fromArray(array $data)
     {
-        $requiredRole = Role::from($data["requiredRole"]);
+        $requiredRank = Rank::from($data["requiredRank"]);
         $spellReward = Commands::from($data["spellReward"]);
         return new self(
             name: $data['name'],
             baseName: $data["baseName"],
             path: pathFromArray($data["path"]),
-            requiredRole: $requiredRole,
+            requiredRank: $requiredRank,
             content: $data["content"],
             spellReward: $spellReward,
             key: $data["key"],

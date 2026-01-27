@@ -10,7 +10,7 @@ class Room
     /** @var Item[] $items */
     public array $items = [];
 
-    public ROLE $requiredRole;
+    public Rank $requiredRank;
     public string $timeOfLastChange;
     public bool $isHidden;
 
@@ -19,7 +19,7 @@ class Room
         array $path = [],
         $doors = [],
         $items = [],
-        $requiredRole = ROLE::WANDERER,
+        $requiredRank = Rank::WANDERER,
         $curDate = true,
         $isHidden = false,
         $date = NULL,
@@ -42,7 +42,7 @@ class Room
 
             array_push($this->path, $name);
         }
-        $this->requiredRole = $requiredRole;
+        $this->requiredRank = $requiredRank;
     }
     public static function fromArray($data): Room
     {
@@ -69,14 +69,14 @@ class Room
             $path = array_slice($data->path, 0, -1);
         }
 
-        $requiredRole = Role::from((string) $data->requiredRole);
+        $requiredRank = Rank::from((string) $data->requiredRank);
 
         return new Room(
             $data->name,
             $path,
             $doors,
             $items,
-            $requiredRole,
+            $requiredRank,
             true,
             $data->isHidden,
             $data->timeOfLastChange,

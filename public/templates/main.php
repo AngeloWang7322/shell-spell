@@ -17,7 +17,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                 echo "
                 <div class='element-container'>
                     <div class='element door'></div>
-                    <p class='element-name " . $door->requiredRole->value . "'>" . $door->name . "</p> 
+                    <p class='element-name " . $door->requiredRank->value . "'>" . $door->name . "</p> 
                 </div>";
             }
             foreach ($_SESSION["curRoom"]->items as $item)
@@ -27,7 +27,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                 echo "
                 <div class='element-container'>
                     <div class='element item " . $itemClasses . "'> </div>
-                    <p class='element-name " . $item->requiredRole->value . "'>" . $item->name . "</p>
+                    <p class='element-name " . $item->requiredRank->value . "'>" . $item->name . "</p>
                 </div> 
                 ";
             }

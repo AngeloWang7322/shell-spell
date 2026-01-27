@@ -5,7 +5,7 @@ class GameController
 {
     public static $levelData = [
         // &&
-        Role::WANDERER->value => [
+        Rank::WANDERER->value => [
             Commands::ECHO->value,
             Commands::CAT->value,
             Commands::CD->value,
@@ -13,30 +13,30 @@ class GameController
             Commands::EXECUTE->value,
         ],
         // ||
-        Role::APPRENTICE->value => [
+        Rank::APPRENTICE->value => [
             Commands::MKDIR->value,
             Commands::RM->value,
             Commands::PWD->value,
             Commands::LS->value,
         ],
         // >>, >
-        Role::ARCHIVIST->value => [
+        Rank::ARCHIVIST->value => [
             Commands::CP->value,
             Commands::MV->value,
             Commands::NANO->value,
             Commands::TOUCH->value,
         ],
         // |
-        Role::CONJURER->value => [
+        Rank::CONJURER->value => [
             Commands::GREP->value,
             Commands::FIND->value,
             Commands::WC->value,
             Commands::HEAD->value,
             Commands::TAIL->value
         ],
-        Role::ROOT->value => []
+        Rank::ROOT->value => []
     ];
-    public Role $userRank;
+    public Rank $userRank;
     public int $xp;
     public string $latestCommand;
     public int $currentSubLvl;
@@ -51,14 +51,14 @@ class GameController
     {
         $this->xp = $xp;
         $this->userName = $userName;
-        $this->userRank = Role::getRoleFromXp($xp);
+        $this->userRank = Rank::getRankFromXp($xp);
         $this->currentLevelData = self::$levelData[$this->userRank->value];
         $this->latestCommand = self::calculateGameStats($xp);
     }
 
     public function levelUpUser($alter)
     {
-        if ($alter->requiredRole != $this->userRank->next()) return;
+        if ($alter->requiredRank != $this->userRank->next()) return;
         $alter->isActive = false;
         $this->userRank = $this->userRank->next();
         $this->currentLevelData = self::$levelData[$this->userRank->value];
@@ -109,7 +109,7 @@ class GameController
             next($this->currentLevelData);
         }
 
-        return $this->userRank == Role::ROOT
+        return $this->userRank == Rank::ROOT
             ? current(self::$levelData[$this->userRank->prev()->value])
             : current($this->currentLevelData);
     }
@@ -264,7 +264,7 @@ class GameController
     {
         switch ($this->userRank->value)
         {
-            case Role::APPRENTICE:
+            case Rank::APPRENTICE:
                 {
                     $_SESSION["curRoom"]->doors["doorofwisdom"] =
                         new Room(
@@ -275,7 +275,7 @@ class GameController
 
                     break;
                 }
-            case Role::ARCHIVIST:
+            case Rank::ARCHIVIST:
                 {
                 }
             default:

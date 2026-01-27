@@ -52,7 +52,7 @@ function &getRoomAbsolute($path, $rankRestrictive = false): Room
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["gameController"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRole))
+            if ($rankRestrictive && $_SESSION["gameController"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
             {
                 throw (new Exception("rank too low"));
             }
@@ -73,9 +73,9 @@ function &getRoomRelative($path, $rankRestrictive = false): Room
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["gameController"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRole))
+            if ($rankRestrictive && $_SESSION["gameController"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
             {
-                throw (new Exception("Rank too low, required Rank: " . $tempRoom->doors[$path[$i]]->requiredRole->value));
+                throw (new Exception("Rank too low, required Rank: " . $tempRoom->doors[$path[$i]]->requiredRank->value));
             }
             $tempRoom = &$tempRoom->doors[$path[$i]];
         }
@@ -113,7 +113,7 @@ function deleteElements($paths, $rankRestrictive = true)
         $element = &getRoomOrItem($path);
 
         $higherRank = canDelete($path,  $element);
-        if ($rankRestrictive && is_a($higherRank, Role::class))
+        if ($rankRestrictive && is_a($higherRank, Rank::class))
             throw new Exception("Rank to low, required Rank: " . $higherRank->value);
 
         if (is_a($element, Room::class))
@@ -125,19 +125,19 @@ function deleteElements($paths, $rankRestrictive = true)
     }
 }
 
-function roleIsHigherThanRoomRecursive(Role $role, $room)
+function RankIsHigherThanRoomRecursive(Rank $Rank, $room)
 {
-    if ($role->isLowerThan($room->requiredRole))
-        return $room->requiredRole;
+    if ($Rank->isLowerThan($room->requiredRank))
+        return $room->requiredRank;
 
     if (!is_a($room, Room::class))
         return true;
 
     foreach ($room->doors as &$door)
     {
-        if (roleIsHigherThanRoomRecursive($role, $door))
+        if (RankIsHigherThanRoomRecursive($Rank, $door))
         {
-            return $room->requiredRole;
+            return $room->requiredRank;
         }
     }
     return true;
@@ -211,7 +211,7 @@ function getLsArray($tempRoom)
         foreach (array_merge($tempRoom->doors, $tempRoom->items) as $element)
         {
             $tempEntry = [];
-            $tempEntry[0] = $element->requiredRole->value;
+            $tempEntry[0] = $element->requiredRank->value;
             $tempEntry[1] = $element->timeOfLastChange;
             $tempEntry[2] = $element->name;
 
@@ -704,7 +704,7 @@ function canDelete($path, $element = NULL)
     {
         throw new Exception("Cant move room into itsself",);
     }
-    $result = roleIsHigherThanRoomRecursive($_SESSION["gameController"]->userRank, getRoomOrItem($path));
+    $result = RankIsHigherThanRoomRecursive($_SESSION["gameController"]->userRank, getRoomOrItem($path));
 
     return $result;
 }
@@ -743,7 +743,7 @@ function colorizeResponseForRank($text)
     $colorizedResponse = "";
     foreach (explode(" ", $text) as $word)
     {
-        $colorizedResponse .= Role::tryFrom(strtolower($word))
+        $colorizedResponse .= Rank::tryFrom(strtolower($word))
             ? colorizeString($word) . " "
             : $word . " ";
     }
