@@ -16,7 +16,7 @@
   <?php if (!empty($extraCss) && count($extraCss) > 0)
     foreach ($extraCss as $css)
     {
-      echo '<link rel="stylesheet" href="' .  htmlspecialchars($css) . '">';
+      echo '<link rel="stylesheet" href="' . __DIR__ . "assets/css/" .htmlspecialchars($css) . '">';
     }
   ?>
 

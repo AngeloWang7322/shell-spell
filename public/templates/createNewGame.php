@@ -1,10 +1,10 @@
 <?php
 
 declare(strict_types=1);
-require_once __DIR__ . "/../../src/db/dbhelper.php";
+require_once "dbhelper.php";
 
 exitIfNotLoggedIn();
-$extraCss[] = "/assets/css/createNewGame.css";
+$extraCss[] = "createNewGame.css";
 $script = "newGame.js"
 ?>
 

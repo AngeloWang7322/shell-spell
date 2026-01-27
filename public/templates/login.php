@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-require_once "./../src/db/db.php";
-require_once "./../src/db/dbhelper.php";
+require_once __DIR__ . "./../src/db/db.php";
+require_once __DIR__ ."./../src/db/dbhelper.php";
 
 exitIfLoggedIn();
 
-$extraCss[] = "/assets/css/auth.css";
+$extraCss[] = "auth.css";
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')

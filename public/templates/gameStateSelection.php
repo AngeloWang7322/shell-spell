@@ -5,7 +5,7 @@ require_once __DIR__ . "/../../src/db/dbhelper.php";
 
 exitIfNotLoggedIn();
 
-$extraCss[] = "/assets/css/gameStateSelection.css";
+$extraCss[] = "gameStateSelection.css";
 $gameStates = $dbHelper->getGameStates();
 ?>
 

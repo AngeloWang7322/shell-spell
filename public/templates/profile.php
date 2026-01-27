@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 exitIfNotLoggedIn();
-$extraCss[] = "/assets/css/profile.css";
+$extraCss[] = "profile.css";
 $script = "upload.js";
-$default = "/assets/images/default.png";
+$default = "assets/images/default.png";
 $pic = $_SESSION["profile_pic"] ?? $default;
 
 ?>

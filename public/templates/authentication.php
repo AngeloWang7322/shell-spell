@@ -9,7 +9,7 @@ exitIfLoggedIn();
 
 $errors = [];
 $success = "";
-$extraCss[] = "/assets/css/auth.css";
+$extraCss[] = "auth.css";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
 {

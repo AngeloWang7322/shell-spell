@@ -1,5 +1,5 @@
 <?php
-$extraCss[] = "/assets/css/notFound.css";
+$extraCss[] = "notFound.css";
 ?>
 <div class="page-content">
     <div class="not-found">
