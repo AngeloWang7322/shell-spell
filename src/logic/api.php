@@ -19,7 +19,7 @@ function enterCommand($dbHelper)
     $_POST["command"] = trim($_POST["command"], " ");
     $_SESSION["inputCommand"] = $_POST["command"];
     $_SESSION["backUpMap"] = clone $_SESSION["map"];
-
+    
     if ($_POST["command"] == "") return;
 
     startTerminalProcess();

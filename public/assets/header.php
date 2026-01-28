@@ -17,7 +17,7 @@ $extraCss[] = "header.css";
                     <img class="icon-large" src="../assets/images/favicon-32x32.png">
                     Shell Spell
                     <img class="icon-large" src="../assets/images/favicon-32x32.png">
-                </div> 
+                </div>
             </a>
         <?php endif; ?>
     </div>

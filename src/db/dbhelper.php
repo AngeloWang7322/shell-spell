@@ -97,10 +97,10 @@ class DBHelper
         $xp = Rank::tryFrom($rank)->rank() * 100;
         if (!isset($_SESSION["loggedIn"]))
         {
+            self::loadDefaultSession();
+
             $_SESSION["mapName"] = $name;
             $_SESSION["gameController"] = new GameController($xp);
-            $_SESSION["map"] = self::getDefaultMap();
-            $_SESSION["history"] = [];
             $_SESSION["gameController"]->getCurrentMessage();
         }
         else

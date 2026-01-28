@@ -18,8 +18,18 @@ require __DIR__ . "/../src/logic/terminalUtils.php";
 require __DIR__ . "/../src/logic/gameController.php";
 
 session_start();
-// session_unset();    
+// session_unset();
+$test = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$request =  $_SERVER["REQUEST_URI"];
 
+if (
+    !isset($_SESSION["map"])
+    && $_SERVER['REQUEST_URI']!= "/newgame"
+)
+{
+    header("Location: /newgame");
+    exit;
+}
 if (!isset($_SESSION["map"]))
 {
     DBHelper::loadDefaultSession();
