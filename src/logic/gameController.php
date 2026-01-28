@@ -86,7 +86,7 @@ class GameController
     public function calculateGameStats($xp)
     {
         $this->unlockedCommands = [];
-        for ($i = 1; $i < $this->userRank->rank(); $i++)
+        for ($i = 0; $i < $this->userRank->rank(); $i++)
         {
             foreach (current(self::$levelData) as $command)
             {
@@ -120,7 +120,7 @@ class GameController
             //LEVEL 1
             case Commands::ECHO->value:
                 {
-                    $response = "<br>A Spellcaster!? Haven't seen one of you people in years(fortunately...)<br>
+                    $response = "A Spellcaster!? Haven't seen one of you people in years(fortunately...)<br>
                         Nobody was supposed to come here anymore.<br> Whats your name wanderer?<br>"
                         . colorizeString("<br><br> > echo [your name]", "action-tip");
                     $this->requiredCommand = Commands::ECHO->value;
@@ -131,7 +131,7 @@ class GameController
                     $this->requiredCommand = NULL;
                     $this->userName = $_SESSION["tokens"]["strings"][0];
                     $response = "
-                        <br><br>You accidentally just activated a rune?! No it can't be... must've been a coincidence... and weird name anywat <br>
+                        You accidentally just activated a rune?! No it can't be... must've been a coincidence... and weird name anywat <br>
                         Activating one requires a skilled caster and the correct chant.
                         You should make good use of the your luck and use the spell you just gained<br>
                         take a look at the old scrolls lying around and read something for once, you may learn something!<br> "
@@ -247,7 +247,7 @@ class GameController
     public function writeMessage($message)
     {
         $message = "
-        -------- strangevoice -------- <br>" .
+        -------- strangevoice -------- <br><br>" .
             $message . "<br>
         ------------------------------ <br>";
         editLastHistory($message);

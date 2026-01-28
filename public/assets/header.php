@@ -3,13 +3,23 @@ $extraCss[] = "header.css";
 ?>
 <div class="header-wrapper">
     <div class="header-group">
-        <a href="/">
-            <div class="title-container">
-                <img class="icon-large" src="../assets/images/favicon-32x32.png">
-                Shell Spell
-                <img class="icon-large" src="../assets/images/favicon-32x32.png">
-            </div>
-        </a>
+        <?php if (isset($_SESSION["isLoggedIn"])): ?>
+            <a href="/menu">
+                <div class="title-container">
+                    <img class="icon-large" src="../assets/images/favicon-32x32.png">
+                    Shell Spell
+                    <img class="icon-large" src="../assets/images/favicon-32x32.png">
+                </div>
+            </a>
+        <?php else: ?>
+            <a href="/newgame">
+                <div class="title-container">
+                    <img class="icon-large" src="../assets/images/favicon-32x32.png">
+                    Shell Spell
+                    <img class="icon-large" src="../assets/images/favicon-32x32.png">
+                </div> 
+            </a>
+        <?php endif; ?>
     </div>
     <div class="header-group">
         <?php

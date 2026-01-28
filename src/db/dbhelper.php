@@ -20,14 +20,6 @@ class DBHelper
             WHERE id = :mapId
             AND user_id = :userId"
         );
-
-        $response = $query->execute([
-            ":mapId" => $_SESSION["mapId"],
-            ":userId" => $_SESSION["user"]["id"],
-            ":mapJson" => json_encode($_SESSION["map"]),
-            ":historyJson" => json_encode($_SESSION["history"]),
-            ":xp" => $_SESSION["gameController"]->xp,
-        ]);
     }
     public function loginUser($password, $email)
     {
@@ -79,7 +71,7 @@ class DBHelper
         $_SESSION["gameController"] = new GameController($gameState["xp"]);
         $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
         $_SESSION["history"] = [];
-        if($gameState["history_json"] != NULL) parseHistory($gameState["history_json"]);
+        if ($gameState["history_json"] != NULL) parseHistory($gameState["history_json"]);
         $_SESSION["gameController"]->getCurrentMessage();
     }
     public function getGameStates()
@@ -102,17 +94,28 @@ class DBHelper
     }
     public function createGameState($name, $rank)
     {
-        $gameStateInsert = $this->pdo->prepare("
+        $xp = Rank::tryFrom($rank)->rank() * 100;
+        if (!isset($_SESSION["loggedIn"]))
+        {
+            $_SESSION["mapName"] = $name;
+            $_SESSION["gameController"] = new GameController($xp);
+            $_SESSION["map"] = self::getDefaultMap();
+            $_SESSION["history"] = [];
+            $_SESSION["gameController"]->getCurrentMessage();
+        }
+        else
+        {
+            $gameStateInsert = $this->pdo->prepare("
             INSERT INTO game_states ( user_id, name, map_json, xp)
-            VALUES (:userId, :stateName, :mapJson,  :xp)
-        ");
-        $gameStateInsert->execute([
-            "userId" => $_SESSION["user"]["id"],
-            "stateName" => $name,
-            "mapJson" => json_encode(self::getDefaultMap()),
-            "xp" => Rank::tryFrom($rank)->rank() * 100
-        ]);
-        $this->loadGameState($this->pdo->lastInsertId());
+            VALUES (:userId, :stateName, :mapJson,  :xp) ");
+            $gameStateInsert->execute([
+                "userId" => $_SESSION["user"]["id"],
+                "stateName" => $name,
+                "mapJson" => json_encode(self::getDefaultMap()),
+                "xp" => $xp
+            ]);
+            $this->loadGameState($this->pdo->lastInsertId());
+        }
     }
     public function deleteGameState($stateId)
     {

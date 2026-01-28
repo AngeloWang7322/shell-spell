@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-exitIfNotLoggedIn();
+// exitIfNotLoggedIn();
 $extraCss[] = "createNewGame.css";
 $script = "newGame.js"
 ?>
