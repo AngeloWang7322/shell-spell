@@ -24,12 +24,13 @@ $request =  $_SERVER["REQUEST_URI"];
 
 if (
     !isset($_SESSION["map"])
-    && $_SERVER['REQUEST_URI']!= "/newgame"
+    && $_SERVER['REQUEST_URI'] != "/newgame"
 )
 {
     header("Location: /newgame");
     exit;
 }
+
 if (!isset($_SESSION["map"]))
 {
     DBHelper::loadDefaultSession();

@@ -1,7 +1,7 @@
 .map-name-form {
     position: fixed;
     left: 50%;
-    top: 20%;
+    top: 25%;
     transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
@@ -28,6 +28,21 @@
     background-color: rgb(69, 69, 69);
     color: white;
     border: 0;
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+    font-size: 92px;
+    text-shadow: 4px 8px 0px rgb(85, 16, 16);
+    margin-top: -64px;
+    margin-bottom: 64px;
+    .logo {
+        width: 104px;
+        image-rendering: pixelated;
+    }
 }
 
 .name-input:hover {
