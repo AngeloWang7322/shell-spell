@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . "./../src/db/db.php";
-require_once __DIR__ ."./../src/db/dbhelper.php";
 
 exitIfLoggedIn();
 

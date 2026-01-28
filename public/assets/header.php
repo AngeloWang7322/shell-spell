@@ -1,5 +1,5 @@
 <?php
-$extraCss[] = "assets/css/header.css";
+$extraCss[] = "header.css";
 ?>
 <div class="header-wrapper">
     <div class="header-group">

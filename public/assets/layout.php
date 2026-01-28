@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Shell Spell</title>
-  <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">  
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">  
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
   <?php if (!empty($extraCss) && count($extraCss) > 0)
     foreach ($extraCss as $css)
     {
-      echo '<link rel="stylesheet" href="' . __DIR__ . "assets/css/" .htmlspecialchars($css) . '">';
+      echo '<link rel="stylesheet" href="/assets/css/' . $css . '">';
     }
   ?>
 

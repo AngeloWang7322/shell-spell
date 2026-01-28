@@ -1,7 +1,6 @@
 <?php
 
 declare(strict_types=1);
-require_once "dbhelper.php";
 
 exitIfNotLoggedIn();
 $extraCss[] = "createNewGame.css";
