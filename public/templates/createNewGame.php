@@ -9,10 +9,12 @@ $script = "newGame.js"
 
 <html>
 <div class="page-content">
-    <div class="title">
-        <img class="logo" src="../assets/images/favicon-32x32.png">
-        Shell Spell
-        <img class="logo" src="../assets/images/favicon-32x32.png">
+    <div class="page-title">
+        <div class="title">
+            <img class="logo" src="../assets/images/favicon-32x32.png">
+            Shell Spell
+            <img class="logo" src="../assets/images/favicon-32x32.png">
+        </div>
     </div>
     <form class="map-name-form" method="post">
         <h2>CREATE NEW GAME</h2>
