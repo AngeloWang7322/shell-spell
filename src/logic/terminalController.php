@@ -23,36 +23,30 @@ function manageExecution()
 }
 function handleDefault()
 {
-    prepareCommandExecution();
+    prepareCommand();
     executeCommand();
 }
 function handleRequiredCommand()
 {
     try
     {
-        prepareCommandExecution();
+        prepareCommand();
+        if ($_SESSION["tokens"]["command"] != $_SESSION["gameController"]->requiredCommand)
+            throw new Exception();
     }
     catch (Exception $e)
     {
-        editLastHistory("<br>" . $_POST["command"] . "<br>" . colorizeString("must use: " . $_SESSION["gameController"]->requiredCommand, "error"));
+        editLastHistory(
+            "<br>" . $_POST["command"] . "<br>" . colorizeString("must use: " . $_SESSION["gameController"]->requiredCommand, "error")
+        );
         throw new Exception("", -1);
     }
-    if ($_SESSION["tokens"]["command"] != $_SESSION["gameController"]->requiredCommand)
-    {
-        editLastHistory("<br>" . $_POST["command"] . "<br>" . colorizeString("must use: " . $_SESSION["gameController"]->requiredCommand, "error"));
-        return;
-    }
-    else if ($_SESSION["gameController"]->requiredCommand == "echo")
-    {
-        writeNewHistory();
-        $_SESSION["gameController"]->requiredCommand = NULL;
-        $_SESSION["gameController"]->unlockNextCommand();
-        cleanUp();
-        throw new Exception("", -1);
-    }
-    executeCommand();
 
-    // throw new Exception("", -1);
+    executeCommand();
+    writeNewHistory();
+    $_SESSION["gameController"]->unlockNextCommand();
+    cleanUp();
+    throw new Exception("", -1);
 }
 function handlePrompt()
 {
@@ -114,7 +108,7 @@ function handleCommandChain($seperator)
     $_SESSION["tokens"] = [];
     $_POST["command"] = $afterSeperator;
 
-    prepareCommandExecution();
+    prepareCommand();
     executeCommand();
 }
 function handlePipe($seperator)
@@ -181,7 +175,7 @@ function addStdoutToFile($seperator, $redirectFilePath)
     else
         $destItem->content = $newStr;
 }
-function prepareCommandExecution()
+function prepareCommand()
 {
     $command = getCommand(explode(" ", trim($_POST["command"]))[0]);
     $command->parseInput();

@@ -246,7 +246,7 @@ class GameController
     }
     public function writeMessage($message)
     {
-        $message = "
+        $message = "<br>
         -------- strangevoice -------- <br><br>" .
             $message . "<br>
         ------------------------------ <br>";

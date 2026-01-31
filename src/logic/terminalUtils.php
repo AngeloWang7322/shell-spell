@@ -20,7 +20,7 @@ function &getRoom($path, $rankRestrictive = false): Room
 
     switch ($path[0])
     {
-        case "hall":
+        case "":
             {
                 return getRoomAbsolute($path);
             }
@@ -47,8 +47,9 @@ function &getRoom($path, $rankRestrictive = false): Room
 }
 function &getRoomAbsolute($path, $rankRestrictive = false): Room
 {
+    $path = removeFirstIfEmpty($path);
     $tempRoom = &$_SESSION["map"];
-    for ($i = 1; $i < count($path); $i++)
+    for ($i = 0; $i < count($path); $i++)
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
@@ -772,4 +773,17 @@ function checkForRune()
             throw new Exception("", -1);
         }
     }
+}
+
+function removeFirstIfEmpty($array)
+{
+    return reset($array) == ""
+        ? array_slice($array, 1)
+        : $array;
+}
+function removeLastIfEmpty($array)
+{
+    return end($array) == ""
+        ? array_slice($array, 0, -1)
+        : $array;
 }

@@ -41,6 +41,7 @@ class DBHelper
     }
     public function registerUser($password, $email, $name)
     {
+        session_unset();
         self::loadDefaultSession();
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
@@ -95,7 +96,7 @@ class DBHelper
     public function createGameState($name, $rank)
     {
         $xp = Rank::tryFrom($rank)->rank() * 100;
-        if (!isset($_SESSION["loggedIn"]))
+        if (!isset($_SESSION["isLoggedIn"]))
         {
             self::loadDefaultSession();
 
@@ -129,11 +130,11 @@ class DBHelper
     }
     public static function loadDefaultSession()
     {
-        session_unset();
         $_SESSION["gameController"] = new GameController(0);
         $_SESSION["tokens"]["command"] = "";
         $_SESSION["tokens"]["path"] = [];
         $_SESSION["tokens"]["options"] = [];
+        $_SESSION["tokens"]["strings"] = [];
         $_SESSION["tokens"]["keyValueOptions"] = [];
         $_SESSION["tokens"]["misc"] = [];
         $_SESSION["tokens"]["pathStr"] = [];
@@ -151,7 +152,6 @@ class DBHelper
             "command" => "",
             "response" => "",
         ];
-        $_SESSION["gameController"]->getCurrentMessage();
     }
     public static function getDefaultMap(): Room
     {

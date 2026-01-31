@@ -79,12 +79,13 @@ function parseCommand($arg)
 }
 function parsePath($path, $tokens = "", &$syntaxArray = [], &$argIndex = NULL, $validChars = [])
 {
-    $validChars = array_merge($validChars, ["hall", "/", "-", ".."]);
-    $validPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), $validChars);
+    $validChars = array_merge($validChars, ["", "/", "-", ".."]);
+    $validFirstPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), $validChars);
 
     return
-        in_array($path[0], $validPathArgs) ||
-        count($path) == 1 && !empty(getWildCardStringAndFunction($path[0]))
+        in_array($path[0], $validFirstPathArgs) 
+        // || count($path) == 1 && !empty(getWildCardStringAndFunction($path[0]) hab ich da muell geschrieben ?
+        
         ?  $path
         : throw new Exception("invalid path provided");
 }

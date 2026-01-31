@@ -9,15 +9,13 @@ $script = "newGame.js"
 
 <html>
 <div class="page-content">
-    <div class="page-title">
-        <div class="title">
-            <img class="logo" src="../assets/images/favicon-32x32.png">
-            Shell Spell
-            <img class="logo" src="../assets/images/favicon-32x32.png">
-        </div>
+    <div class="title">
+        <img class="logo" src="../assets/images/favicon-32x32.png">
+        Shell Spell
+        <img class="logo" src="../assets/images/favicon-32x32.png">
     </div>
     <form class="map-name-form" method="post">
-    <h2>CREATE NEW GAME</h2>
+        <h2>CREATE NEW GAME</h2>
         <div class="new-game-data">
             <input type="hidden" value="newMap" name="action">
             <input id="newMapNameInput" autocomplete="off" maxlength="15" class="button-large name-input" name="newMapName" placeholder="New Game">
