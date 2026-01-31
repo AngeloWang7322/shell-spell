@@ -11,7 +11,6 @@ $gameStates = $dbHelper->getGameStates();
 
 <html>
 <div class="page-content">
-
     <div class="page-title">
         <div class="title">
             <img class="logo" src="../assets/images/favicon-32x32.png">
@@ -19,7 +18,6 @@ $gameStates = $dbHelper->getGameStates();
             <img class="logo" src="../assets/images/favicon-32x32.png">
         </div>
     </div>
-
     <div class="selection-wrapper">
         <?php
         foreach ($gameStates as $id => $data)
