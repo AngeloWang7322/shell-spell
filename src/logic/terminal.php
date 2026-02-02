@@ -77,6 +77,11 @@ function executeRm()
 {
     deleteElements($_SESSION["tokens"]["path"]);
 }
+function executeRmdir()
+{
+    deleteElements($_SESSION["tokens"]["path"], deleteOnlyRooms: true);
+}
+
 
 function executeCp()
 {

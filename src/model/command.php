@@ -170,10 +170,27 @@ function getCommand($command)
         => new Command(
             commandName: "rm",
             tokenSyntax: [TokenTYPE::OPTION, TokenType::PATH],
+            validOptions: ["-d"],
+            validKeyValueOptions: [],
+            description: "NAME<br>
+                              rm - remove items or rooms<br>
+                        <br>
+                          SYNOPSIS<br>
+                              rm (name)<br>
+                        <br>
+                          DESCRIPTION<br>
+                              Deletes a room or an item from the current location<br>
+                              if it exists and permissions allow it.
+                              ",
+        ),
+        "rmdir" == $command
+        => new Command(
+            commandName: "rmdir",
+            tokenSyntax: [TokenTYPE::OPTION, TokenType::PATH],
             validOptions: [],
             validKeyValueOptions: [],
             description: "NAME<br>
-                              rm - remove a room or item<br>
+                              rm - remove rooms <br>
                         <br>
                           SYNOPSIS<br>
                               rm (name)<br>

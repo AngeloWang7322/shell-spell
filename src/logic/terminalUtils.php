@@ -106,8 +106,9 @@ function &getItem($path)
     else
         throw new Exception("item not found");
 }
-function deleteElements($paths, $rankRestrictive = true)
+function deleteElements($paths, $deleteOnlyRooms = false, $rankRestrictive = true)
 {
+    $deleteRooms = hasOption("-d");
     foreach ($paths as $path)
     {
         $parentRoom = &getRoomOrItem(array_slice($path, 0, -1));
@@ -119,6 +120,7 @@ function deleteElements($paths, $rankRestrictive = true)
 
         if (is_a($element, Room::class))
         {
+            if(!$deleteRooms && !$deleteOnlyRooms) throw new Exception("Element is a Room");
             unset($parentRoom->doors[end($path)]);
         }
         else
@@ -786,4 +788,8 @@ function removeLastIfEmpty($array)
     return end($array) == ""
         ? array_slice($array, 0, -1)
         : $array;
+}
+
+function hasOption($flag){
+    return in_array($flag, $_SESSION["tokens"]["options"]);
 }

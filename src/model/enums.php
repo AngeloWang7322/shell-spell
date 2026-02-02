@@ -84,6 +84,7 @@ enum Commands: string
     case CD = "cd";
     case MKDIR = "mkdir";
     case RM = "rm";
+    case RMDIR = "rmdir";
     case MV = "mv";
     case PWD = "pwd";
     case LS = "ls";
