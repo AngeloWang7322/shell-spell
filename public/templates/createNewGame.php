@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 // exitIfNotLoggedIn();
-$extraCss[] = "createNewGame.css";
-$script = "newGame.js"
+importCss("createNewGame.css");
+importScript("newGame.js");
 ?>
 
 <html>

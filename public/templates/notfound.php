@@ -1,5 +1,5 @@
 <?php
-$extraCss[] = "notFound.css";
+importCss("notFound.css");
 ?>
 <div class="page-content">
     <div class="not-found">

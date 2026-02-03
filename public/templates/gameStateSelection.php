@@ -4,8 +4,8 @@ declare(strict_types=1);
 require_once __DIR__ . "/../../src/db/dbhelper.php";
 
 exitIfNotLoggedIn();
+importCss("gameStateSelection.css");
 
-$extraCss[] = "gameStateSelection.css";
 $gameStates = $dbHelper->getGameStates();
 ?>
 

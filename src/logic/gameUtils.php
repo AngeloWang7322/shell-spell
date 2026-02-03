@@ -42,3 +42,10 @@ function canDisplay($room)
 {
     return !$room->isHidden || isset($_SESSION["displayAll"]);
 }
+
+function importCss($cssFileName){
+    echo "<link rel='stylesheet' href='/../assets/css/" . $cssFileName . "'>";
+}
+function importScript($scriptName){
+    echo "<script src='/../scripts/" . $scriptName . "'></script>";
+}

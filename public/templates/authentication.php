@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 
 exitIfLoggedIn();
+importCss("auth.css");
 
 $errors = [];
 $success = "";
-$extraCss[] = "auth.css";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
 {

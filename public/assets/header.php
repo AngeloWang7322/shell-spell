@@ -1,6 +1,3 @@
-<?php
-$extraCss[] = "header.css";
-?>
 <div class="header-wrapper">
     <div class="header-group">
         <?php if (isset($_SESSION["isLoggedIn"])): ?>
@@ -56,3 +53,6 @@ $extraCss[] = "header.css";
         <?php endif; ?>
     </div>
 </div>
+<?php
+importCss("header.css");
+?>

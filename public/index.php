@@ -15,10 +15,11 @@ require __DIR__ . "/../src/logic/terminal.php";
 require __DIR__ . "/../src/logic/terminalController.php";
 require __DIR__ . "/../src/logic/terminalUtils.php";
 require __DIR__ . "/../src/logic/gameController.php";
+require __DIR__ . '/assets/layout.php';
 
 session_start();
 // session_unset();
-$test = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
 $request =  $_SERVER["REQUEST_URI"];
 
 if (
@@ -68,4 +69,3 @@ else
     require __DIR__ . '/templates//' . $routes['notfound'];
 }
 
-require __DIR__ . '/assets/layout.php';

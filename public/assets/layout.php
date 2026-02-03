@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
 
 
-  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
 
   <?php if (!empty($extraCss) && count($extraCss) > 0)
     foreach ($extraCss as $css)
