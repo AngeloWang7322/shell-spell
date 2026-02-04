@@ -78,7 +78,7 @@ a:visited {
     align-items: center;
     justify-content: center;
     font-size: 36px;
-    text-shadow: 2px 3px #07487e;
+    text-shadow: 3px 5px rgb(85, 16, 16);
 }
 
 .title-container:hover {

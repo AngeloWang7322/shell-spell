@@ -1,10 +1,13 @@
+<?php
+importCss("header.css");
+?>
 <div class="header-wrapper">
     <div class="header-group">
         <?php if (isset($_SESSION["isLoggedIn"])): ?>
             <a href="/menu">
                 <div class="title-container">
                     <img class="icon-large" src="../assets/images/favicon-32x32.png">
-                    Shell Spell
+                    SHELL SPELL
                     <img class="icon-large" src="../assets/images/favicon-32x32.png">
                 </div>
             </a>
@@ -12,7 +15,7 @@
             <a href="/newgame">
                 <div class="title-container">
                     <img class="icon-large" src="../assets/images/favicon-32x32.png">
-                    Shell Spell
+                    SHELL SPELL
                     <img class="icon-large" src="../assets/images/favicon-32x32.png">
                 </div>
             </a>
@@ -53,6 +56,3 @@
         <?php endif; ?>
     </div>
 </div>
-<?php
-importCss("header.css");
-?>

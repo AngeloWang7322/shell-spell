@@ -14,7 +14,7 @@ $gameStates = $dbHelper->getGameStates();
     <div class="page-title">
         <div class="title">
             <img class="logo" src="../assets/images/favicon-32x32.png">
-            Shell Spell
+            SHELL SPELL
             <img class="logo" src="../assets/images/favicon-32x32.png">
         </div>
     </div>
