@@ -61,19 +61,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 Name
                 <input class="form-control" type="text" name="name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>">
             </label>
-        </div><br>
+        </div>
         <div class="form-group">
             <label>
                 E-Mail
                 <input class="form-control" type="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
             </label>
-        </div><br>
+        </div>
         <div class="form-group">
             <label>
                 Password
                 <input class="form-control" type="password" name="password">
             </label>
-        </div><br>
+        </div>
         <button class="button-large" type="submit">Register</button>
     </form>
     <?php if (!empty($errors)): ?>
@@ -83,9 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
-    <br>
     <div action="alternative-auth-wrapper">
-        <h3>Already Have An Account?</h3>
+        Already Have An Account?
         <a href="/login">
             <div class="button-medium">
                 Login

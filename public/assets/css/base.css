@@ -55,11 +55,8 @@ form {
 
 .page-content {
     display: flex;
-    position: relative;
-    left: 50%;
-    top: 60%;
-    transform: translate(-50%, -50%);
     align-items: center;
+    margin-top: 64px;
     flex-direction: column;
     min-height: 100vh;
 }

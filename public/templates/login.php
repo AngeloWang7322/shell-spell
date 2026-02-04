@@ -41,14 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 <input class="form-control" type="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
             </label>
         </div>
-        <br>
         <div class="form-group">
             <label>
                 Password
                 <input class="form-control" type="password" name="password">
             </label>
         </div>
-        <br>
         <button class="button-large" type="submit">Log In</button>
     </form> <?php if (!empty($errors)): ?>
         <div class="errors" style="color:red;">
@@ -57,9 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
-    <br>
     <div action="alternative-auth-wrapper">
-        <h3>Don't Have An Account?</h3>
+        <span>Don't Have An Account?</span>
         <a href="/register">
             <div class="button-medium">
                 Register

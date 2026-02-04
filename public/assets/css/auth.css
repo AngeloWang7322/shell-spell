@@ -1,5 +1,6 @@
 .form-wrapper {
     color: white;
+    gap: 24px;
 }
 
 body {
@@ -45,8 +46,10 @@ button {
 .alternative-auth-wrapper{
     display: flex;
     flex-direction: column;
-    height: 200px;
-    widtH: min-content;
+    justify-content: center;
+    align-items: center;
+    width: min-content;
+    gap: 24px;
 }
 @media(max-width: 1200px) {
     .form-wrapper {
