@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-// exitIfNotLoggedIn();
 importCss("createNewGame.css");
-importScript("newGame.js");
 ?>
 
 <html>
@@ -44,3 +42,6 @@ importScript("newGame.js");
 </div>
 
 </html>
+<?php
+importScript("newGame.js");
+?>
