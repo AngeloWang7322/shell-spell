@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 importCss("createNewGame.css");
+importScript("newGame.js");
 ?>
 
 <html>
@@ -42,6 +43,3 @@ importCss("createNewGame.css");
 </div>
 
 </html>
-<?php
-importScript("newGame.js");
-?>

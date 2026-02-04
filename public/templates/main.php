@@ -1,5 +1,6 @@
 <?php
 importCss("main.css");
+importScript("main.js");
 
 $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["mapName"] . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["gameController"]->userRank->value);
 ?>
@@ -89,6 +90,3 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
         </div>
     </div>
 </div>
-<?php
-importScript("main.js");
-?>

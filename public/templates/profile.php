@@ -3,6 +3,7 @@
 declare(strict_types=1);
 exitIfNotLoggedIn();
 importCss("profile.css");
+importScript("upload.js");
 
 $default = "assets/images/default.png";
 $pic = $_SESSION["profile_pic"] ?? $default;
@@ -36,6 +37,3 @@ $pic = $_SESSION["profile_pic"] ?? $default;
         </button>
     </a>
 </div>
-<?php
-importScript("upload.js");
-?>

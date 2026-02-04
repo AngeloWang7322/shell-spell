@@ -47,5 +47,5 @@ function importCss($cssFileName){
     echo "<link rel='stylesheet' href='/../assets/css/" . $cssFileName . "'>";
 }
 function importScript($scriptName){
-    echo "<script src='/../scripts/" . $scriptName . "'></script>";
+    echo "<script src='/../scripts/" . $scriptName . "' defer></script>";
 }
