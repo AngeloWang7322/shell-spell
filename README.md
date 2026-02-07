@@ -1,5 +1,5 @@
 # SHELL SPELL
-**A Gamified Learning Tool For The CLI**
+**A Gamified Learning Tool For The CLI**\n
 
 
 ## Introduction
@@ -11,7 +11,7 @@ and more experienced users from "I know my ways around here" to "I feel like the
 
 ## Challanges
 
-**Parser**
+**Parser**\n
 Parsing the input definitely presented the biggest challange. 
 At first, i wrote something that
 
@@ -41,7 +41,7 @@ My final Solution consists of class that:
     - knows if reads stdin
     - knows if writes to stdout (more on those 2 later)
 
-**Multicommand operators (|, ||, &&, >>, >)**
+**Multicommand operators (|, ||, &&, >>, >)**\n
 Implementing these, required a new system that can execute commands consecutively and read the previous commands response (stdout) as its input (stdin).
 This was achieved by recursively checking:
     if multicommand operator is presemt in input String 
