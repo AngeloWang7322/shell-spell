@@ -39,7 +39,6 @@ importScript("newGame.js");
             CREATE
         </button>
     </form>
-    <br>
 </div>
 
 </html>

@@ -1,6 +1,6 @@
 {
     "name": "angelowang/cli-game",
-    "description": "gamified learning tool for cli usage",
+    "description": "gamified learning tool for cli ",
     "type": "project",
     "license": "MIT",
     "minimum-stability": "stable",

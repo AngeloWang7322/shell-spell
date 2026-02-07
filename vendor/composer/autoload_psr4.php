@@ -11,5 +11,6 @@ return array(
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'PhpOption\\' => array($vendorDir . '/phpoption/phpoption/src/PhpOption'),
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),
+    'FastRoute\\' => array($vendorDir . '/nikic/fast-route/src'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
 );
