@@ -14,11 +14,13 @@ and more experienced users from "I know my ways around here" to "I feel like the
 # Parser
 Parsing the input definitely presented the biggest challange. 
 At first, i wrote something that
+
     - reads the main command (first word)
     - parses paths as arrays 
     - reads options
 
 This WAS NOT able to:
+
     - check for token (parsed arguments e.g. path, option...) structure: 
         - if token is valid for the respective command 
         - if token order is correct 
