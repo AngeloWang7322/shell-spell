@@ -1,4 +1,62 @@
-Funcionalities
+<!DOCTYPE html>
+### **SHELL SPELL**
+# A gamified learning tool for the CLI
+
+
+## **Introduction**
+Shell Spell started out as a University Project. 
+My goal was to create something that enabled users of various Skill-Levels to improve their terminal abilities.
+Beginners must should quickly go from "What is this black Box?" to "I finally know my ways around here", 
+and more experienced users from "I know my ways around here" to "I feel like the computer guys from the Matrix".
+
+
+## **Challanges**
+
+# Parser
+Parsing the input definitely presented the biggest challange. 
+At first, i wrote something that
+    - reads the main command (first word)
+    - parses paths as arrays 
+    - reads options
+
+This WAS NOT able to:
+    - check for token (parsed arguments e.g. path, option...) structure: 
+        - if token is valid for the respective command 
+        - if token order is correct 
+    - check if option is valid
+    - read optional values 
+    - throw if excess arguments were provided
+    - vary token parsing/validation based on command (e.g. mkdir path argument would always be recognized as non existent -> invalid path)
+
+This solution was of course temporary, and only existed so i could write the actual command execution logic.
+
+
+My final Solution consists of class that:
+    - know the base command
+    - has default parser for each token type
+    - can use specific parsers
+    - checks for valid options
+    - can read the value of optional arguments
+    - knows if reads stdin
+    - knows if writes to stdout (more on those 2 later)
+
+# Multicommand operators (|, ||, &&, >>, >)
+Implementing these, required a new system that can execute commands consecutively and utilize ones response(stdout) as ones input (stdin).
+This was achieved by recursively checking:
+    if multicommand operator is presemt in input String 
+    -> seperate input to before(first command)/after(second command) last occurence
+    -> recall execution logic with first command 
+    -> execute second command after first
+
+the pipe '|' operator checks if
+    - non-last commands writes to stdout
+    - non-first commands reads from stdin
+
+
+
+
+
+# Funcionalities
     CD:
         - change directory
         - absolute, relative, /, -, ..
@@ -7,10 +65,15 @@ Funcionalities
         - multiple at one
         - throws if dir exists
     RM:
-        - Remove Element
+        - Remove Item
         - multiple at once
-        - select multiple via *wildcard
-        - throws if would delete higher Ranked
+        - select multiple via wildcard "*"
+        - throws if would delete higher Ranked Item
+    RMDIR: 
+        - Remove Room
+        - multiple at once
+        - select via wildcard "*"
+        - throws if would delete higher Ranked Item or Room
     CP:
         - copy element
         - prompt before replacing
