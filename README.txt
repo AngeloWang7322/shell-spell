@@ -1,15 +1,15 @@
-### **SHELL SPELL**
+### SHELL SPELL
 # A gamified learning tool for the CLI
 
 
-## **Introduction**
+## Introduction
 Shell Spell started out as a University Project. 
 My goal was to create something that enabled users of various Skill-Levels to improve their terminal abilities.
 Beginners must should quickly go from "What is this black Box?" to "I finally know my ways around here", 
 and more experienced users from "I know my ways around here" to "I feel like the computer guys from the Matrix".
 
 
-## **Challanges**
+## Challanges
 
 # Parser
 Parsing the input definitely presented the biggest challange. 
