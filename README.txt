@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 ### **SHELL SPELL**
 # A gamified learning tool for the CLI
 
