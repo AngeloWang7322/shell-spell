@@ -52,7 +52,6 @@ class Command
         $this->optionParser = $optionParser;
         $this->keyValueOptionParser = $keyValueOptionParser;
         $this->finalValidator = $finalValidator;
-        $_SESSION["tokens"] = [];
         $_SESSION["tokens"]["command"] = "";
         $_SESSION["tokens"]["path"] = [];
         $_SESSION["tokens"]["options"] = [];
@@ -81,13 +80,13 @@ class Command
                 case TokenType::OPTION:
                     {
                         $function = $this->optionParser;
-                        $function($arg, $tokens, $syntaxArray, $i, $this->validOptions);
+                        $function($arg, $tokens, $syntaxArray, $i, $this->validOptions, $this->validKeyValueOptions);
                         break;
                     }
                 case TokenType::KEYVALUEOPTION:
                     {
                         $function = $this->keyValueOptionParser;
-                        $function($arg, $tokens, $syntaxArray, $i, $this->validOptions);
+                        $function($arg, $tokens, $syntaxArray, $i, $this->validKeyValueOptions);
                         break;
                     }
                 case TokenType::PATH:

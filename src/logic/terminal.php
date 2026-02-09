@@ -23,7 +23,7 @@ function executeMkdir()
             in_array(
                 $roomName,
                 array_keys($tempRoom->doors)
-            ) && !empty($_SESSION["state"]->promptData)
+            ) && !empty(StateManager::$promptData)
             //TODO: check if empty works here
         )
         {
@@ -33,7 +33,7 @@ function executeMkdir()
         $tempRoom->doors[$roomName] = new Room(
             name: $roomName,
             path: $tempRoom->path,
-            requiredRank: $_SESSION["gameController"]->userRank
+            requiredRank: $_SESSION["GameEngine"]->userRank
         );
     }
 }
@@ -50,7 +50,7 @@ function executeLs()
 
 function executePwd()
 {
-    $_SESSION["state"]->stdout = $_SESSION["curRoom"]->path;
+    StateManager::$stdout = $_SESSION["curRoom"]->path;
 }
 
 function executeRm()
@@ -89,7 +89,7 @@ function executeMv()
 function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
-    $_SESSION["state"]->stdout = getLinesFromText($catItem->content);
+    StateManager::$stdout = getLinesFromText($catItem->content);
 }
 
 function executeTouch()
@@ -107,7 +107,7 @@ function executeTouch()
             name: $fileName,
             baseName: "",
             path: $destRoom->path,
-            requiredRank: $_SESSION["gameController"]->userRank,
+            requiredRank: $_SESSION["GameEngine"]->userRank,
             content: "",
             curDate: true
         );
@@ -115,8 +115,7 @@ function executeTouch()
 function executeGrep()
 {
     $matchingLines = callCorrectGrepFunction();
-
-    $_SESSION["state"]->stdout = $matchingLines;
+    StateManager::$stdout = $matchingLines;
 }
 
 function executeExecute()
@@ -132,14 +131,14 @@ function executeExecute()
     );
 
     if (is_a($itemExec, Alter::class))
-        $_SESSION["gameController"]->levelUpUser($itemExec);
+        $_SESSION["GameEngine"]->levelUpUser($itemExec);
     else
         throw new Exception("item not executable");
 }
 
 function executeEcho()
 {
-    $_SESSION["state"]->stdout = $_SESSION["tokens"]["strings"][0];
+    StateManager::$stdout = [$_SESSION["tokens"]["strings"][0]];
 }
 
 function executeFind()
@@ -162,7 +161,7 @@ function executeFind()
         )
     );
 
-    $_SESSION["state"]->stdout = $matches;
+    StateManager::$stdout = $matches;
 }
 
 function executeWc()
@@ -170,14 +169,14 @@ function executeWc()
     $lines = getLines();
     $counts = getCounts($lines);
 
-    $_SESSION["state"]->stdout = $counts;
+    StateManager::$stdout = $counts;
 }
 function executeHead()
 {
     $lines = getLines();
     $lines = getPartialArray($lines);
 
-    $_SESSION["state"]->stdout = $lines;
+    StateManager::$stdout = $lines;
 }
 function executeTail()
 {
@@ -186,7 +185,7 @@ function executeTail()
         false
     );
 
-    $_SESSION["state"]->stdout = $lines;
+    StateManager::$stdout = $lines;
 }
 
 function executeNano()
@@ -201,5 +200,5 @@ function executeNano()
 function executeMan()
 {
     $description = getCommand($_SESSION["tokens"]["misc"])->description;
-    $_SESSION["state"]->stdout = getLinesFromText($description);
+    StateManager::$stdout = getLinesFromText($description);
 }

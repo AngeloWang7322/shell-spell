@@ -2,10 +2,14 @@
 <?php
 function &getRoomOrItem($path, $tempRoom = null): mixed
 {
-    if ($tempRoom = &getRoom($path))
-        return $tempRoom;
-    else
+    try
+    {
+        return getRoom($path);
+    }
+    catch (Exception $e)
+    {
         return getItem($path);
+    }
 }
 
 function &getRoom($path, $rankRestrictive = false): Room
@@ -48,12 +52,12 @@ function &getRoom($path, $rankRestrictive = false): Room
 function &getRoomAbsolute($path, $rankRestrictive = false): Room
 {
     $path = removeFirstIfEmpty($path);
-    $tempRoom = &$_SESSION["game"]->map;
+    $tempRoom = &$_SESSION["map"];
     for ($i = 0; $i < count($path); $i++)
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["gameController"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
+            if ($rankRestrictive && $_SESSION["GameEngine"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
             {
                 throw (new Exception("rank too low"));
             }
@@ -74,7 +78,7 @@ function &getRoomRelative($path, $rankRestrictive = false): Room
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["gameController"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
+            if ($rankRestrictive && $_SESSION["GameEngine"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
             {
                 throw (new Exception("Rank too low, required Rank: " . $tempRoom->doors[$path[$i]]->requiredRank->value));
             }
@@ -240,12 +244,12 @@ function getLsArray($tempRoom)
             }
         }
 
-        $_SESSION["state"]->stdout = $finalArray;
+        StateManager::$stdout = $finalArray;
     }
     else
     {
         $finalArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-        $_SESSION["state"]->stdout = $finalArray;
+        StateManager::$stdout = $finalArray;
     }
 }
 function callCorrectGrepFunction()
@@ -290,9 +294,9 @@ function callCorrectGrepFunction()
     }
     else
     {
-        if (empty($_SESSION["state"]->stdout))
+        if (empty(StateManager::$stdout))
             throw new Exception("no path provided");
-        foreach ($_SESSION["state"]->stdout as $key => $line)
+        foreach (StateManager::$stdout as $key => $line)
         {
             if (grepLine(
                 $line,
@@ -304,7 +308,7 @@ function callCorrectGrepFunction()
                 $matchingLines[$key] = $line;
             }
         }
-        $_SESSION["state"]->stdout = "";
+        StateManager::$stdout = [];
     }
     return $matchingLines;
 }
@@ -453,10 +457,10 @@ function checkIfNamesExists(array $names, $hayStack): bool
 function createPrompt($prompt, $validAnswers = ["y", "n"])
 {
     //TODO move prompt logic somewhere else
-    $_SESSION["state"]->promptData["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
-    $_SESSION["state"]->promptData["options"] = ["y", "n"];
-    $_SESSION["state"]->stdout = $_SESSION["promptData"]["prompt"];
-    $_SESSION["state"]->writeNewHistory();
+    StateManager::$promptData["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
+    StateManager::$promptData["options"] = ["y", "n"];
+    StateManager::$stdout = $_SESSION["promptData"]["prompt"];
+    StateManager::addNewHistory();
     throw new Exception("", 0);
 }
 
@@ -670,8 +674,8 @@ function getCounts($lines)
 }
 function getLines()
 {
-    return isset($_SESSION["state"]->stdout) ?
-        $_SESSION["state"]->stdout :
+    return isset(StateManager::$stdout) ?
+        StateManager::$stdout :
         getLinesFromText(getItem($_SESSION["tokens"]["path"][0])->content);
 }
 
@@ -702,7 +706,7 @@ function canDelete($path, $element = NULL)
     {
         throw new Exception("Cant move room into itsself",);
     }
-    $result = RankIsHigherThanRoomRecursive($_SESSION["gameController"]->userRank, getRoomOrItem($path));
+    $result = RankIsHigherThanRoomRecursive($_SESSION["GameEngine"]->userRank, getRoomOrItem($path));
 
     return $result;
 }
@@ -752,17 +756,17 @@ function checkForRune()
         // $isA = is_a($item, Spell::class);
         // $is2 = strtolower($item->key) == $arg;
         // $lower = strtolower($item->key);
-        // $nextSpell = $_SESSION["gameController"]->getNextSpell();
-        // $isSame = $item->spellReward->value == $_SESSION["gameController"]->getNextSpell();
+        // $nextSpell = $_SESSION["GameEngine"]->getNextSpell();
+        // $isSame = $item->spellReward->value == $_SESSION["GameEngine"]->getNextSpell();
         if (
             is_a($item, Spell::class) &&
             $item->key == $arg &&
-            $item->spellReward->value == $_SESSION["gameController"]->getNextSpell()
+            $item->spellReward->value == $_SESSION["GameEngine"]->getNextSpell()
         )
         {
-            $_SESSION["state"]->writeNewHistory();
-            $_SESSION["gameController"]->unlockNextCommand();
-            $_SESSION["state"]->cleanUp();
+            StateManager::addNewHistory();
+            $_SESSION["GameEngine"]->unlockNextCommand();
+            StateManager::reset();
             throw new Exception("", -1);
         }
     }
@@ -784,4 +788,20 @@ function removeLastIfEmpty($array)
 function hasOption($flag)
 {
     return in_array($flag, $_SESSION["tokens"]["options"]);
+}
+function getLastOccuringElementIn($needle, $haystack = [">>", ">", "||", "|", "&&",])
+{
+    for ($i = strlen($needle); $i > 0; $i--)
+    {
+        foreach ($haystack as $element)
+        {
+            $len = strlen($element);
+            $substr = substr($needle, $i - $len, $len);
+            if ($substr == $element)
+            {
+                return $element;
+            }
+        }
+    }
+    return false;
 }

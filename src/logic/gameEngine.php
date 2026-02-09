@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-class GameController
+class GameEngine
 {
     public static $levelData = [
         // &&
@@ -43,14 +43,16 @@ class GameController
     public array $currentLevelData = [];
     public array $unlockedCommands = [];
     public string $userName;
-    public Room $map;
+    public string $mapName;
     public function __construct(
         $xp = 0,
-        $userName = "wanderer",
+        $userName = "guest",
+        $mapName = "dungeon",
     )
     {
         $this->xp = $xp;
         $this->userName = $userName;
+        $this->mapName = $mapName;
         $this->userRank = Rank::getRankFromXp($xp);
         $this->currentLevelData = self::$levelData[$this->userRank->value];
         $this->latestCommand = self::calculateGameStats($xp);
@@ -66,7 +68,7 @@ class GameController
         $this->currentSubLvl = 0;
         $this->xp = $this->userRank->rank() * 100;
         self::createRewardRoom();
-        $_SESSION["state"]->writeNewHistory();
+        StateManager::addNewHistory();
         self::getCurrentMessage();
         throw new Exception("", -1);
     }
@@ -246,7 +248,7 @@ class GameController
         -------- strangevoice -------- <br><br>" .
             $message . "<br>
         ------------------------------ <br>";
-        $_SESSION["state"]->editLastHistory($message);
+        StateManager::editLastHistory($message);
     }
     public function getNextSpell()
     {

@@ -14,17 +14,15 @@ require __DIR__ . "/../src/logic/api.php";
 require __DIR__ . "/../src/logic/terminal.php";
 require __DIR__ . "/../src/logic/terminalController.php";
 require __DIR__ . "/../src/logic/terminalUtils.php";
-require __DIR__ . "/../src/logic/gameController.php";
-require __DIR__ . "/../src/logic/gameStateHandler.php";
+require __DIR__ . "/../src/logic/GameEngine.php";
+require __DIR__ . "/../src/logic/StateManager.php";
 require __DIR__ . '/assets/layout.php';
 
 session_start();
 // session_unset();
 
-$request =  $_SERVER["REQUEST_URI"];
-
 if (
-    !isset($_SESSION["game"]->map)
+    !isset($_SESSION["map"])
     && $_SERVER['REQUEST_URI'] != "/newgame"
 )
 {
@@ -32,7 +30,7 @@ if (
     exit;
 }
 
-if (!isset($_SESSION["game"]->map))
+if (!isset($_SESSION["map"]))
 {
     DBHelper::loadDefaultSession();
 }

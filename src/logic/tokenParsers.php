@@ -61,7 +61,7 @@ function createTokens(): array
 }
 function parseCommand($arg)
 {
-    if (in_array($arg, $_SESSION["gameController"]->unlockedCommands))
+    if (in_array($arg, $_SESSION["GameEngine"]->unlockedCommands))
     {
         return $arg;
     }
@@ -126,7 +126,7 @@ function parseMisc($arg)
             }
     }
 }
-function parseOption($arg, $tokens, &$syntaxArray, &$argIndex, $validOptions)
+function parseOption($arg, $tokens, &$syntaxArray, &$argIndex, $validOptions, $validKeyValueOptions)
 {
     if (substr($arg, 0, 1) == '-')
     {
@@ -137,6 +137,11 @@ function parseOption($arg, $tokens, &$syntaxArray, &$argIndex, $validOptions)
         }
         else
         {
+            if (in_array($arg, $validKeyValueOptions))
+            {
+                $argIndex--;
+                return;
+            }
             throw new Exception("invalid option '" . $tokens[$argIndex] . "'");
         }
     }
@@ -175,10 +180,11 @@ function parseKeyValueOption($option, $tokens, &$syntaxArray, &$argIndex, $valid
     }
     else
     {
-        if (next($syntaxArray) == NULL)
-        {
-            throw new Exception("invalid syntax");
-        }
+        // if ( == NULL)
+        // {
+        //     throw new Exception("invalid syntax");
+        // }
+        next($syntaxArray);
         $argIndex--;
     }
 }
@@ -200,7 +206,7 @@ function parsePathFind($path, $tokens, &$syntaxArray, &$argIndex)
 }
 function parsePathOptional($path, $tokens, &$syntaxArray, &$argIndex)
 {
-    if (!isset($_SESSION["state"]->stdout))
+    if (!isset(StateManager::$stdout))
     {
         try
         {
