@@ -13,7 +13,7 @@ function editScroll()
     $userRank = $_SESSION["user"]["Rank"];
     if ($userRank->isLowerThan($tempScroll->requiredRank))
     {
-        editLastHistory("unable to change scroll, required Rank: " . colorizeString($tempScroll->requiredRank->value));
+        $_SESSION["state"]->editLastHistory("unable to change scroll, required Rank: " . colorizeString($tempScroll->requiredRank->value));
     }
     else
     {
@@ -43,9 +43,17 @@ function canDisplay($room)
     return !$room->isHidden || isset($_SESSION["displayAll"]);
 }
 
-function importCss($cssFileName){
+function importCss($cssFileName)
+{
     echo "<link rel='stylesheet' href='/../assets/css/" . $cssFileName . "'>";
 }
-function importScript($scriptName){
+function importScript($scriptName)
+{
     echo "<script src='/../scripts/" . $scriptName . "' defer></script>";
+}
+function splitString($baseString, &$beforeSeperator, &$afterSeperator, $seperator)
+{
+    $needlePos = strrpos($baseString, $seperator);
+    $beforeSeperator = trim(substr($baseString, 0, $needlePos));
+    $afterSeperator = trim(substr($baseString, $needlePos + strlen($seperator) + 1));
 }

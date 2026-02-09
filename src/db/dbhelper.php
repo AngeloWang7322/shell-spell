@@ -68,9 +68,8 @@ class DBHelper
         ]);
         $gameState = $fetchGameState->fetch();
         $_SESSION["mapId"] = $gameState["id"];
-        $_SESSION["mapName"] = $gameState["name"];
         $_SESSION["gameController"] = new GameController($gameState["xp"]);
-        $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
+        $_SESSION["game"]->map = Room::fromArray(json_decode($gameState["map_json"]));
         $_SESSION["history"] = [];
         if ($gameState["history_json"] != NULL) parseHistory($gameState["history_json"]);
         $_SESSION["gameController"]->getCurrentMessage();
@@ -100,7 +99,6 @@ class DBHelper
         {
             self::loadDefaultSession();
 
-            $_SESSION["mapName"] = $name;
             $_SESSION["gameController"] = new GameController($xp);
             $_SESSION["gameController"]->getCurrentMessage();
         }
@@ -130,28 +128,27 @@ class DBHelper
     }
     public static function loadDefaultSession()
     {
-        $_SESSION["gameController"] = new GameController(0);
-        $_SESSION["tokens"]["command"] = "";
-        $_SESSION["tokens"]["path"] = [];
-        $_SESSION["tokens"]["options"] = [];
-        $_SESSION["tokens"]["strings"] = [];
-        $_SESSION["tokens"]["keyValueOptions"] = [];
-        $_SESSION["tokens"]["misc"] = [];
-        $_SESSION["tokens"]["pathStr"] = [];
-        $_SESSION["mapName"] = "dungeon";
-        $_SESSION["pipeCount"] = 0;
-        $_SESSION["map"] = self::getDefaultMap();
-        $_SESSION["curRoom"] = &$_SESSION["map"];
-        $_SESSION["user"]["Rank"] = Rank::WANDERER;
+        $_SESSION["game"] = new GameController(0);
+        $_SESSION["state"] = new GameStateHandler();
+        $_SESSION["game"]->map = self::getDefaultMap();
+        $_SESSION["tokens"] = [];
+        // $_SESSION["tokens"]["command"] = "";
+        // $_SESSION["tokens"]["path"] = [];
+        // $_SESSION["tokens"]["options"] = [];
+        // $_SESSION["tokens"]["strings"] = [];
+        // $_SESSION["tokens"]["keyValueOptions"] = [];
+        // $_SESSION["tokens"]["misc"] = [];
+        // $_SESSION["tokens"]["pathStr"] = [];
+        // $_SESSION["pipeCount"] = 0;
+        $_SESSION["curRoom"] = &$_SESSION["game"]->map;
         $_SESSION["user"]["username"] = "guest";
         $_SESSION["lastPath"] = [];
-        $_SESSION["response"] = "";
-        $_SESSION["history"] = [];
-        $_SESSION["history"][] = [
-            "directory" => "",
-            "command" => "",
-            "response" => "",
-        ];
+        // $_SESSION["history"] = [];
+        // $_SESSION["history"][] = [
+        //     "directory" => "",
+        //     "command" => "",
+        //     "response" => "",
+        // ];
     }
     public static function getDefaultMap(): Room
     {

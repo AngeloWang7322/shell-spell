@@ -48,7 +48,7 @@ function &getRoom($path, $rankRestrictive = false): Room
 function &getRoomAbsolute($path, $rankRestrictive = false): Room
 {
     $path = removeFirstIfEmpty($path);
-    $tempRoom = &$_SESSION["map"];
+    $tempRoom = &$_SESSION["game"]->map;
     for ($i = 0; $i < count($path); $i++)
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
@@ -120,7 +120,7 @@ function deleteElements($paths, $deleteOnlyRooms = false, $rankRestrictive = tru
 
         if (is_a($element, Room::class))
         {
-            if(!$deleteRooms && !$deleteOnlyRooms) throw new Exception("Element is a Room");
+            if (!$deleteRooms && !$deleteOnlyRooms) throw new Exception("Element is a Room");
             unset($parentRoom->doors[end($path)]);
         }
         else
@@ -240,18 +240,12 @@ function getLsArray($tempRoom)
             }
         }
 
-        writeOutput(
-            $finalArray,
-            implode("<br> ", $finalArray)
-        );
+        $_SESSION["state"]->stdout = $finalArray;
     }
     else
     {
         $finalArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-        writeOutput(
-            $finalArray,
-            implode(", ", $finalArray)
-        );
+        $_SESSION["state"]->stdout = $finalArray;
     }
 }
 function callCorrectGrepFunction()
@@ -296,9 +290,9 @@ function callCorrectGrepFunction()
     }
     else
     {
-        if (empty($_SESSION["stdout"]))
+        if (empty($_SESSION["state"]->stdout))
             throw new Exception("no path provided");
-        foreach ($_SESSION["stdout"] as $key => $line)
+        foreach ($_SESSION["state"]->stdout as $key => $line)
         {
             if (grepLine(
                 $line,
@@ -310,7 +304,7 @@ function callCorrectGrepFunction()
                 $matchingLines[$key] = $line;
             }
         }
-        $_SESSION["response"] = "";
+        $_SESSION["state"]->stdout = "";
     }
     return $matchingLines;
 }
@@ -458,10 +452,11 @@ function checkIfNamesExists(array $names, $hayStack): bool
 
 function createPrompt($prompt, $validAnswers = ["y", "n"])
 {
-    $_SESSION["promptData"]["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
-    $_SESSION["promptData"]["options"] = ["y", "n"];
-    $_SESSION["response"] = $_SESSION["promptData"]["prompt"];
-    writeNewHistory();
+    //TODO move prompt logic somewhere else
+    $_SESSION["state"]->promptData["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
+    $_SESSION["state"]->promptData["options"] = ["y", "n"];
+    $_SESSION["state"]->stdout = $_SESSION["promptData"]["prompt"];
+    $_SESSION["state"]->writeNewHistory();
     throw new Exception("", 0);
 }
 
@@ -675,8 +670,8 @@ function getCounts($lines)
 }
 function getLines()
 {
-    return isset($_SESSION["stdout"]) ?
-        $_SESSION["stdout"] :
+    return isset($_SESSION["state"]->stdout) ?
+        $_SESSION["state"]->stdout :
         getLinesFromText(getItem($_SESSION["tokens"]["path"][0])->content);
 }
 
@@ -732,11 +727,7 @@ function pathArrayFromElements($elements)
 }
 
 
-function writeOutput($stdout, $response)
-{
-    $_SESSION["stdout"] = $stdout;
-    $_SESSION["response"] = colorizeResponseForRank($response);
-}
+
 function isExecutable($element)
 {
     return is_a($element, Alter::class) || is_a($element, Spell::class);
@@ -769,9 +760,9 @@ function checkForRune()
             $item->spellReward->value == $_SESSION["gameController"]->getNextSpell()
         )
         {
-            writeNewHistory();
+            $_SESSION["state"]->writeNewHistory();
             $_SESSION["gameController"]->unlockNextCommand();
-            cleanUp();
+            $_SESSION["state"]->cleanUp();
             throw new Exception("", -1);
         }
     }
@@ -790,6 +781,7 @@ function removeLastIfEmpty($array)
         : $array;
 }
 
-function hasOption($flag){
+function hasOption($flag)
+{
     return in_array($flag, $_SESSION["tokens"]["options"]);
 }

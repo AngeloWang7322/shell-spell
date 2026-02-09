@@ -52,6 +52,14 @@ class Command
         $this->optionParser = $optionParser;
         $this->keyValueOptionParser = $keyValueOptionParser;
         $this->finalValidator = $finalValidator;
+        $_SESSION["tokens"] = [];
+        $_SESSION["tokens"]["command"] = "";
+        $_SESSION["tokens"]["path"] = [];
+        $_SESSION["tokens"]["options"] = [];
+        $_SESSION["tokens"]["strings"] = [];
+        $_SESSION["tokens"]["keyValueOptions"] = [];
+        $_SESSION["tokens"]["misc"] = [];
+        $_SESSION["tokens"]["pathStr"] = [];
     }
     public function parseInput()
     {

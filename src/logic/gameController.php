@@ -43,7 +43,7 @@ class GameController
     public array $currentLevelData = [];
     public array $unlockedCommands = [];
     public string $userName;
-    public $requiredCommand;
+    public Room $map;
     public function __construct(
         $xp = 0,
         $userName = "wanderer",
@@ -66,7 +66,7 @@ class GameController
         $this->currentSubLvl = 0;
         $this->xp = $this->userRank->rank() * 100;
         self::createRewardRoom();
-        writeNewHistory();
+        $_SESSION["state"]->writeNewHistory();
         self::getCurrentMessage();
         throw new Exception("", -1);
     }
@@ -120,15 +120,11 @@ class GameController
             //LEVEL 1
             case Commands::ECHO->value:
                 {
-                    $response = "A Spellcaster!? Haven't seen one of you people in years(fortunately...)<br>
-                        Nobody was supposed to come here anymore.<br> Whats your name wanderer?<br>"
-                        . colorizeString("<br><br> > echo [your name]", "action-tip");
-                    $this->requiredCommand = Commands::ECHO->value;
+                    $response = colorizeString("<br><br> > echo [your name]", "action-tip");
                     break;
                 }
             case Commands::CAT->value:
                 {
-                    $this->requiredCommand = NULL;
                     $this->userName = $_SESSION["tokens"]["strings"][0];
                     $response = "
                         You accidentally just activated a rune?! No it can't be... must've been a coincidence... and weird name anywat <br>
@@ -250,7 +246,7 @@ class GameController
         -------- strangevoice -------- <br><br>" .
             $message . "<br>
         ------------------------------ <br>";
-        editLastHistory($message);
+        $_SESSION["state"]->editLastHistory($message);
     }
     public function getNextSpell()
     {
@@ -281,6 +277,12 @@ class GameController
             default:
                 {
                 }
+        }
+    }
+    public function enterSpellSandbox($spell)
+    {
+        switch ($spell)
+        {
         }
     }
 }

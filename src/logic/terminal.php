@@ -2,23 +2,6 @@
 
 declare(strict_types=1);
 
-use FFI\CData;
-
-function startTerminalProcess()
-{
-    try
-    {
-        manageExecution();
-    }
-    catch (Exception $e)
-    {
-        if ($e->getCode() == -1) return;
-        handleException($e);
-    }
-
-    closeProcess();
-}
-
 function executeCd()
 {
     moveWithCdOptions();
@@ -40,7 +23,8 @@ function executeMkdir()
             in_array(
                 $roomName,
                 array_keys($tempRoom->doors)
-            ) && !isset($_SESSION["promptData"])
+            ) && !empty($_SESSION["state"]->promptData)
+            //TODO: check if empty works here
         )
         {
             throw new Exception("room already exists");
@@ -66,11 +50,7 @@ function executeLs()
 
 function executePwd()
 {
-    $pwd = implode("/", $_SESSION["curRoom"]->path);
-    writeOutput(
-        $pwd,
-        $pwd
-    );
+    $_SESSION["state"]->stdout = $_SESSION["curRoom"]->path;
 }
 
 function executeRm()
@@ -109,11 +89,7 @@ function executeMv()
 function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
-
-    writeOutput(
-        getLinesFromText($catItem->content),
-        $catItem->content
-    );
+    $_SESSION["state"]->stdout = getLinesFromText($catItem->content);
 }
 
 function executeTouch()
@@ -140,10 +116,7 @@ function executeGrep()
 {
     $matchingLines = callCorrectGrepFunction();
 
-    writeOutput(
-        $matchingLines,
-        arrayKeyValueToString($matchingLines)
-    );
+    $_SESSION["state"]->stdout = $matchingLines;
 }
 
 function executeExecute()
@@ -166,12 +139,7 @@ function executeExecute()
 
 function executeEcho()
 {
-    checkForRune();
-
-    writeOutput(
-        getLinesFromText($_SESSION["tokens"]["strings"][0]),
-        $_SESSION["tokens"]["strings"][0]
-    );
+    $_SESSION["state"]->stdout = $_SESSION["tokens"]["strings"][0];
 }
 
 function executeFind()
@@ -194,10 +162,7 @@ function executeFind()
         )
     );
 
-    writeOutput(
-        $matches,
-        implode("<br>", $matches)
-    );
+    $_SESSION["state"]->stdout = $matches;
 }
 
 function executeWc()
@@ -205,20 +170,14 @@ function executeWc()
     $lines = getLines();
     $counts = getCounts($lines);
 
-    writeOutput(
-        $counts,
-        arrayKeyValueToString($counts, " ")
-    );
+    $_SESSION["state"]->stdout = $counts;
 }
 function executeHead()
 {
     $lines = getLines();
     $lines = getPartialArray($lines);
 
-    writeOutput(
-        $lines,
-        arrayKeyValueToString($lines, " ")
-    );
+    $_SESSION["state"]->stdout = $lines;
 }
 function executeTail()
 {
@@ -227,10 +186,7 @@ function executeTail()
         false
     );
 
-    writeOutput(
-        $lines,
-        arrayKeyValueToString($lines, " ")
-    );
+    $_SESSION["state"]->stdout = $lines;
 }
 
 function executeNano()
@@ -245,9 +201,5 @@ function executeNano()
 function executeMan()
 {
     $description = getCommand($_SESSION["tokens"]["misc"])->description;
-
-    writeOutput(
-        getLinesFromText($description),
-        $description
-    );
+    $_SESSION["state"]->stdout = getLinesFromText($description);
 }

@@ -83,9 +83,9 @@ function parsePath($path, $tokens = "", &$syntaxArray = [], &$argIndex = NULL, $
     $validFirstPathArgs = array_merge(array_keys($_SESSION["curRoom"]->doors), array_keys($_SESSION["curRoom"]->items), $validChars);
 
     return
-        in_array($path[0], $validFirstPathArgs) 
+        in_array($path[0], $validFirstPathArgs)
         // || count($path) == 1 && !empty(getWildCardStringAndFunction($path[0]) hab ich da muell geschrieben ?
-        
+
         ?  $path
         : throw new Exception("invalid path provided");
 }
@@ -200,7 +200,7 @@ function parsePathFind($path, $tokens, &$syntaxArray, &$argIndex)
 }
 function parsePathOptional($path, $tokens, &$syntaxArray, &$argIndex)
 {
-    if (!isset($_SESSION["stdout"]))
+    if (!isset($_SESSION["state"]->stdout))
     {
         try
         {
