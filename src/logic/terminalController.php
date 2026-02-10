@@ -283,6 +283,9 @@ class Controller
         {
             $responseString = implode(", ", self::$stdout);
         }
+        else if(is_array(self::$stdout)){
+            // formatGrid();
+        }
         else
         {
             foreach (self::$stdout as $key => $entry)
@@ -293,20 +296,6 @@ class Controller
                     $responseString .= $key . " - " . $entry . "<br>";
             }
         }
-
-
-        // foreach (self::$stdout as $key => $entry)
-        // {
-        //     if (!is_numeric($key))
-        //     {
-        //         $responseString .= $key . " - " . $entry . "<br>";
-        //     }
-        //     else
-        //     {
-        //         $responseString .= $entry . ", ";
-        //     }
-
-        // }
         return $responseString;
     }
 }

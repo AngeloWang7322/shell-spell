@@ -227,6 +227,7 @@ function getLsArray($tempRoom)
 
         $finalArray = array_fill(0, count($tempLsArray), "");
 
+        //TODO return 2 dimensional array, write grid formatter function
         for ($i = 0; $i < 3; $i++)
         {
             $longest = 5;
@@ -295,20 +296,26 @@ function callCorrectGrepFunction()
     else
     {
         if (empty(Controller::$stdout))
-            throw new Exception("no path provided");
-        foreach (Controller::$stdout as $key => $line)
-        {
-            if (grepLine(
-                $line,
-                $_SESSION["tokens"]["strings"][0],
-                searchMatching: $searchMatching,
-                isCaseInsensitive: $isCaseInsensitive,
-            ))
-            {
-                $matchingLines[$key] = $line;
-            }
-        }
+            throw new Exception("no source provided");
+        $matchingLines = grepArray(
+            Controller::$stdout,
+            $_SESSION["tokens"]["strings"][0],
+            searchMatching: $searchMatching,
+            isCaseInsensitive: $isCaseInsensitive
+        );
         Controller::$stdout = [];
+        // foreach (Controller::$stdout as $key => $line)
+        // {
+        //     if (grepLine(
+        //         $line,
+        //         $_SESSION["tokens"]["strings"][0],
+        //         searchMatching: $searchMatching,
+        //         isCaseInsensitive: $isCaseInsensitive,
+        //     ))
+        //     {
+        //         $matchingLines[$key] = $line;
+        //     }
+        // }
     }
     return $matchingLines;
 }
@@ -422,7 +429,7 @@ function getLinesFromText($text)
         {
             $line = substr($text, $strOffset + 1, $i - $strOffset);
             if ($line == "") continue;
-            $lines[] = $line;
+            $lines[$i] = $line;
             $strOffset = $i + 1;
             $lineCount++;
         }
@@ -804,4 +811,34 @@ function getLastOccuringElementIn($needle, $haystack = [">>", ">", "||", "|", "&
         }
     }
     return false;
+}
+function formatGrid($array)
+{
+    $string = "";
+    foreach ($array as $line)
+    {
+        $longest = 0;
+        foreach ($line as $word)
+        {
+            if (strlen($word) + 5 > $longest)
+            {
+                $longest = strlen($word) + 5;
+            }
+
+        }
+
+        // for ($j = 0; $j < count($tempLsArray); $j++)
+        // {
+        //     if (strlen($tempLsArray[$j][$i]) + 5 > $longest)
+        //     {
+        //         $longest = strlen($tempLsArray[$j][$i]) + 5;
+        //     }
+        //     $finalArray[$j] .= $tempLsArray[$j][$i] . " ";
+        // }
+        // for ($j = 0; $j < count($finalArray); $j++)
+        // {
+        //     $finalArray[$j] .= spaceOf((int)(($longest - strlen($tempLsArray[$j][$i])) * 0.9));
+        // }
+        // $string .= "<br>";
+    }
 }

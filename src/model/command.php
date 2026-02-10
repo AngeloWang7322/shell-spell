@@ -69,6 +69,10 @@ class Command
         {
             $arg = $tokens[$i];
 
+            if (current($syntaxArray) == false)
+                throw new Exception("unexpected argument: " . $arg);
+
+
             switch (current($syntaxArray))
             {
                 case TokenType::COMMAND:
@@ -106,10 +110,7 @@ class Command
                         break;
                     }
             }
-            if (next($syntaxArray) == false)
-            {
-                throw new Exception("unexpected argument: " . $tokens[$i + 1]);
-            }
+            next($syntaxArray);
         }
         if ($this->finalValidator)
         {

@@ -20,7 +20,8 @@ function createTokens(): array
 
         if ($tempToken == "")
         {
-            if($word == ""){
+            if ($word == "")
+            {
                 continue;
             }
             else if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']) || ($first == $last && strlen($word) > 1))
@@ -88,7 +89,7 @@ function parsePath($path, $tokens = "", &$syntaxArray = [], &$argIndex = NULL, $
     return
         in_array($path[0], $validFirstPathArgs)
 
-        ?  $path
+        ? $path
         : throw new Exception("invalid path provided: ");
 }
 function parseString($arg): string
