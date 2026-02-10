@@ -13,7 +13,7 @@ function editScroll()
     $userRank = $_SESSION["user"]["Rank"];
     if ($userRank->isLowerThan($tempScroll->requiredRank))
     {
-        StateManager::editLastHistory("unable to change scroll, required Rank: " . colorizeString($tempScroll->requiredRank->value));
+        Controller::editLastHistory("unable to change scroll, required Rank: " . colorizeString($tempScroll->requiredRank->value));
     }
     else
     {

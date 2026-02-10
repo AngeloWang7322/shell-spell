@@ -20,7 +20,10 @@ function createTokens(): array
 
         if ($tempToken == "")
         {
-            if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']) || ($first == $last && strlen($word) > 1))
+            if($word == ""){
+                continue;
+            }
+            else if (!in_array($first, ["'", '"']) && !in_array($last, ["'", '"']) || ($first == $last && strlen($word) > 1))
             {
                 array_push($tokens, $word);
             }
@@ -61,7 +64,7 @@ function createTokens(): array
 }
 function parseCommand($arg)
 {
-    if (in_array($arg, $_SESSION["GameEngine"]->unlockedCommands))
+    if (in_array($arg, $_SESSION["GameState"]->unlockedCommands))
     {
         return $arg;
     }
@@ -84,10 +87,9 @@ function parsePath($path, $tokens = "", &$syntaxArray = [], &$argIndex = NULL, $
 
     return
         in_array($path[0], $validFirstPathArgs)
-        // || count($path) == 1 && !empty(getWildCardStringAndFunction($path[0]) hab ich da muell geschrieben ?
 
         ?  $path
-        : throw new Exception("invalid path provided");
+        : throw new Exception("invalid path provided: ");
 }
 function parseString($arg): string
 {
@@ -106,7 +108,7 @@ function parseString($arg): string
     }
     else
     {
-        throw new Exception("empty string given");
+        throw new Exception("no string given");
     }
 }
 function parseMisc($arg)
@@ -135,13 +137,32 @@ function parseOption($arg, $tokens, &$syntaxArray, &$argIndex, $validOptions, $v
             $_SESSION["tokens"]["options"][] = $arg;
             prev($syntaxArray);
         }
+        else if (in_array($arg, array_keys($validKeyValueOptions)))
+        {
+            if (count($tokens) == $argIndex)
+                throw new Exception("no argument provided for: " . $arg);
+            else if (getType($validKeyValueOptions[$arg]) != getType($tokens[$argIndex + 1]))
+                throw new Exception("invalid option value provided for: " . $arg);
+
+            switch (gettype($validKeyValueOptions[$arg]))
+            {
+                case "string":
+                    {
+                        $_SESSION["tokens"]["keyValueOptions"][$arg] = parseString($tokens[$argIndex + 1]);
+                        break;
+                    }
+                default:
+                    {
+                        $_SESSION["tokens"]["keyValueOptions"][$arg] = $tokens[$argIndex + 1];
+                        break;
+                    }
+            }
+            prev($syntaxArray);
+            $argIndex++;
+            return;
+        }
         else
         {
-            if (in_array($arg, $validKeyValueOptions))
-            {
-                $argIndex--;
-                return;
-            }
             throw new Exception("invalid option '" . $tokens[$argIndex] . "'");
         }
     }
@@ -150,44 +171,7 @@ function parseOption($arg, $tokens, &$syntaxArray, &$argIndex, $validOptions, $v
         $argIndex--;
     }
 }
-function parseKeyValueOption($option, $tokens, &$syntaxArray, &$argIndex, $validKeyValueOptions)
-{
-    if (substr($option, 0, 1) == '-' && $argIndex <= count($tokens))
-    {
-        if (in_array($option, array_keys($validKeyValueOptions)))
-        {
-            switch (gettype($validKeyValueOptions[$option]))
-            {
-                case "string":
-                    {
-                        $_SESSION["tokens"]["keyValueOptions"][$option] = parseString($tokens[$argIndex + 1]);
-                        $argIndex++;
-                        break;
-                    }
-                case "integer":
-                    {
-                        $_SESSION["tokens"]["keyValueOptions"][$option] = is_numeric($tokens[$argIndex + 1])
-                            ? $tokens[$argIndex + 1]
-                            : throw new Exception(($option . "entered, no integer recieved"));
-                        $argIndex++;
-                    }
-            }
-        }
-        else
-        {
-            throw new Exception("incorrect option given");
-        }
-    }
-    else
-    {
-        // if ( == NULL)
-        // {
-        //     throw new Exception("invalid syntax");
-        // }
-        next($syntaxArray);
-        $argIndex--;
-    }
-}
+
 function parsePathNew($mkdirPath, $tokens, &$syntaxArray, &$argIndex)
 {
     return match (true)
@@ -206,7 +190,7 @@ function parsePathFind($path, $tokens, &$syntaxArray, &$argIndex)
 }
 function parsePathOptional($path, $tokens, &$syntaxArray, &$argIndex)
 {
-    if (!isset(StateManager::$stdout))
+    if (!isset(Controller::$stdout))
     {
         try
         {
@@ -250,7 +234,6 @@ function parseStringEcho($path, $tokens, &$syntaxArray, &$argIndex)
     }
     catch (Exception $e)
     {
-
         return implode(" ", array_slice($tokens, 1));
     }
 }

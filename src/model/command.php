@@ -83,12 +83,6 @@ class Command
                         $function($arg, $tokens, $syntaxArray, $i, $this->validOptions, $this->validKeyValueOptions);
                         break;
                     }
-                case TokenType::KEYVALUEOPTION:
-                    {
-                        $function = $this->keyValueOptionParser;
-                        $function($arg, $tokens, $syntaxArray, $i, $this->validKeyValueOptions);
-                        break;
-                    }
                 case TokenType::PATH:
                     {
                         $function = $this->pathParser;
@@ -114,7 +108,7 @@ class Command
             }
             if (next($syntaxArray) == false)
             {
-                end($syntaxArray);
+                throw new Exception("unexpected argument: " . $tokens[$i + 1]);
             }
         }
         if ($this->finalValidator)
@@ -301,7 +295,7 @@ function getCommand($command)
         "find" == $command
         => new Command(
             commandName: "find",
-            tokenSyntax: [TokenType::PATH, TokenType::KEYVALUEOPTION],
+            tokenSyntax: [TokenType::PATH, TokenType::OPTION],
             validOptions: [],
             validKeyValueOptions: ["-name" => "string"],
             description: "NAME<br>
@@ -435,7 +429,7 @@ function getCommand($command)
         "head" == $command
         => new Command(
             commandName: "head",
-            tokenSyntax: [TokenType::KEYVALUEOPTION, TokenType::PATH],
+            tokenSyntax: [TokenType::OPTION, TokenType::PATH],
             validOptions: [],
             validKeyValueOptions: ["-n" => 10],
             description: "NAME<br>
@@ -454,7 +448,7 @@ function getCommand($command)
         "tail" == $command
         => new Command(
             commandName: "tail",
-            tokenSyntax: [TokenType::KEYVALUEOPTION, TokenType::PATH],
+            tokenSyntax: [TokenType::OPTION, TokenType::PATH],
             validOptions: [],
             validKeyValueOptions: ["-n" => 10],
             description: "NAME<br>

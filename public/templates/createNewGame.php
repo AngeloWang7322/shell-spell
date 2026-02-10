@@ -29,7 +29,7 @@ importScript("newGame.js");
                             <?php if ($Rank->value == "root"): ?>Sandbox Mode
                         <?php elseif ($Rank->value != "wanderer"): ?>
                         <?php endif; ?>
-                        <?= implode(", ", array_values(GameEngine::$levelData[$Rank->value])) ?>
+                        <?= implode(", ", array_values(GameState::$levelData[$Rank->value])) ?>
                         </div>
                     </option>
                 <?php endforeach; ?>

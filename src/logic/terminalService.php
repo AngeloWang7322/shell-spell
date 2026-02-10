@@ -57,7 +57,7 @@ function &getRoomAbsolute($path, $rankRestrictive = false): Room
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["GameEngine"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
+            if ($rankRestrictive && $_SESSION["GameState"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
             {
                 throw (new Exception("rank too low"));
             }
@@ -78,7 +78,7 @@ function &getRoomRelative($path, $rankRestrictive = false): Room
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["GameEngine"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
+            if ($rankRestrictive && $_SESSION["GameState"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
             {
                 throw (new Exception("Rank too low, required Rank: " . $tempRoom->doors[$path[$i]]->requiredRank->value));
             }
@@ -244,12 +244,12 @@ function getLsArray($tempRoom)
             }
         }
 
-        StateManager::$stdout = $finalArray;
+        Controller::$stdout = $finalArray;
     }
     else
     {
         $finalArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-        StateManager::$stdout = $finalArray;
+        Controller::$stdout = $finalArray;
     }
 }
 function callCorrectGrepFunction()
@@ -294,9 +294,9 @@ function callCorrectGrepFunction()
     }
     else
     {
-        if (empty(StateManager::$stdout))
+        if (empty(Controller::$stdout))
             throw new Exception("no path provided");
-        foreach (StateManager::$stdout as $key => $line)
+        foreach (Controller::$stdout as $key => $line)
         {
             if (grepLine(
                 $line,
@@ -308,7 +308,7 @@ function callCorrectGrepFunction()
                 $matchingLines[$key] = $line;
             }
         }
-        StateManager::$stdout = [];
+        Controller::$stdout = [];
     }
     return $matchingLines;
 }
@@ -457,10 +457,10 @@ function checkIfNamesExists(array $names, $hayStack): bool
 function createPrompt($prompt, $validAnswers = ["y", "n"])
 {
     //TODO move prompt logic somewhere else
-    StateManager::$promptData["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
-    StateManager::$promptData["options"] = ["y", "n"];
-    StateManager::$stdout = $_SESSION["promptData"]["prompt"];
-    StateManager::addNewHistory();
+    Controller::$promptData["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
+    Controller::$promptData["options"] = ["y", "n"];
+    Controller::$stdout = $_SESSION["promptData"]["prompt"];
+    Controller::addNewHistory();
     throw new Exception("", 0);
 }
 
@@ -674,8 +674,8 @@ function getCounts($lines)
 }
 function getLines()
 {
-    return isset(StateManager::$stdout) ?
-        StateManager::$stdout :
+    return isset(Controller::$stdout) ?
+        Controller::$stdout :
         getLinesFromText(getItem($_SESSION["tokens"]["path"][0])->content);
 }
 
@@ -706,7 +706,7 @@ function canDelete($path, $element = NULL)
     {
         throw new Exception("Cant move room into itsself",);
     }
-    $result = RankIsHigherThanRoomRecursive($_SESSION["GameEngine"]->userRank, getRoomOrItem($path));
+    $result = RankIsHigherThanRoomRecursive($_SESSION["GameState"]->userRank, getRoomOrItem($path));
 
     return $result;
 }
@@ -725,7 +725,7 @@ function pathArrayFromElements($elements)
     $pathArray = [];
     foreach ($elements as $element)
     {
-        $pathArray[] = implode("/", $element->path);
+        $pathArray[implode("/", $element->path)] = "";
     }
     return $pathArray;
 }
@@ -756,17 +756,17 @@ function checkForRune()
         // $isA = is_a($item, Spell::class);
         // $is2 = strtolower($item->key) == $arg;
         // $lower = strtolower($item->key);
-        // $nextSpell = $_SESSION["GameEngine"]->getNextSpell();
-        // $isSame = $item->spellReward->value == $_SESSION["GameEngine"]->getNextSpell();
+        // $nextSpell = $_SESSION["GameState"]->getNextSpell();
+        // $isSame = $item->spellReward->value == $_SESSION["GameState"]->getNextSpell();
         if (
             is_a($item, Spell::class) &&
             $item->key == $arg &&
-            $item->spellReward->value == $_SESSION["GameEngine"]->getNextSpell()
+            $item->spellReward->value == $_SESSION["GameState"]->getNextSpell()
         )
         {
-            StateManager::addNewHistory();
-            $_SESSION["GameEngine"]->unlockNextCommand();
-            StateManager::reset();
+            Controller::addNewHistory();
+            $_SESSION["GameState"]->unlockNextCommand();
+            Controller::reset();
             throw new Exception("", -1);
         }
     }
