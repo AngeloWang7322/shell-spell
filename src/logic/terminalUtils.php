@@ -211,10 +211,11 @@ function pushNewLastPath(array $newPath)
 }
 function getLsArray($tempRoom)
 {
-    $tempLsArray = [];
 
     if (!empty($_SESSION["tokens"]["options"]) && in_array("-l", $_SESSION["tokens"]["options"]))
     {
+        $tempLsArray = [];
+
         foreach (array_merge($tempRoom->doors, $tempRoom->items) as $element)
         {
             $tempEntry = [];
@@ -224,12 +225,14 @@ function getLsArray($tempRoom)
 
             array_push($tempLsArray, $tempEntry);
         }
-        StateManager::$stdout = $tempLsArray;
+        return $tempLsArray;
     }
     else
     {
-        $finalArray = array_merge(array_keys($tempRoom->doors), array_keys($tempRoom->items));
-        StateManager::$stdout = $finalArray;
+        return array_merge(
+            array_keys($tempRoom->doors),
+            array_keys($tempRoom->items)
+        );
     }
 }
 function callCorrectGrepFunction()
@@ -784,7 +787,7 @@ function getLastOccuringElementIn($needle, $haystack = [">>", ">", "||", "|", "&
     }
     return false;
 }
-function renderGrid(array $grid)
+function renderGrid(array $grid): string
 {
     if (count($grid) == 0)
         return "";

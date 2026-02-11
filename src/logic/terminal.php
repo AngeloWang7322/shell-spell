@@ -40,7 +40,7 @@ function executeMkdir()
 function executeLs()
 {
     $path = $_SESSION["tokens"]["path"][0] ?? [];
-    getLsArray(
+    StateManager::$stdout = getLsArray(
         getRoom(
             $path,
             true

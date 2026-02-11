@@ -279,16 +279,30 @@ class StateManager
         {
             $seperator = ", ";
         }
-        switch(gettype(self::$stdout)){
-            case "array":{
-                $responseString = renderGrid(self::$stdout);
-                break;
-            }
-            default:{
-                $responseString = implode ("<br>", self::$stdout);
-                break;
-            }
-
+        switch (gettype(self::$stdout))
+        {
+            case "array":
+                {
+                    $responseString = renderGrid(self::$stdout);
+                    break;
+                }
+            case "string":
+                {
+                    if (is_numeric(key(self::$stdout[0])))
+                    {
+                        $responseString .= implode(", ", self::$stdout);
+                    }
+                    else
+                    {
+                        $responseString .= implode("<br>", self::$stdout);
+                    }
+                    break;
+                }
+            default:
+                {
+                    $responseString = implode("<br>", self::$stdout);
+                    break;
+                }
         }
         // foreach (self::$stdout as $key => $entry)
         // {
