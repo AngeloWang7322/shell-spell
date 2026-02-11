@@ -106,7 +106,6 @@ enum TokenType: string
 {
     case COMMAND = "command";
     case OPTION = "option";
-    case KEYVALUEOPTION = "keyvalueoption";
     case PATH = "path";
     case STRING = "string";
     case MISC = "misc";

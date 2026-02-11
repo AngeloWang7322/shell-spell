@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-class GameEngine
+class GameState
 {
     public static $levelData = [
         // &&
@@ -68,7 +68,7 @@ class GameEngine
         $this->currentSubLvl = 0;
         $this->xp = $this->userRank->rank() * 100;
         self::createRewardRoom();
-        StateManager::addNewHistory();
+        Controller::addNewHistory();
         self::getCurrentMessage();
         throw new Exception("", -1);
     }
@@ -248,7 +248,7 @@ class GameEngine
         -------- strangevoice -------- <br><br>" .
             $message . "<br>
         ------------------------------ <br>";
-        StateManager::editLastHistory($message);
+        Controller::editLastHistory($message);
     }
     public function getNextSpell()
     {

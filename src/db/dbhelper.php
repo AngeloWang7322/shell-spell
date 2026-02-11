@@ -68,11 +68,11 @@ class DBHelper
         ]);
         $gameState = $fetchGameState->fetch();
         $_SESSION["mapId"] = $gameState["id"];
-        $_SESSION["GameEngine"] = new GameEngine($gameState["xp"]);
+        $_SESSION["GameState"] = new GameState($gameState["xp"]);
         $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
         $_SESSION["history"] = [];
         if ($gameState["history_json"] != NULL) parseHistory($gameState["history_json"]);
-        $_SESSION["GameEngine"]->getCurrentMessage();
+        $_SESSION["GameState"]->getCurrentMessage();
     }
     public function getGameStates()
     {
@@ -99,8 +99,8 @@ class DBHelper
         {
             self::loadDefaultSession();
 
-            $_SESSION["GameEngine"] = new GameEngine($xp);
-            $_SESSION["GameEngine"]->getCurrentMessage();
+            $_SESSION["GameState"] = new GameState($xp);
+            $_SESSION["GameState"]->getCurrentMessage();
         }
         else
         {
@@ -128,8 +128,8 @@ class DBHelper
     }
     public static function loadDefaultSession()
     {
-        $_SESSION["game"] = new GameEngine(0);
-        $_SESSION["state"] = new StateManager();
+        $_SESSION["game"] = new GameState(0);
+        $_SESSION["state"] = new Controller();
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["tokens"] = [];
         $_SESSION["curRoom"] = &$_SESSION["map"];

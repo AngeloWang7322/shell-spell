@@ -2,7 +2,7 @@
 importCss("main.css");
 importScript("main.js");
 
-$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["game"]->mapName . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["GameEngine"]->userRank->value);
+$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["game"]->mapName . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["GameState"]->userRank->value);
 ?>
 
 <div class="game-container">

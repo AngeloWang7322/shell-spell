@@ -69,6 +69,10 @@ class Command
         {
             $arg = $tokens[$i];
 
+            if (current($syntaxArray) == false)
+                throw new Exception("unexpected argument: " . $arg);
+
+
             switch (current($syntaxArray))
             {
                 case TokenType::COMMAND:
@@ -81,12 +85,6 @@ class Command
                     {
                         $function = $this->optionParser;
                         $function($arg, $tokens, $syntaxArray, $i, $this->validOptions, $this->validKeyValueOptions);
-                        break;
-                    }
-                case TokenType::KEYVALUEOPTION:
-                    {
-                        $function = $this->keyValueOptionParser;
-                        $function($arg, $tokens, $syntaxArray, $i, $this->validKeyValueOptions);
                         break;
                     }
                 case TokenType::PATH:
@@ -112,10 +110,7 @@ class Command
                         break;
                     }
             }
-            if (next($syntaxArray) == false)
-            {
-                end($syntaxArray);
-            }
+            next($syntaxArray);
         }
         if ($this->finalValidator)
         {
@@ -301,7 +296,7 @@ function getCommand($command)
         "find" == $command
         => new Command(
             commandName: "find",
-            tokenSyntax: [TokenType::PATH, TokenType::KEYVALUEOPTION],
+            tokenSyntax: [TokenType::PATH, TokenType::OPTION],
             validOptions: [],
             validKeyValueOptions: ["-name" => "string"],
             description: "NAME<br>
@@ -435,7 +430,7 @@ function getCommand($command)
         "head" == $command
         => new Command(
             commandName: "head",
-            tokenSyntax: [TokenType::KEYVALUEOPTION, TokenType::PATH],
+            tokenSyntax: [TokenType::OPTION, TokenType::PATH],
             validOptions: [],
             validKeyValueOptions: ["-n" => 10],
             description: "NAME<br>
@@ -454,7 +449,7 @@ function getCommand($command)
         "tail" == $command
         => new Command(
             commandName: "tail",
-            tokenSyntax: [TokenType::KEYVALUEOPTION, TokenType::PATH],
+            tokenSyntax: [TokenType::OPTION, TokenType::PATH],
             validOptions: [],
             validKeyValueOptions: ["-n" => 10],
             description: "NAME<br>
