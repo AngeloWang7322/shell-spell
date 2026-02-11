@@ -216,7 +216,7 @@ class StateManager
     {
         array_push(
             self::$stdout,
-            colorizeString(colorizeResponseForRank($e->getMessage()), "error")
+            colorizeString(colorizeRanks($e->getMessage()), "error")
         );
         $_SESSION["map"] = $_SESSION["backUpMap"];
     }
@@ -274,38 +274,33 @@ class StateManager
     static public function renderStdout()
     {
         $responseString = "";
-        // $includeKeys = $
-        // in_array(
-        //     $_SESSION["tokens"]["command"],
-        //     [
-        //         Commands::GREP->value,
-        //         Commands::FIND->value,
-        //     ]
-        // );
-        foreach (self::$stdout as $key => $entry)
+        $seperator = "<br>";
+        if ($_SESSION["tokens"]["command"] == Commands::LS->value && !in_array("-l", $_SESSION["tokens"]["options"]))
         {
-            if (!is_numeric($key))
-            {
-                $responseString .= $key . " - " . $entry . "<br>";
-            }
-            else
-            {
-                $responseString .= $entry . ", ";
-            }
-            // $type = gettype($entry);
-            // $responseString .= match ($type)
-            // {
-            //     "string" =>
-            //     $entry,
-            //     // Room::class,
-            //     Item::class =>
-            //     $entry->name . "<br>",
-            //     "array" =>
-            //     implode(" - ", $entry),
-            //     default =>
-            //     implode("<br>", self::$stdout)
-            // };
+            $seperator = ", ";
         }
-        return $responseString;
+        switch(gettype(self::$stdout)){
+            case "array":{
+                $responseString = renderGrid(self::$stdout);
+                break;
+            }
+            default:{
+                $responseString = implode ("<br>", self::$stdout);
+                break;
+            }
+
+        }
+        // foreach (self::$stdout as $key => $entry)
+        // {
+        //     if (!is_numeric($key))
+        //     {
+        //         $responseString .= $key . " - " . $entry . "<br>";
+        //     }
+        //     else
+        //     {
+        //         $responseString .= $entry . $seperator;
+        //     }
+        // }
+        return colorizeRanks($responseString);
     }
 }

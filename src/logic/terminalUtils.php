@@ -224,27 +224,7 @@ function getLsArray($tempRoom)
 
             array_push($tempLsArray, $tempEntry);
         }
-
-        $finalArray = array_fill(0, count($tempLsArray), "");
-
-        for ($i = 0; $i < 3; $i++)
-        {
-            $longest = 5;
-            for ($j = 0; $j < count($tempLsArray); $j++)
-            {
-                if (strlen($tempLsArray[$j][$i]) + 5 > $longest)
-                {
-                    $longest = strlen($tempLsArray[$j][$i]) + 5;
-                }
-                $finalArray[$j] .= $tempLsArray[$j][$i] . " ";
-            }
-            for ($j = 0; $j < count($finalArray); $j++)
-            {
-                $finalArray[$j] .= spaceOf((int)(($longest - strlen($tempLsArray[$j][$i])) * 0.9));
-            }
-        }
-
-        StateManager::$stdout = $finalArray;
+        StateManager::$stdout = $tempLsArray;
     }
     else
     {
@@ -696,7 +676,6 @@ function openScrollIfIsScroll($textFile)
 }
 function canDelete($path, $element = NULL)
 {
-    //check if would delete room 
     if (
         isset($_SESSION["tokens"]["path"][1]) &&
         isset($_SESSION["tokens"]["command"]) != "rm" &&
@@ -736,7 +715,7 @@ function isExecutable($element)
 {
     return is_a($element, Alter::class) || is_a($element, Spell::class);
 }
-function colorizeResponseForRank($text)
+function colorizeRanks($text)
 {
     $colorizedResponse = "";
     foreach (explode(" ", $text) as $word)
@@ -804,4 +783,32 @@ function getLastOccuringElementIn($needle, $haystack = [">>", ">", "||", "|", "&
         }
     }
     return false;
+}
+function renderGrid(array $grid)
+{
+    if (count($grid) == 0)
+        return "";
+
+    $columnCount = count($grid[0]);
+    $rowCount = count($grid);
+
+    $lines = [];
+    for ($i = 0; $i < $columnCount; $i++)
+    {
+        $longest = 5;
+        for ($j = 0; $j < $rowCount; $j++)
+        {
+            if (strlen($grid[$j][$i]) + 5 > $longest)
+            {
+                $longest = strlen($grid[$j][$i]) + 5;
+            }
+            $lines[$j] .= $grid[$j][$i] . " ";
+        }
+        for ($j = 0; $j < count($lines); $j++)
+        {
+            $lines[$j] .= spaceOf((int)(($longest - strlen($grid[$j][$i])) * 0.9));
+        }
+    }
+
+    return implode("<br>", $lines);
 }
