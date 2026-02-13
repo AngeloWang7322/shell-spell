@@ -191,7 +191,7 @@ function parsePathFind($path, $tokens, &$syntaxArray, &$argIndex)
 }
 function parsePathOptional($path, $tokens, &$syntaxArray, &$argIndex)
 {
-    if (!isset(Controller::$stdout))
+    if (!isset(Terminal::$stdout))
     {
         try
         {

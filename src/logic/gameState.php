@@ -68,7 +68,7 @@ class GameState
         $this->currentSubLvl = 0;
         $this->xp = $this->userRank->rank() * 100;
         self::createRewardRoom();
-        Controller::addNewHistory();
+        Terminal::addNewHistory();
         self::getCurrentMessage();
         throw new Exception("", -1);
     }
@@ -248,7 +248,7 @@ class GameState
         -------- strangevoice -------- <br><br>" .
             $message . "<br>
         ------------------------------ <br>";
-        Controller::editLastHistory($message);
+        Terminal::editLastHistory($message);
     }
     public function getNextSpell()
     {

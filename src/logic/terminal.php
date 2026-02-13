@@ -1,203 +1,326 @@
 <?php
 
 declare(strict_types=1);
+class Terminal
+{
+    static public bool $isSandbox = false;
+    static public bool $isPrompt = false;
+    static public array $promptData = [];
+    static public bool $inPipe = false;
+    static public int $pipeCount = 0;
+    static public $stdin = "";
+    static public array $stdout = [];
+    static public $stderr = "";
 
-function executeCd()
-{
-    moveWithCdOptions();
-}
-function executeMkdir()
-{
-    for ($i = 0; $i < count($_SESSION["tokens"]["path"]); $i++)
+    static public function startTerminalProcess()
     {
-        $roomName = end($_SESSION["tokens"]["path"][$i]);
-        $tempRoom = &getRoom(
-            array_slice(
-                $_SESSION["tokens"]["path"][0],
-                0,
-                -1
-            )
-        );
-
-        if (
-            in_array(
-                $roomName,
-                array_keys($tempRoom->doors)
-            ) && !empty(Controller::$promptData)
-            //TODO: check if empty works here
-        )
+        try
         {
-            throw new Exception("room already exists");
+            if (self::$isPrompt)
+                self::handlePrompt();
+            else if (self::$isSandbox)
+                self::handleSandbox();
+            else
+            {
+                match ($operator = getLastOccuringElementIn($_POST["command"]))
+                {
+                    ">>", ">" => self::handleRedirect($operator),
+                    "|" => self::handlePipe($operator),
+                    "&&" => self::handleCommandChain($operator),
+                    "||" => self::handleFailSafe($operator),
+                    default => self::handleDefault()
+                };
+            }
+        }
+        catch (Exception $e)
+        {
+            self::handleException($e);
         }
 
-        $tempRoom->doors[$roomName] = new Room(
-            name: $roomName,
-            path: $tempRoom->path,
-            requiredRank: $_SESSION["GameState"]->userRank
+        self::closeProcess();
+    }
+
+    static public function closeProcess()
+    {
+        if (self::mustPreserveState())
+        {
+            self::editLastHistory();
+        }
+        else
+        {
+            self::addNewHistory();
+            self::reset();
+        }
+    }
+
+    static public function addNewHistory()
+    {
+        if (count($_SESSION["history"]) > 20)
+        {
+            $_SESSION["history"] = array_slice($_SESSION["history"], 1);
+        }
+        $_SESSION["history"][] = [
+            "directory" => $_POST["baseString"],
+            "command" => $_SESSION["inputCommand"],
+            "response" => self::renderStdout()
+        ];
+    }
+    static public function editLastHistory($str = NULL)
+    {
+        $newStr = $str ?? self::renderStdout();
+        end($_SESSION["history"]);
+        current($_SESSION["history"])["response"] .= $newStr;
+    }
+
+
+    static public function reset()
+    {
+        self::resetStreams();
+        self::$isSandbox = false;
+        self::$isPrompt = false;
+        self::$inPipe = false;
+        self::$pipeCount = 0;
+    }
+    static public function resetStreams()
+    {
+        self::$stdin = "";
+        self::$stdout = [];
+        self::$stderr = "";
+    }
+    static public function mustPreserveState()
+    {
+        return self::$pipeCount > 0
+            || self::$isSandbox
+            || self::$isPrompt;
+    }
+
+    /*
+         ---------------  HANDLERS -------------------
+    */
+
+    static public function handleDefault()
+    {
+        self::prepareCommand();
+        self::executeCommand();
+    }
+
+    static public function handlePrompt()
+    {
+        $answer = $_POST["command"];
+
+        switch (true)
+        {
+            case (in_array($_POST["command"], [self::$promptData["options"][0], ""])):
+                {
+                    try
+                    {
+                        self::executeCommand();
+                        $answer = "y";
+                    }
+                    catch (Exception $e)
+                    {
+                        self::$promptData = [];
+                        throw new Exception($e->getMessage());
+                    }
+                }
+            case (in_array($_POST["command"], ["n", "N"])):
+                {
+                    array_push(
+                        self::$stdout,
+                        ["<br> " . $answer]
+                    );
+                    self::editLastHistory();
+                    self::reset();
+                    throw new Exception("", 0);
+                }
+            default:
+                {
+                    array_push(
+                        self::$stdout,
+                        ["<br>" . $_POST["command"] . "<br>" . implode("/", self::$promptData["options"])]
+                    );
+                    self::editLastHistory();
+                    throw new Exception("", 0);
+                }
+        }
+    }
+    static public function handleFailSafe($seperator)
+    {
+        $beforeSeperator = "";
+        $afterSeperator = "";
+        splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
+        $_POST["command"] = $beforeSeperator;
+        try
+        {
+            self::startTerminalProcess();
+        }
+        catch (Exception $e)
+        {
+            $_SESSION["tokens"] = [];
+            $_POST["command"] = $afterSeperator;
+            self::startTerminalProcess();
+        }
+    }
+    static public function handleCommandChain($seperator)
+    {
+        $beforeSeperator = "";
+        $afterSeperator = "";
+        splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
+        $_POST["command"] = $beforeSeperator;
+        self::startTerminalProcess();
+
+        $_SESSION["tokens"] = [];
+        $_POST["command"] = $afterSeperator;
+
+        self::prepareCommand();
+        self::executeCommand();
+    }
+    static public function handlePipe($seperator)
+    {
+        self::$pipeCount++;
+        $beforeSeperator = "";
+        $afterSeperator = "";
+        
+        splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
+        $_POST["command"] = $beforeSeperator;
+        self::startTerminalProcess();
+
+        self::$stdin = self::$stdout;
+        self::$stdout = [];
+
+        $_SESSION["tokens"] = [];
+        $_POST["command"] = $afterSeperator;
+        self::$pipeCount--;
+        self::prepareCommand();
+        self::executeCommand();
+    }
+    static public function handleRedirect($seperator)
+    {
+        $command = "";
+        $redirectFilePath = "";
+
+        splitString(
+            $_POST["command"],
+            $command,
+            $redirectFilePath,
+            $seperator
+        );
+
+        $redirectFilePath = toPath($redirectFilePath);
+        $_POST["command"] = $command;
+        self::startTerminalProcess();
+        self::$stdout = [];
+        self::canRedirect(
+            $redirectFilePath,
+            $seperator
+        );
+
+        self::redirectStdoutToFile(
+            $seperator,
+            $redirectFilePath,
+            self::$stdout
         );
     }
-}
-function executeLs()
-{
-    $path = $_SESSION["tokens"]["path"][0] ?? [];
-    StateManager::$stdout = getLsArray(
-        getRoom(
-            $path,
-            true
-        )
-    );
-}
-
-function executePwd()
-{
-    Controller::$stdout = $_SESSION["curRoom"]->path;
-}
-
-function executeRm()
-{
-    deleteElements($_SESSION["tokens"]["path"]);
-}
-function executeRmdir()
-{
-    deleteElements($_SESSION["tokens"]["path"], deleteOnlyRooms: true);
-}
-
-
-function executeCp()
-{
-    $matches = getMatchingElements();
-    $destRoom = &getRoom($_SESSION["tokens"]["path"][1]);
-
-    copyElementsTo(
-        $matches,
-        $destRoom
-    );
-    updatePaths($destRoom);
-}
-
-function executeMv()
-{
-    $matches = getMatchingElements();
-
-    executeCp();
-    deleteElements(
-        getPathsFromElements($matches),
-        false
-    );
-}
-
-function executeCat()
-{
-    $catItem = &getItem($_SESSION["tokens"]["path"][0]);
-    Controller::$stdout = getLinesFromText($catItem->content);
-}
-
-function executeTouch()
-{
-    $fileName = array_pop($_SESSION["tokens"]["path"][0]);
-    $destRoom = &getRoom($_SESSION["tokens"]["path"][0]);
-
-    if (!isNameValid($fileName, "." . ItemType::SCROLL->value))
-        throw new Exception("invalid name given");
-
-    if (key_exists($fileName, $destRoom->items))
-        $destRoom->items[$fileName]->timeOfLastChange = generateDate(true);
-    else
-        $destRoom->items[$fileName] = new Scroll(
-            name: $fileName,
-            baseName: "",
-            path: $destRoom->path,
-            requiredRank: $_SESSION["GameState"]->userRank,
-            content: "",
-            curDate: true
+    static public function handleSandbox()
+    {
+    }
+    static public function handleException(Exception $e)
+    {
+        array_push(
+            self::$stdout,
+            colorizeString(colorizeRanks($e->getMessage()), "error")
         );
-}
-function executeGrep()
-{
-    $matchingLines = callCorrectGrepFunction();
-    Controller::$stdout = $matchingLines;
-}
+        $_SESSION["map"] = $_SESSION["backUpMap"];
+    }
 
-function executeExecute()
-{
-    $itemExec = &getItem(
-        explode(
-            "/",
-            substr(
-                $_POST["command"],
-                2
-            )
+
+    static public function arrayKeyValueToString($array, $seperator = "<br>")
+    {
+        $finalString = "";
+        foreach ($array as $key => $line)
+        {
+            $finalString .= $key . " " . $line . $seperator;
+        }
+        return $finalString;
+    }
+
+    static public function executeCommand()
+    {
+        ("execute" . $_SESSION["tokens"]["command"])();
+    }
+
+    static public function canRedirect($redirectFilePath, $seperator)
+    {
+        parsePath($redirectFilePath,);
+        if (!isset(self::$stdout))
+            throw new Exception("invalid usage of '" . $seperator . "' operator");
+    }
+    static public function redirectStdoutToFile($seperator, $redirectFilePath, $stdout)
+    {
+        $newStr = strip_tags(self::arrayKeyValueToString($stdout));
+        $destItem = &getItem($redirectFilePath);
+
+        if ($seperator == ">>")
+            $destItem->content .= $newStr;
+        else
+            $destItem->content = $newStr;
+    }
+    static public function prepareCommand()
+    {
+        $_SESSION["command"] = getCommand(explode(" ", trim($_POST["command"]))[0]);
+        $_SESSION["command"]->parseInput();
+        self::checkPipe($_SESSION["command"]);
+    }
+    static public function checkPipe($command)
+    {
+        if (
+            self::$pipeCount > 0
+            && !$command->isWriter
+            //TODO check if empty works
+            && !empty(self::$stdout)
         )
-    );
+        {
+            throw new Exception("command not pipable");
+        }
+    }
+    static public function renderStdout()
+    {
+        $responseString = "";
+        if (count(self::$stdout) == 0)
+            return $responseString;
 
-    if (is_a($itemExec, Alter::class))
-        $_SESSION["GameState"]->levelUpUser($itemExec);
-    else
-        throw new Exception("item not executable");
-}
+        switch (gettype(current(self::$stdout)))
+        {
+            case "array":
+                {
+                    $responseString = renderGrid(self::$stdout);
+                    break;
+                }
+            case "string":
+                {
+                    if (is_numeric(array_key_first(self::$stdout)))
+                    {
+                        $responseString .= implode(", ", self::$stdout);
+                    }
+                    else
+                    {
+                        foreach (self::$stdout as $key => $entry)
+                        {
+                            if ($entry == "")
+                                $responseString .= $key . "<br>";
+                            else
+                                $responseString .= $key . $entry . "<br>";
+                        }
+                    }
+                    break;
+                }
+            default:
+                {
+                    $responseString = implode("<br>", self::$stdout);
+                    break;
+                }
+        }
 
-function executeEcho()
-{
-    Controller::$stdout = [$_SESSION["tokens"]["strings"][0]];
-}
-
-function executeFind()
-{
-    $findString = "";
-    $findFunction = "";
-    $startingRoom = getRoom($_SESSION["tokens"]["path"][0]);
-    $matches = [];
-    getOptionsFind(
-        $findString,
-        $findFunction,
-    );
-
-    $matches = pathArrayFromElements(
-        getElementsFind(
-            $startingRoom,
-            $findFunction,
-            $findString
-        )
-    );
-
-    Controller::$stdout = $matches;
-}
-
-function executeWc()
-{
-    $lines = getLines();
-    $counts = getCounts($lines);
-
-    Controller::$stdout = $counts;
-}
-function executeHead()
-{
-    $lines = getLines();
-    $lines = getPartialArray($lines);
-
-    Controller::$stdout = $lines;
-}
-function executeTail()
-{
-    $lines = getPartialArray(
-        getLines(),
-        false
-    );
-
-    Controller::$stdout = $lines;
-}
-
-function executeNano()
-{
-    $textFile = getItem($_SESSION["tokens"]["path"][0]);
-
-    openScrollIfIsScroll(
-        $textFile
-    );
-}
-
-function executeMan()
-{
-    $description = getCommand($_SESSION["tokens"]["misc"])->description;
-    Controller::$stdout = getLinesFromText($description);
+        return colorizeRanks($responseString);
+    }
 }

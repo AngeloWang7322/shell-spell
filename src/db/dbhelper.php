@@ -129,7 +129,7 @@ class DBHelper
     public static function loadDefaultSession()
     {
         $_SESSION["game"] = new GameState(0);
-        $_SESSION["state"] = new Controller();
+        $_SESSION["state"] = new Terminal();
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["tokens"] = [];
         $_SESSION["curRoom"] = &$_SESSION["map"];

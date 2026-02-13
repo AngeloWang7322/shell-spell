@@ -13,7 +13,7 @@ require __DIR__ . "/../src/logic/gameUtils.php";
 require __DIR__ . "/../src/logic/api.php";
 require __DIR__ . "/../src/logic/terminal.php";
 require __DIR__ . "/../src/logic/terminalService.php";
-require __DIR__ . "/../src/logic/terminalController.php";
+require __DIR__ . "/../src/logic/terminalUtils.php";
 require __DIR__ . "/../src/logic/gameState.php";
 require __DIR__ . '/assets/layout.php';
 

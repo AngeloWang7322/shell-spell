@@ -118,7 +118,7 @@ $r->addRoute('GET', '/user[/{id:\d+}[/{name}]]', 'handler');
 $r->addRoute('GET', '/user[/{id:\d+}]/{name}', 'handler');
 ```
 
-The `$handler` parameter does not necessarily have to be a callback, it could also be a controller
+The `$handler` parameter does not necessarily have to be a callback, it could also be a Terminal
 class name or any other kind of data you wish to associate with the route. FastRoute only tells you
 which handler corresponds to your URI, how you interpret it is up to you.
 

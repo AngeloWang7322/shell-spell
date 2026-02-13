@@ -22,7 +22,7 @@ function enterCommand($dbHelper)
     
     if ($_POST["command"] == "") return;
 
-    Controller::startTerminalProcess();
+    Terminal::startTerminalProcess();
 
     if (isset($_SESSION["isLoggedIn"]))
     {
