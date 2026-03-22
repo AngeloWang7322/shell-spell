@@ -65,13 +65,15 @@ function createTokens(): array
 }
 function parseCommand($arg)
 {
-    if (in_array($arg, $_SESSION["gameState"]->unlockedCommands))
+    if (in_array($arg, $_SESSION["gameState"]->unlockedCommands) 
+        || (isset($_SESSION["sandbox"]) && $_SESSION["sandbox"]->spell->value == $arg))
     {
         return $arg;
     }
     else
     {
         if (Commands::tryFrom($arg))
+
         {
             throw new Exception("command not unlocked yet...");
         }

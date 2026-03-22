@@ -215,9 +215,13 @@ class Terminal
             Streams::$stdout = ["wrong spell"];
             return;
         }
-        $_SESSION["sandbox"]->nextCommand();
-        self::prepareCommand();
-        self::executeCommand();
+
+        if ($_SESSION["sandbox"]->nextCommand())
+        {
+            self::prepareCommand();
+            self::executeCommand();
+            $_SESSION["sandbox"]->writeCurrentPrompt();
+        }
     }
 
     public function handleException(Exception $e)

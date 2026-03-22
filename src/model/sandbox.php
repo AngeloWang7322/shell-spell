@@ -22,13 +22,13 @@ class Sandbox
     {
         $_SESSION["history"][] = [
             "directory" => "",
-            "command" => $this->current . "/" . count($this->commands),
+            "command" => $this->current + 1 . "/" . count($this->commands),
             "response" => $this->commands[$this->current][0]
         ];
     }
     public function isInputValid()
     {
-        return  trim($_POST["command"]) == $this->commands[$this->current][1];
+        return trim($_POST["command"]) == $this->commands[$this->current][1];
     }
 
     public function nextCommand()
@@ -36,21 +36,26 @@ class Sandbox
         $this->current++;
         if ($this->current == count($this->commands))
         {
+
+            self::exitSandbox();
             $_SESSION["gameState"]->unlockSpell($this->spell);
-            self::exit();
+            return false;
         }
-        self::writeCurrentPrompt();
+
+        return true;
     }
 
     public function prepare()
     {
+        $_SESSION["terminal"]->addNewHistory();
+
         $_SESSION["sandbox"] = $this;
         $_SESSION["terminal"]->isSandbox = true;
 
-        $_SESSION["tempMap"] =  $_SESSION["map"];
-        $_SESSION["map"] = $this->map;
+        $_SESSION["tempPath"] = $_SESSION["curRoom"]->path;
 
-        $_SESSION["tempCurRoom"] = $_SESSION["curRoom"];
+        $_SESSION["tempMap"] = $_SESSION["map"];
+        $_SESSION["map"] = $this->map;
         $_SESSION["curRoom"] = &$_SESSION["map"];
 
         $_SESSION["tempHistory"] = $_SESSION["history"];
@@ -60,15 +65,15 @@ class Sandbox
         $_SESSION["gameState"]->mapName = $this->spell->value . ".sh";
     }
 
-    public function exit()
+    public function exitSandbox()
     {
         $_SESSION["terminal"]->isSandbox = false;
 
         $_SESSION["map"] = $_SESSION["tempMap"];
         unset($_SESSION["tempMap"]);
-
-        $_SESSION["curRoom"] = &$_SESSION["tempCurRoom"];
-        unset($_SESSION["tempCurRoom"]);
+        
+        $_SESSION["curRoom"] = &getRoomAbsolute($_SESSION["tempPath"]);
+        unset($_SESSION["tempPath"]);
 
         $_SESSION["history"] = $_SESSION["tempHistory"];
         unset($_SESSION["tempHistory"]);

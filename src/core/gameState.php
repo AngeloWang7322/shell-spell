@@ -38,19 +38,20 @@ class GameState
         self::createRewardRoom();
         $_SESSION["terminal"]->addNewHistory();
         self::getCurrentMessage();
-        throw new Exception("", -1);
     }
 
     public function unlockSpell(Commands $newSpell)
     {
         if (
-            !in_array($newSpell, $this->currentLevelData)
-            || in_array($newSpell, $this->unlockedCommands)
+            !in_array($newSpell->value, $this->currentLevelData)
+            || in_array($newSpell->value, $this->unlockedCommands)
         )
         {
             Streams::$stderr[] = "command already unlocked";
             return false;
         }
+        Streams::$stdout = ["new spell unlocked!: " . $newSpell->value];
+
         $this->xp += (int)(1 / count($this->currentLevelData) * 100);
 
         $this->currentSubLvl++;
@@ -99,22 +100,22 @@ class GameState
         $response = Data::getNewSpellMessage($this->latestCommand);
         self::writeMessage(colorizeString($response, "guide"));
     }
-    
+
     public function writeMessage($message)
     {
         $message = "<br>
         -------- strangevoice -------- <br><br>" .
             $message . "<br>
         ------------------------------ <br>";
-        $_SESSION["terminal"]->editLastHistory($message);
+        $_SESSION["terminal"]->addNewHistory($message);
     }
-    public function getNextSpell()
-    {
-        $next =  $this->currentLevelData[$this->currentSubLvl + 1];
-        return $this->currentSubLvl <= count($this->currentLevelData)
-            ?  $this->currentLevelData[$this->currentSubLvl + 1]
-            : false;
-    }
+    // public function getNextSpell()
+    // {
+    //     $next =  $this->currentLevelData[$this->currentSubLvl + 1];
+    //     return $this->currentSubLvl <= count($this->currentLevelData)
+    //         ?  $this->currentLevelData[$this->currentSubLvl + 1]
+    //         : false;
+    // }
 
     public function createRewardRoom()
     {

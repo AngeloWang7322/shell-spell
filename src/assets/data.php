@@ -7,11 +7,11 @@ class Data
     static public $levelData = [
         // &&
         Rank::WANDERER->value => [
-            Commands::ECHO->value,
-            Commands::CAT->value,
-            Commands::CD->value,
-            Commands::MAN->value,
             Commands::EXECUTE->value,
+            Commands::ECHO->value,
+            Commands::CD->value,
+            Commands::CAT->value,
+            Commands::MAN->value,
         ],
         // ||
         Rank::APPRENTICE->value => [
@@ -43,7 +43,13 @@ class Data
     {
         return match ($command)
         {
-            Commands::ECHO->value => "" .  colorizeString("<br><br> > echo [your name]", "action-tip"),
+            Commands::EXECUTE->value => "Unlock the new spell!" . colorizeString("<br><br> \$./cd.sh", "action-tip"),
+            // Commands::EXECUTE->value =>
+            // "You already got here? Thats a surprise...<br>
+            //             Well then this should be no biggie, you'll figure out where, on what and how to use this one<br>
+            //             (or not and you're still just a wanderer)"
+            //     . colorizeString(getCommand($command)->description, "action-tip"),
+            Commands::ECHO->value => "" .  colorizeString("<br><br> \$echo [your name]", "action-tip"),
             Commands::CAT->value => "
                         You accidentally just activated a rune?! No it can't be... must've been a coincidence... and weird name anywat <br>
                         Activating one requires a skilled caster and the correct chant.
@@ -57,11 +63,7 @@ class Data
                         here's a little something hat can help even the most wandererrest of wanderers 
                         And keep your eyes open for anything... interesting<br>"
                 . colorizeString(getCommand($command)->description, "action-tip"),
-            Commands::EXECUTE->value =>
-            "You already got here? Thats a surprise...<br>
-                        Well then this should be no biggie, you'll figure out where, on what and how to use this one<br>
-                        (or not and you're still just a wanderer)"
-                . colorizeString(getCommand($command)->description, "action-tip"),
+
             Commands::LS->value => "While calling you a wanderer was fun, i unfortunately have to congratulate you on your rank Promotion,<br>
                         you are now officially an APPRENTICE. Not too shabby  <br> 
                         as you can see (or rather, as you can't), invoking the alter transported you to this empty place.<br>
