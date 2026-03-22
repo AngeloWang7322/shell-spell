@@ -32,12 +32,9 @@ class GameState
         $alter->isActive = false;
         $this->userRank = $this->userRank->next();
         $this->currentLevelData = Data::$levelData[$this->userRank->value];
-        $this->newestSpell = current($this->currentLevelData);
         $this->currentSubLvl = 0;
         $this->xp = $this->userRank->rank() * 100;
         self::createRewardRoom();
-        $_SESSION["terminal"]->addNewHistory();
-        self::getCurrentMessage();
     }
 
     public function unlockSpell(Commands $newSpell)
@@ -62,7 +59,7 @@ class GameState
     {
         return count($this->currentLevelData) == 0
             ? 0
-            : (int)($this->currentSubLvl / count($this->currentLevelData) * 100);
+            : (int)(($this->currentSubLvl + 1 )/ count($this->currentLevelData) * 100);
     }
     public function calculateGameStats($xp)
     {

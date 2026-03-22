@@ -1,7 +1,6 @@
 <?php
 
 declare(strict_types=1);
-// require_once "../model/enums.php";
 class Data
 {
     static public $levelData = [
@@ -47,18 +46,13 @@ class Data
             Commands::CD->value => "Finally you learned how to walk, now you're a true wanderer! (get it?)<br>
                         How about you look around here and get used to your new spell.<br>"
                 . colorizeString("<br>cd [doorname]", "action-tip"),
-            Commands::ECHO->value => "" .  colorizeString("<br><br> \$echo [your name]", "action-tip"),
-            Commands::CAT->value => "
-                        You accidentally just activated a rune?! No it can't be... must've been a coincidence... and weird name anywat <br>
-                        Activating one requires a skilled caster and the correct chant.
-                        You should make good use of the your luck and use the spell you just gained<br>
-                        take a look at the old scrolls lying around and read something for once, you may learn something!<br> "
-                . colorizeString("<br> cat [filename]", "action-tip"),
-
+            Commands::ECHO->value => "echo [text]" .  colorizeString("<br><br>echo [your name]", "action-tip"),
+            Commands::CAT->value => "Wow you can finally read! Maybe you can learn something useful from all these scrolls lying around"
+                . colorizeString("<br>cat [filename]", "action-tip"),
             Commands::MAN->value => "Since you wanderers love to forget how your spells work,<br>
                         here's a little something hat can help even the most wandererrest of wanderers 
                         And keep your eyes open for anything... interesting<br>"
-                . colorizeString(getCommand($command)->description, "action-tip"),
+                . colorizeString("man [spell]", "action-tip"),
             Commands::LS->value => "While calling you a wanderer was fun, i unfortunately have to congratulate you on your rank Promotion,<br>
                         you are now officially an APPRENTICE. Not too shabby  <br> 
                         as you can see (or rather, as you can't), invoking the alter transported you to this empty place.<br>
@@ -87,15 +81,15 @@ class Data
     }
     static public function getSandBox(Commands $cmd)
     {
+        $sandboxMap = new Room($cmd->value);
         switch ($cmd)
         {
             case Commands::CD:
                 {
-                    $sandboxMap = new Room($cmd->value);
                     $sandboxMap->doors["door"] = new Room("door");
                     $sandboxMap->doors["door"]->doors["room"] = new Room("room");
                     return  new Sandbox(
-                        Commands::CD,
+                        $cmd,
                         [
                             ["enter room", "cd door"],
                             ["go back one room",  "cd .."],
@@ -107,11 +101,10 @@ class Data
                 }
             case Commands::CAT:
                 {
-                    $sandboxMap = new Room($cmd->value);
-                    $sandboxMap->doors["room"] =new Room("room");
+                    $sandboxMap->doors["room"] = new Room("room");
                     $sandboxMap->items["text.txt"] = new Scroll("text.txt", "test", content: "once upon a time... there was a lost wanderer");
-                     return  new Sandbox(
-                        Commands::CD,
+                    return  new Sandbox(
+                        $cmd,
                         [
                             ["read item", "cat text.txt"],
                             ["read item in next room", "cat room/text.txt"],
@@ -121,51 +114,131 @@ class Data
                 }
             case Commands::ECHO:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::MAN:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::MKDIR:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::RM:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::RMDIR:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::PWD:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::LS:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::CP:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::MV:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::GREP:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::NANO:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::TOUCH:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::FIND:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::WC:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::HEAD:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             case Commands::TAIL:
                 {
+                    return  new Sandbox(
+                        $cmd,
+                        [],
+                        $sandboxMap
+                    );
                 }
             default:
                 throw new Exception("commmand not found");

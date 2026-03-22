@@ -166,7 +166,7 @@ class DBHelper
             curDate: false,
         );
         $library = $entrance->doors["library"];
-        $library->items["cat.sh"] = new Spell("cat.sh", "cat", $library->path, rewardSpell: Commands::CAT);
+        $library->items["cat.sh"] = new Spell("cat.sh", "cat", path: $library->path, rewardSpell: Commands::CAT);
         $entrance->doors["stairsdown"] = new Room(
             name: "stairsdown",
             path: $entrance->path,
@@ -181,6 +181,12 @@ class DBHelper
         );
 
         $arsenal = $entrance->doors["arsenal"];
+        $arsenal->items["promise.txt"] = new Scroll(
+            "",
+            "promise",
+            $arsenal->path,
+            content: "coming soon :)"
+        );
         $stairsDown = $entrance->doors["stairsdown"];
         $stairsDown->doors["catacombs"] = new Room(
             name: "catacombs",
@@ -227,14 +233,11 @@ class DBHelper
             $foyer->path,
             requiredRank: Rank::WANDERER
         );
-        $foyer->items["execute.sh"] = new Spell(
+        $foyer->items["echo.sh"] = new Spell(
             "",
-            "execute",
+            "echo",
             $foyer->path,
-            Rank::WANDERER,
-            "wie heisst das zaubertwort?",
-            Commands::EXECUTE,
-            "bitte",
+            Commands::ECHO
         );
         $foyer->items["mantra.txt"] = new Scroll(
             "",
@@ -339,11 +342,7 @@ class DBHelper
             "",
             "cd",
             [""],
-            Rank::WANDERER,
-            "",
             Commands::CD,
-            "",
-            false
         );
         return $tempMap;
     }

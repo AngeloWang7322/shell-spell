@@ -145,9 +145,9 @@ class Spell extends Item
         $name,
         $baseName,
         $path,
+        $rewardSpell,
         $requiredRank = Rank::WANDERER,
         $content = "",
-        $rewardSpell,
         $curDate = true,
         $date = ""
     )
@@ -170,6 +170,12 @@ class Spell extends Item
     public function execute()
     {
         $sandbox = Data::getSandBox($this->rewardSpell);
+        
+        if(count($sandbox->commands) == 0){
+            $_SESSION["gameState"]->unlockSpell($sandbox->spell);
+            return;
+        }
+
         $sandbox->prepare();
         $sandbox->writeCurrentPrompt();
     }
