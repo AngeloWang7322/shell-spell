@@ -54,11 +54,9 @@ function &getRoomAbsolute($path, $rankRestrictive = false): Room
 {
     $path = removeFirstIfEmpty($path);
     $tempRoom = &$_SESSION["map"];
-    echo "absolute path: " . json_encode($path);
 
     for ($i = 0; $i < countNonEmpty($path); $i++)
     {
-        echo "doors " . json_encode(array_keys($tempRoom->doors));
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
             if ($rankRestrictive && $_SESSION["gameState"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
@@ -458,7 +456,8 @@ function isNameValid($name, $suffix = "", $additionalInvalidChars = [])
 
 function colorizeString($string, $class = "")
 {
-    if ($class == "") $class = $string;
+    if ($class == "") 
+        $class = $string;
     return "<span class='" . $class . "'>" . $string . "</span>";
 }
 
@@ -577,7 +576,6 @@ function getOptionsGrep(&$searchMatching, &$searchRecursive, &$isCaseInsensitive
     {
         foreach ($_SESSION["tokens"]["options"] as $flag)
         {
-            echo "<br> setting option: " . $flag;
             match ($flag)
             {
                 "-v" => $searchMatching = false,

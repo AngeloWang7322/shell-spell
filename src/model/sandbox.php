@@ -36,7 +36,6 @@ class Sandbox
         $this->current++;
         if ($this->current == count($this->commands))
         {
-
             self::exitSandbox();
             $_SESSION["gameState"]->unlockSpell($this->spell);
             return false;

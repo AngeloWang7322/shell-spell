@@ -114,6 +114,7 @@ class DBHelper
                 "xp" => $xp
             ]);
             $this->loadGameState($this->pdo->lastInsertId());
+            $_SESSION["gameState"]->getCurrentMessage();
         }
     }
     public function deleteGameState($stateId)
@@ -128,6 +129,12 @@ class DBHelper
     }
     public static function loadDefaultSession()
     {
+        $_SESSION["history"] = [];
+        $_SESSION["history"][] = [
+            "directory" => "",
+            "command" => "",
+            "response" => "",
+        ];
         $_SESSION["gameState"] = new GameState(0);
         $_SESSION["terminal"] = new Terminal();
         $_SESSION["map"] = self::getDefaultMap();
@@ -135,12 +142,6 @@ class DBHelper
         $_SESSION["curRoom"] = &$_SESSION["map"];
         $_SESSION["user"]["username"] = "guest";
         $_SESSION["lastPath"] = [];
-        $_SESSION["history"] = [];
-        $_SESSION["history"][] = [
-            "directory" => "",
-            "command" => "",
-            "response" => "",
-        ];
     }
     public static function getDefaultMap(): Room
     {
@@ -158,6 +159,14 @@ class DBHelper
         );
 
         $entrance = $tempMap->doors["entrance"];
+        $entrance->doors["library"] = new Room(
+            name: "library",
+            path: $entrance->path,
+            requiredRank: Rank::WANDERER,
+            curDate: false,
+        );
+        $library = $entrance->doors["library"];
+        $library->items["cat.sh"] = new Spell("cat.sh", "cat", $library->path, rewardSpell: Commands::CAT);
         $entrance->doors["stairsdown"] = new Room(
             name: "stairsdown",
             path: $entrance->path,

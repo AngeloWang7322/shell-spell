@@ -69,7 +69,10 @@ class Terminal
     public function editLastHistory($str = NULL)
     {
         $newStr = $str ?? self::renderStdout();
-        end($_SESSION["history"])["response"] .= $newStr;
+        $lastHistory = end($_SESSION["history"]);
+        $lastHistory["response"] = $newStr;
+        array_pop($_SESSION["history"]);
+        array_push($_SESSION["history"], $lastHistory);
     }
 
     public function resetStreams()

@@ -6,7 +6,7 @@ class GameState
 
     public Rank $userRank;
     public int $xp;
-    public string $latestCommand;
+    public string $newestSpell;
     public int $currentSubLvl;
     public array $currentLevelData = [];
     public array $unlockedCommands = [];
@@ -23,7 +23,7 @@ class GameState
         $this->mapName = $mapName;
         $this->userRank = Rank::getRankFromXp($xp);
         $this->currentLevelData = Data::$levelData[$this->userRank->value];
-        $this->latestCommand = self::calculateGameStats($xp);
+        $this->newestSpell = self::calculateGameStats($xp);
     }
 
     public function levelUpUser($alter)
@@ -32,7 +32,7 @@ class GameState
         $alter->isActive = false;
         $this->userRank = $this->userRank->next();
         $this->currentLevelData = Data::$levelData[$this->userRank->value];
-        $this->latestCommand = current($this->currentLevelData);
+        $this->newestSpell = current($this->currentLevelData);
         $this->currentSubLvl = 0;
         $this->xp = $this->userRank->rank() * 100;
         self::createRewardRoom();
@@ -51,11 +51,11 @@ class GameState
             return false;
         }
         Streams::$stdout = ["new spell unlocked!: " . $newSpell->value];
-
+        $this->newestSpell = $newSpell->value;
         $this->xp += (int)(1 / count($this->currentLevelData) * 100);
 
         $this->currentSubLvl++;
-        array_push($this->unlockedCommands, $newSpell);
+        array_push($this->unlockedCommands, $newSpell->value);
         self::getCurrentMessage();
     }
     public function calculateLvlProgress()
@@ -97,17 +97,17 @@ class GameState
 
     public function getCurrentMessage()
     {
-        $response = Data::getNewSpellMessage($this->latestCommand);
+        $response = Data::getNewSpellMessage($this->newestSpell);
         self::writeMessage(colorizeString($response, "guide"));
     }
 
     public function writeMessage($message)
     {
-        $message = "<br>
+        Streams::$stdout[] = "<br>
         -------- strangevoice -------- <br><br>" .
             $message . "<br>
-        ------------------------------ <br>";
-        $_SESSION["terminal"]->addNewHistory($message);
+        ------------------------------ <br><br>";
+        $_SESSION["terminal"]->editLastHistory();
     }
     // public function getNextSpell()
     // {

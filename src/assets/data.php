@@ -43,12 +43,10 @@ class Data
     {
         return match ($command)
         {
-            Commands::EXECUTE->value => "Unlock the new spell!" . colorizeString("<br><br> \$./cd.sh", "action-tip"),
-            // Commands::EXECUTE->value =>
-            // "You already got here? Thats a surprise...<br>
-            //             Well then this should be no biggie, you'll figure out where, on what and how to use this one<br>
-            //             (or not and you're still just a wanderer)"
-            //     . colorizeString(getCommand($command)->description, "action-tip"),
+            Commands::EXECUTE->value => "Unlock the new spell!<br><br>" . colorizeString("./cd.sh", "action-tip"),
+            Commands::CD->value => "Finally you learned how to walk, now you're a true wanderer! (get it?)<br>
+                        How about you look around here and get used to your new spell.<br>"
+                . colorizeString("<br>cd [doorname]", "action-tip"),
             Commands::ECHO->value => "" .  colorizeString("<br><br> \$echo [your name]", "action-tip"),
             Commands::CAT->value => "
                         You accidentally just activated a rune?! No it can't be... must've been a coincidence... and weird name anywat <br>
@@ -56,14 +54,11 @@ class Data
                         You should make good use of the your luck and use the spell you just gained<br>
                         take a look at the old scrolls lying around and read something for once, you may learn something!<br> "
                 . colorizeString("<br> cat [filename]", "action-tip"),
-            Commands::CD->value => "Finally you learned how to walk, now you're a true wanderer,(Haha even more Puny now!)<br>
-                        How about you look around here and get used to your new spell.<br>"
-                . colorizeString("<br>cd [doorname]", "action-tip"),
+
             Commands::MAN->value => "Since you wanderers love to forget how your spells work,<br>
                         here's a little something hat can help even the most wandererrest of wanderers 
                         And keep your eyes open for anything... interesting<br>"
                 . colorizeString(getCommand($command)->description, "action-tip"),
-
             Commands::LS->value => "While calling you a wanderer was fun, i unfortunately have to congratulate you on your rank Promotion,<br>
                         you are now officially an APPRENTICE. Not too shabby  <br> 
                         as you can see (or rather, as you can't), invoking the alter transported you to this empty place.<br>
@@ -98,16 +93,79 @@ class Data
                 {
                     $sandboxMap = new Room($cmd->value);
                     $sandboxMap->doors["door"] = new Room("door");
+                    $sandboxMap->doors["door"]->doors["room"] = new Room("room");
                     return  new Sandbox(
                         Commands::CD,
                         [
                             ["enter room", "cd door"],
-                            ["enter multiple rooms subsequently", "cd door/room"],
                             ["go back one room",  "cd .."],
+                            ["enter multiple rooms subsequently", "cd door/room"],
                             ["return to start", "cd /"]
                         ],
                         $sandboxMap
                     );
+                }
+            case Commands::CAT:
+                {
+                    $sandboxMap = new Room($cmd->value);
+                    $sandboxMap->doors["room"] =new Room("room");
+                    $sandboxMap->items["text.txt"] = new Scroll("text.txt", "test", content: "once upon a time... there was a lost wanderer");
+                     return  new Sandbox(
+                        Commands::CD,
+                        [
+                            ["read item", "cat text.txt"],
+                            ["read item in next room", "cat room/text.txt"],
+                        ],
+                        $sandboxMap
+                    );
+                }
+            case Commands::ECHO:
+                {
+                }
+            case Commands::MAN:
+                {
+                }
+            case Commands::MKDIR:
+                {
+                }
+            case Commands::RM:
+                {
+                }
+            case Commands::RMDIR:
+                {
+                }
+            case Commands::PWD:
+                {
+                }
+            case Commands::LS:
+                {
+                }
+            case Commands::CP:
+                {
+                }
+            case Commands::MV:
+                {
+                }
+            case Commands::GREP:
+                {
+                }
+            case Commands::NANO:
+                {
+                }
+            case Commands::TOUCH:
+                {
+                }
+            case Commands::FIND:
+                {
+                }
+            case Commands::WC:
+                {
+                }
+            case Commands::HEAD:
+                {
+                }
+            case Commands::TAIL:
+                {
                 }
             default:
                 throw new Exception("commmand not found");

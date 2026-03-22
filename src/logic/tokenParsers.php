@@ -73,7 +73,6 @@ function parseCommand($arg)
     else
     {
         if (Commands::tryFrom($arg))
-
         {
             throw new Exception("command not unlocked yet...");
         }

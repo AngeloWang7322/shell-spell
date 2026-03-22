@@ -166,14 +166,13 @@ class Spell extends Item
             true
         );
     }
-
+    
     public function execute()
     {
         $sandbox = Data::getSandBox($this->rewardSpell);
         $sandbox->prepare();
         $sandbox->writeCurrentPrompt();
     }
-    
     public static function fromArray(array $data)
     {
         // $requiredRank = Rank::from($data["requiredRank"]);
