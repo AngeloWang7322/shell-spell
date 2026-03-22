@@ -2,7 +2,7 @@
 importCss("main.css");
 importScript("main.js");
 
-$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["game"]->mapName . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["GameState"]->userRank->value);
+$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["gameState"]->mapName . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["gameState"]->userRank->value);
 ?>
 
 <div class="game-container">
@@ -79,10 +79,10 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                 </form>
             </div>
             <div class="xp-display-container">
-                <div class="xp-bar" style="width: <?= $_SESSION["game"]->calculateLvlProgress() ?>%;">
+                <div class="xp-bar" style="width: <?= $_SESSION["gameState"]->calculateLvlProgress() ?>%;">
                     <h4 class="xp-text">
                         <?=
-                        $_SESSION["game"]->userRank->value
+                        $_SESSION["gameState"]->userRank->value
                         ?>
                     </h4>
                 </div>

@@ -65,7 +65,7 @@ function createTokens(): array
 }
 function parseCommand($arg)
 {
-    if (in_array($arg, $_SESSION["GameState"]->unlockedCommands))
+    if (in_array($arg, $_SESSION["gameState"]->unlockedCommands))
     {
         return $arg;
     }

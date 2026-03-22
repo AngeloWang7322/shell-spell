@@ -1,24 +1,33 @@
 <?php
 
 declare(strict_types=1);
+
 class Terminal
 {
-    static public bool $isSandbox = false;
-    static public bool $isPrompt = false;
-    static public array $promptData = [];
-    static public bool $inPipe = false;
-    static public int $pipeCount = 0;
-    static public $stdin = "";
+    public bool $isSandbox;
+    public bool $isPrompt;
+    public array $promptData;
+    public bool $inPipe;
+    public int $pipeCount;
+    public $stdin = "";
     static public array $stdout = [];
     static public $stderr = "";
-
-    static public function startTerminalProcess()
+    public function __construct()
+    {
+        $this->isSandbox = false;
+        $this->isPrompt = false;
+        $this->promptData = [];
+        $this->inPipe = false;
+        $this->pipeCount = 0;
+        $this->stdin = "";
+    }
+    public function startTerminalProcess()
     {
         try
         {
-            if (self::$isPrompt)
+            if ($this->isPrompt)
                 self::handlePrompt();
-            else if (self::$isSandbox)
+            else if ($this->isSandbox)
                 self::handleSandbox();
             else
             {
@@ -40,7 +49,7 @@ class Terminal
         self::closeProcess();
     }
 
-    static public function closeProcess()
+    public function closeProcess()
     {
         if (self::mustPreserveState())
         {
@@ -53,7 +62,7 @@ class Terminal
         }
     }
 
-    static public function addNewHistory()
+    public function addNewHistory()
     {
         if (count($_SESSION["history"]) > 20)
         {
@@ -65,7 +74,7 @@ class Terminal
             "response" => self::renderStdout()
         ];
     }
-    static public function editLastHistory($str = NULL)
+    public function editLastHistory($str = NULL)
     {
         $newStr = $str ?? self::renderStdout();
         end($_SESSION["history"]);
@@ -73,44 +82,44 @@ class Terminal
     }
 
 
-    static public function reset()
+    public function reset()
     {
         self::resetStreams();
-        self::$isSandbox = false;
-        self::$isPrompt = false;
-        self::$inPipe = false;
-        self::$pipeCount = 0;
+        $this->isSandbox = false;
+        $this->isPrompt = false;
+        $this->inPipe = false;
+        $this->pipeCount = 0;
     }
-    static public function resetStreams()
+    public function resetStreams()
     {
-        self::$stdin = "";
+        $this->stdin = "";
         self::$stdout = [];
         self::$stderr = "";
     }
-    static public function mustPreserveState()
+    public function mustPreserveState()
     {
-        return self::$pipeCount > 0
-            || self::$isSandbox
-            || self::$isPrompt;
+        return $this->pipeCount > 0
+            || $this->isSandbox
+            || $this->isPrompt;
     }
 
     /*
          ---------------  HANDLERS -------------------
     */
 
-    static public function handleDefault()
+    public function handleDefault()
     {
         self::prepareCommand();
         self::executeCommand();
     }
 
-    static public function handlePrompt()
+    public function handlePrompt()
     {
         $answer = $_POST["command"];
 
         switch (true)
         {
-            case (in_array($_POST["command"], [self::$promptData["options"][0], ""])):
+            case (in_array($_POST["command"], [$this->promptData["options"][0], ""])):
                 {
                     try
                     {
@@ -119,7 +128,7 @@ class Terminal
                     }
                     catch (Exception $e)
                     {
-                        self::$promptData = [];
+                        $this->promptData = [];
                         throw new Exception($e->getMessage());
                     }
                 }
@@ -137,14 +146,14 @@ class Terminal
                 {
                     array_push(
                         self::$stdout,
-                        ["<br>" . $_POST["command"] . "<br>" . implode("/", self::$promptData["options"])]
+                        ["<br>" . $_POST["command"] . "<br>" . implode("/", $this->promptData["options"])]
                     );
                     self::editLastHistory();
                     throw new Exception("", 0);
                 }
         }
     }
-    static public function handleFailSafe($seperator)
+    public function handleFailSafe($seperator)
     {
         $beforeSeperator = "";
         $afterSeperator = "";
@@ -152,7 +161,7 @@ class Terminal
         $_POST["command"] = $beforeSeperator;
         try
         {
-            self::startTerminalProcess();
+            $this->startTerminalProcess();
         }
         catch (Exception $e)
         {
@@ -161,7 +170,7 @@ class Terminal
             self::startTerminalProcess();
         }
     }
-    static public function handleCommandChain($seperator)
+    public function handleCommandChain($seperator)
     {
         $beforeSeperator = "";
         $afterSeperator = "";
@@ -175,26 +184,26 @@ class Terminal
         self::prepareCommand();
         self::executeCommand();
     }
-    static public function handlePipe($seperator)
+    public function handlePipe($seperator)
     {
-        self::$pipeCount++;
+        $this->pipeCount++;
         $beforeSeperator = "";
         $afterSeperator = "";
-        
+
         splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
         $_POST["command"] = $beforeSeperator;
         self::startTerminalProcess();
 
-        self::$stdin = self::$stdout;
+        $this->stdin = self::$stdout;
         self::$stdout = [];
 
         $_SESSION["tokens"] = [];
         $_POST["command"] = $afterSeperator;
-        self::$pipeCount--;
+        $this->pipeCount--;
         self::prepareCommand();
         self::executeCommand();
     }
-    static public function handleRedirect($seperator)
+    public function handleRedirect($seperator)
     {
         $command = "";
         $redirectFilePath = "";
@@ -221,11 +230,26 @@ class Terminal
             self::$stdout
         );
     }
-    static public function handleSandbox()
+    public function handleSandbox()
     {
-        
     }
-    static public function handleException(Exception $e)
+    public function enterSandbox(SpellSandbox $sandBox)
+    {
+        Terminal::$isSandbox = true;
+
+        $_SESSION["backupMap"] =  $_SESSION["map"];
+        $_SESSION["backupCurRoom"] =  $_SESSION["curRoom"];
+        $_SESSION["map"] = $sandBox->map;
+        $_SESSION["curRoom"] = &$_SESSION["map"];
+    }
+    public function exitSandbox()
+    {
+        Terminal::$isSandbox = false;
+        $_SESSION["map"] = $_SESSION["backupMap"];
+        $_SESSION["curRoom"] = &$_SESSION["backupCurRoom"];
+        unset($_SESSION["backupCurRoom"], $_SESSION["backupMap"]);
+    }
+    public function handleException(Exception $e)
     {
         array_push(
             self::$stdout,
@@ -250,7 +274,7 @@ class Terminal
         ("execute" . $_SESSION["tokens"]["command"])();
     }
 
-    static public function canRedirect($redirectFilePath, $seperator)
+    public function canRedirect($redirectFilePath, $seperator)
     {
         parsePath($redirectFilePath,);
         if (!isset(self::$stdout))
@@ -266,16 +290,16 @@ class Terminal
         else
             $destItem->content = $newStr;
     }
-    static public function prepareCommand()
+    public function prepareCommand()
     {
         $_SESSION["command"] = getCommand(explode(" ", trim($_POST["command"]))[0]);
         $_SESSION["command"]->parseInput();
         self::checkPipe($_SESSION["command"]);
     }
-    static public function checkPipe($command)
+    public function checkPipe($command)
     {
         if (
-            self::$pipeCount > 0
+            $this->pipeCount > 0
             && !$command->isWriter
             //TODO check if empty works
             && !empty(self::$stdout)
@@ -284,7 +308,7 @@ class Terminal
             throw new Exception("command not pipable");
         }
     }
-    static public function renderStdout()
+    public function renderStdout()
     {
         $responseString = "";
         if (count(self::$stdout) == 0)

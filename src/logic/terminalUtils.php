@@ -176,12 +176,12 @@ function moveWithCdOptions()
                 );
                 break;
             }
-        // case "/":
-        //     {
-        //         pushNewLastPath($_SESSION["curRoom"]->path);
-        //         $_SESSION["curRoom"] = &$_SESSION["map"];
-        //         break;
-        //     }
+            // case "/":
+            //     {
+            //         pushNewLastPath($_SESSION["curRoom"]->path);
+            //         $_SESSION["curRoom"] = &$_SESSION["map"];
+            //         break;
+            //     }
         default:
             {
                 pushNewLastPath($_SESSION["curRoom"]->path);
@@ -440,10 +440,10 @@ function checkIfNamesExists(array $names, $hayStack): bool
 function createPrompt($prompt, $validAnswers = ["y", "n"])
 {
     //TODO move prompt logic somewhere else
-    Terminal::$promptData["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
-    Terminal::$promptData["options"] = ["y", "n"];
+    $_SESSION["terminal"]->promptData["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
+    $_SESSION["terminal"]->promptData["options"] = ["y", "n"];
     Terminal::$stdout = $_SESSION["promptData"]["prompt"];
-    Terminal::addNewHistory();
+    $_SESSION["terminal"]->addNewHistory();
     throw new Exception("", 0);
 }
 
@@ -729,31 +729,6 @@ function colorizeRanks($text)
     }
     return $colorizedResponse;
 }
-function checkForRune()
-{
-    $arg = $_SESSION["tokens"]["strings"][0];
-    $spells = [];
-    foreach ($_SESSION["curRoom"]->items as $item)
-    {
-        // $isA = is_a($item, Spell::class);
-        // $is2 = strtolower($item->key) == $arg;
-        // $lower = strtolower($item->key);
-        // $nextSpell = $_SESSION["GameState"]->getNextSpell();
-        // $isSame = $item->spellReward->value == $_SESSION["GameState"]->getNextSpell();
-        if (
-            is_a($item, Spell::class) &&
-            $item->key == $arg &&
-            $item->spellReward->value == $_SESSION["GameState"]->getNextSpell()
-        )
-        {
-            Terminal::addNewHistory();
-            $_SESSION["GameState"]->unlockNextCommand();
-            Terminal::reset();
-            throw new Exception("", -1);
-        }
-    }
-}
-
 function removeFirstIfEmpty($array)
 {
     return reset($array) == ""

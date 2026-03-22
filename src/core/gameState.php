@@ -1,78 +1,8 @@
 <?php
-
 declare(strict_types=1);
 class GameState
 {
-    public static $levelData = [
-        // &&
-        Rank::WANDERER->value => [
-            Commands::ECHO->value,
-            Commands::CAT->value,
-            Commands::CD->value,
-            Commands::MAN->value,
-            Commands::EXECUTE->value,
-        ],
-        // ||
-        Rank::APPRENTICE->value => [
-            Commands::MKDIR->value,
-            Commands::RM->value,
-            Commands::PWD->value,
-            Commands::LS->value,
-        ],
-        // >>, >
-        Rank::ARCHIVIST->value => [
-            Commands::CP->value,
-            Commands::MV->value,
-            Commands::NANO->value,
-            Commands::TOUCH->value,
-        ],
-        // |
-        Rank::CONJURER->value => [
-            Commands::GREP->value,
-            Commands::FIND->value,
-            Commands::WC->value,
-            Commands::HEAD->value,
-            Commands::TAIL->value
-        ],
-        Rank::ROOT->value => []
-    ];
-    public static $tutorials = [
-        Commands::ECHO->value => [
-            ""
-        ],
-        Commands::CAT->value => [
-            "read item contents" => ["cat text.txt", "cat door/alter.exe"]
-        ],
-        Commands::CD->value => [
-            "enter door" => ["cd door1"],
-            "enter door from starting room" => ["cd /door"],
-            "go back " => ["cd .."],
-            "return to start" => [" cd /"],
-            "enter multiple at once" => ["cd door1/door2"],
-        ],
-        Commands::MAN->value => [
-            "look up any spell manual" => ["man cd", "man echo"]
-        ],
-        Commands::EXECUTE->value => [
-            "activate a spell or alter" => ["./spell.sh", "./alter.exe"]
-        ],
-        Commands::MKDIR->value => [
-            ""
-            
-        ],
-        Commands::RM->value => [],
-        Commands::PWD->value => [],
-        Commands::LS->value => [],
-        Commands::CP->value => [],
-        Commands::MV->value => [],
-        Commands::NANO->value => [],
-        Commands::TOUCH->value => [],
-        Commands::GREP->value => [],
-        Commands::FIND->value => [],
-        Commands::WC->value => [],
-        Commands::HEAD->value => [],
-        Commands::TAIL->value => [],
-    ];
+
     public Rank $userRank;
     public int $xp;
     public string $latestCommand;
@@ -91,7 +21,7 @@ class GameState
         $this->userName = $userName;
         $this->mapName = $mapName;
         $this->userRank = Rank::getRankFromXp($xp);
-        $this->currentLevelData = self::$levelData[$this->userRank->value];
+        $this->currentLevelData = Data::$levelData[$this->userRank->value];
         $this->latestCommand = self::calculateGameStats($xp);
     }
 
@@ -100,12 +30,12 @@ class GameState
         if ($alter->requiredRank != $this->userRank->next()) return;
         $alter->isActive = false;
         $this->userRank = $this->userRank->next();
-        $this->currentLevelData = self::$levelData[$this->userRank->value];
+        $this->currentLevelData = Data::$levelData[$this->userRank->value];
         $this->latestCommand = current($this->currentLevelData);
         $this->currentSubLvl = 0;
         $this->xp = $this->userRank->rank() * 100;
         self::createRewardRoom();
-        Terminal::addNewHistory();
+        $_SESSION["terminal"]->addNewHistory();
         self::getCurrentMessage();
         throw new Exception("", -1);
     }
@@ -127,11 +57,11 @@ class GameState
         $this->unlockedCommands = [];
         for ($i = 0; $i < $this->userRank->rank(); $i++)
         {
-            foreach (current(self::$levelData) as $command)
+            foreach (current(Data::$levelData) as $command)
             {
                 array_push($this->unlockedCommands, $command);
             }
-            next(self::$levelData);
+            next(Data::$levelData);
         }
         reset($this->currentLevelData);
         $percentage = count($this->currentLevelData) == 0
@@ -149,7 +79,7 @@ class GameState
         }
 
         return $this->userRank == Rank::ROOT
-            ? current(self::$levelData[$this->userRank->prev()->value])
+            ? current(Data::$levelData[$this->userRank->prev()->value])
             : current($this->currentLevelData);
     }
     public function getCurrentMessage()
@@ -285,7 +215,7 @@ class GameState
         -------- strangevoice -------- <br><br>" .
             $message . "<br>
         ------------------------------ <br>";
-        Terminal::editLastHistory($message);
+        $_SESSION["terminal"]->editLastHistory($message);
     }
     public function getNextSpell()
     {
@@ -316,12 +246,6 @@ class GameState
             default:
                 {
                 }
-        }
-    }
-    public function enterSpellSandbox($spell)
-    {
-        switch ($spell)
-        {
         }
     }
 }

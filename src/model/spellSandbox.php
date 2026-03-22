@@ -1,11 +1,10 @@
 <?php
 
-declare(strict_types=1);
 class SpellSandbox
 {
-    public Spell $spell;
-    public array $prompts;
-    public Room $map;
+    static public Spell $spell;
+    static public array $prompts;
+    static public Room $map;
     public function __construct(
         $spell,
         array $prompts,
@@ -16,11 +15,5 @@ class SpellSandbox
         $this->prompts = $prompts;
         $this->map = $map;
     }
-
-    public function enterSandbox()
-    {
-        $_SESSION["backUpMap"] =  $_SESSION["map"];
-        $_SESSION["map"] = $this->map;
-        $_SESSION["curRoom"] = &$_SESSION["map"];
-    }
+    
 }

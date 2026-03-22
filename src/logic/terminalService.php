@@ -33,7 +33,7 @@ function executeMkdir()
         $tempRoom->doors[$roomName] = new Room(
             name: $roomName,
             path: $tempRoom->path,
-            requiredRank: $_SESSION["GameEngine"]->userRank
+            requiredRank: $_SESSION["GameState"]->userRank
         );
     }
 }
@@ -130,7 +130,7 @@ function executeExecute()
     );
 
     if (is_a($itemExec, Alter::class))
-        $_SESSION["GameEngine"]->levelUpUser($itemExec);
+        $itemExec->execute();
     else
         throw new Exception("item not executable");
 }

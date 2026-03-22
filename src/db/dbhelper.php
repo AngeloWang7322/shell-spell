@@ -99,8 +99,8 @@ class DBHelper
         {
             self::loadDefaultSession();
 
-            $_SESSION["GameState"] = new GameState($xp);
-            $_SESSION["GameState"]->getCurrentMessage();
+            $_SESSION["gameState"] = new GameState($xp);
+            $_SESSION["gameState"]->getCurrentMessage();
         }
         else
         {
@@ -128,8 +128,8 @@ class DBHelper
     }
     public static function loadDefaultSession()
     {
-        $_SESSION["game"] = new GameState(0);
-        $_SESSION["state"] = new Terminal();
+        $_SESSION["gameState"] = new GameState(0);
+        $_SESSION["terminal"] = new Terminal();
         $_SESSION["map"] = self::getDefaultMap();
         $_SESSION["tokens"] = [];
         $_SESSION["curRoom"] = &$_SESSION["map"];
@@ -267,7 +267,6 @@ class DBHelper
             requiredRank: Rank::WANDERER,
             content: "the answer lies in something sweet...",
             spellReward: Commands::MAN,
-            key: "pure-delight"
         );
         $cellar->items["honeyfigcake.txt"] = new Scroll(
             name: "",

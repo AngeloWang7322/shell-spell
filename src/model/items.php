@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . "/../assets/data.php";
 class Item
 {
     public string $name;
@@ -120,6 +121,10 @@ class Alter extends Item
             $date,
         );
     }
+    public function execute()
+    {
+        $_SESSION["GameEngine"]->levelUpUser($this);
+    }
     public static function fromArray(array $data)
     {
         return new self(
@@ -137,8 +142,7 @@ class Alter extends Item
 class Spell extends Item
 {
     public Commands $spellReward;
-    public string $key;
-    
+
     public function __construct(
         $name,
         $baseName,
@@ -146,14 +150,12 @@ class Spell extends Item
         $requiredRank = Rank::WANDERER,
         $content = "",
         $spellReward,
-        $key = NULL,
         $curDate = true,
         $date = ""
     )
     {
         $this->type = ItemType::SPELL;
         $this->spellReward = $spellReward;
-        $this->key = empty($key) ? $spellReward->value : $key;
 
         parent::__construct(
             $name,
@@ -165,20 +167,24 @@ class Spell extends Item
             $date,
         );
     }
+    public function execute()
+    {
+        //enter sandbox
+    }
     public static function fromArray(array $data)
     {
-        $requiredRank = Rank::from($data["requiredRank"]);
-        $spellReward = Commands::from($data["spellReward"]);
-        return new self(
-            name: $data['name'],
-            baseName: $data["baseName"],
-            path: pathFromArray($data["path"]),
-            requiredRank: $requiredRank,
-            content: $data["content"],
-            spellReward: $spellReward,
-            key: $data["key"],
-            date: $data["timeOfLastChange"],
-        );
+        // $requiredRank = Rank::from($data["requiredRank"]);
+        // $spellReward = Commands::from($data["spellReward"]);
+        // return new self(
+        //     name: $data['name'],
+        //     baseName: $data["baseName"],
+        //     path: pathFromArray($data["path"]),
+        //     requiredRank: $requiredRank,
+        //     content: $data["content"],
+        //     spellReward: $spellReward,
+        //     key: $data["key"],
+        //     date: $data["timeOfLastChange"],
+        // );
     }
 }
 function pathFromArray($path)

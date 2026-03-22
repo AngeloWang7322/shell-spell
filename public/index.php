@@ -11,15 +11,14 @@ require __DIR__ . "/../src/db/db.php";
 require __DIR__ . '/../src/logic/upload.php';
 require __DIR__ . "/../src/logic/gameUtils.php";
 require __DIR__ . "/../src/logic/api.php";
-require __DIR__ . "/../src/logic/terminal.php";
+require __DIR__ . "/../src/core/terminal.php";
 require __DIR__ . "/../src/logic/terminalService.php";
 require __DIR__ . "/../src/logic/terminalUtils.php";
-require __DIR__ . "/../src/logic/gameState.php";
+require __DIR__ . "/../src/core/gameState.php";
 require __DIR__ . '/assets/layout.php';
 
 session_start();
 // session_unset();
-
 if (
     !isset($_SESSION["map"])
     && $_SERVER['REQUEST_URI'] != "/newgame"
@@ -61,7 +60,7 @@ if (isset($routes[$path]))
 {
     require __DIR__ . "/assets/header.php";
     require __DIR__ . '/templates//' . $routes[$path];
-}
+}   
 else
 {
     require __DIR__ . '/templates//' . $routes['notfound'];
