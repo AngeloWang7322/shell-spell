@@ -38,7 +38,8 @@ function &getRoom($path, $rankRestrictive = false): Room
                 {
                     $index++;
                 }
-                $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 0, -$index), $rankRestrictive);
+
+                $tempRoom = &getRoomAbsolute(array_slice($_SESSION["curRoom"]->path, 1, -$index), $rankRestrictive);
             }
         default:
             {
@@ -53,8 +54,11 @@ function &getRoomAbsolute($path, $rankRestrictive = false): Room
 {
     $path = removeFirstIfEmpty($path);
     $tempRoom = &$_SESSION["map"];
-    for ($i = 0; $i < count($path); $i++)
+    echo "absolute path: " . json_encode($path);
+
+    for ($i = 0; $i < countNonEmpty($path); $i++)
     {
+        echo "doors " . json_encode(array_keys($tempRoom->doors));
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
             if ($rankRestrictive && $_SESSION["GameState"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
@@ -162,7 +166,8 @@ function updatePaths(&$room)
 }
 function moveWithCdOptions()
 {
-    switch (substr($_SESSION["inputCommand"], 3, 1))
+
+    switch ($_SESSION["tokens"]["pathStr"][0])
     {
         case "-":
             {
@@ -171,12 +176,12 @@ function moveWithCdOptions()
                 );
                 break;
             }
-        case "/":
-            {
-                pushNewLastPath($_SESSION["curRoom"]->path);
-                $_SESSION["curRoom"] = &$_SESSION["map"];
-                break;
-            }
+        // case "/":
+        //     {
+        //         pushNewLastPath($_SESSION["curRoom"]->path);
+        //         $_SESSION["curRoom"] = &$_SESSION["map"];
+        //         break;
+        //     }
         default:
             {
                 pushNewLastPath($_SESSION["curRoom"]->path);
@@ -407,7 +412,7 @@ function getLinesFromText($text)
     }
     return $lines;
 }
-function counNonEmpty($array)
+function countNonEmpty($array)
 {
     $counter = 0;
     foreach ($array as $element)
@@ -789,8 +794,12 @@ function renderGrid(array $grid): string
 
     $columnCount = count($grid[0]);
     $rowCount = count($grid);
-
     $lines = [];
+
+    for ($i = 0; $i < $rowCount; $i++)
+    {
+        $lines[$i] = "";
+    }
     for ($i = 0; $i < $columnCount; $i++)
     {
         $longest = 5;

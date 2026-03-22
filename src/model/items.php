@@ -138,6 +138,7 @@ class Spell extends Item
 {
     public Commands $spellReward;
     public string $key;
+    
     public function __construct(
         $name,
         $baseName,

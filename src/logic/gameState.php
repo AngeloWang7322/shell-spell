@@ -36,6 +36,43 @@ class GameState
         ],
         Rank::ROOT->value => []
     ];
+    public static $tutorials = [
+        Commands::ECHO->value => [
+            ""
+        ],
+        Commands::CAT->value => [
+            "read item contents" => ["cat text.txt", "cat door/alter.exe"]
+        ],
+        Commands::CD->value => [
+            "enter door" => ["cd door1"],
+            "enter door from starting room" => ["cd /door"],
+            "go back " => ["cd .."],
+            "return to start" => [" cd /"],
+            "enter multiple at once" => ["cd door1/door2"],
+        ],
+        Commands::MAN->value => [
+            "look up any spell manual" => ["man cd", "man echo"]
+        ],
+        Commands::EXECUTE->value => [
+            "activate a spell or alter" => ["./spell.sh", "./alter.exe"]
+        ],
+        Commands::MKDIR->value => [
+            ""
+            
+        ],
+        Commands::RM->value => [],
+        Commands::PWD->value => [],
+        Commands::LS->value => [],
+        Commands::CP->value => [],
+        Commands::MV->value => [],
+        Commands::NANO->value => [],
+        Commands::TOUCH->value => [],
+        Commands::GREP->value => [],
+        Commands::FIND->value => [],
+        Commands::WC->value => [],
+        Commands::HEAD->value => [],
+        Commands::TAIL->value => [],
+    ];
     public Rank $userRank;
     public int $xp;
     public string $latestCommand;

@@ -223,6 +223,7 @@ class Terminal
     }
     static public function handleSandbox()
     {
+        
     }
     static public function handleException(Exception $e)
     {

@@ -145,14 +145,14 @@ class DBHelper
     public static function getDefaultMap(): Room
     {
         $tempMap = new Room(
-            "hall",
+            "",
+            [""],
             curDate: false,
         );
         $_SESSION["curRoom"] = &$tempMap;
-        $tempMap->path = ["hall"];
         $tempMap->doors["entrance"] = new Room(
             name: "entrance",
-            path: ["hall"],
+            path: [""],
             requiredRank: Rank::WANDERER,
             curDate: false
         );
@@ -295,7 +295,7 @@ class DBHelper
         $tempMap->items["leaflet.txt"] = new Scroll(
             "",
             "leaflet",
-            ["hall"],
+            [""],
             Rank::WANDERER,
             "Welcome, wanderer.<br>
                     <br>
@@ -320,7 +320,7 @@ class DBHelper
         // $tempMap->items["execute.sh"] = new Spell(
         //     "",
         //     "execute",
-        //     ["hall"],
+        //     [""],
         //     Rank::WANDERER,
         //     "",
         //     Commands::EXECUTE,
@@ -330,7 +330,7 @@ class DBHelper
         $tempMap->items["cd.sh"] = new Spell(
             "",
             "cd",
-            ["hall"],
+            [],
             Rank::WANDERER,
             "",
             Commands::CD,
@@ -354,32 +354,32 @@ class DBHelper
     public function getMapByLvl($Rank)
     {
         $tempMap = new Room(
-            "hall",
+            "",
             curDate: false,
         );
         $_SESSION["curRoom"] = &$tempMap;
-        $tempMap->path = ["hall"];
+        $tempMap->path = [""];
 
         switch ($Rank)
         {
             case Rank::WANDERER:
                 {
                     $tempMap = new Room(
-                        "hall",
+                        "",
                         curDate: false,
                     );
                     $tempMap = new Room(
-                        "hall",
+                        "",
                         curDate: false,
                     );
                     $_SESSION["curRoom"] = &$tempMap;
-                    $tempMap->path = ["hall"];
+                    $tempMap->path = [""];
 
-                    $tempMap->path = ["hall"];
+                    $tempMap->path = [""];
 
                     $tempMap->doors["darkHall"] = new Room(
                         name: "darkHall",
-                        path: ["hall"],
+                        path: [""],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
@@ -387,7 +387,7 @@ class DBHelper
                     $tempMap->items["bread.txt"] = new Scroll(
                         "",
                         "bread",
-                        ["hall"],
+                        [""],
                         Rank::WANDERER,
                         "Tak pease and wassh hem clene, and ley hem in watre over nyght, that they may swelle and waxe tendre. On the morwe, set hem on the fyre in a fayre pot with clene watre, and let hem boyle softly til they breke.  Then tak an oynoun and hew it smal, and put it therinne with salt ynowe. Add herbes, as perselye or saverey, if thou hast, and let al seeth togider.  Whan the potage is thikke and smothe, tak it fro the fyre and serve it hote, with brede y-toasted or a crust therof. This potage is good for the body and may serve pore and riche.",
                         false
@@ -397,7 +397,7 @@ class DBHelper
                     $tempMap->items["mysteriousNote.txt"] = new Scroll(
                         "",
                         "mysteriousNote",
-                        ["hall"],
+                        [""],
                         Rank::WANDERER,
                         "Welcome, wanderer.<br>
                     <br>
@@ -422,7 +422,7 @@ class DBHelper
                     $tempMap->items["rippedPage.txt"] = new Scroll(
                         "",
                         "rippedPage",
-                        ["hall"],
+                        [""],
                         Rank::WANDERER,
                         "...so in short, when using the Spell cd with a correct destination, you can quickly move around !",
                         false
@@ -430,63 +430,63 @@ class DBHelper
 
                     $tempMap->doors["darkHall"]->doors["darkPassage"] = new Room(
                         name: "darkPassage",
-                        path: ["hall", "darkHall"],
+                        path: ["", "darkHall"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
                     $tempMap->doors["darkHall"]->doors["rustyIronDoor"] = new Room(
                         name: "rustyIronDoor",
-                        path: ["hall", "darkHall"],
+                        path: ["", "darkHall"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
                     $tempMap->doors["darkHall"]->doors["oldDoor"] = new Room(
                         name: "oldDoor",
-                        path: ["hall", "darkHall"],
+                        path: ["", "darkHall"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
                     $tempMap->doors["darkHall"]->doors["burntDoor"] = new Room(
                         name: "burntDoor",
-                        path: ["hall", "darkHall"],
+                        path: ["", "darkHall"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
                     $tempMap->doors["darkHall"]->doors["rustyCell"] = new Room(
                         name: "rustyCell",
-                        path: ["hall", "darkHall"],
+                        path: ["", "darkHall"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
                     $tempMap->doors["darkHall"]->doors["oldDoor"]->items["hint.txt"] = new Scroll(
                         name: "",
                         baseName: "hint",
-                        path: ["hall", "darkHall", "oldDoor"],
+                        path: ["", "darkHall", "oldDoor"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
 
                     $tempMap->doors["darkHall"]->doors["rustyIronDoor"]->doors["crackedDoor"] = new Room(
                         name: "crackedDoor",
-                        path: ["hall", "darkHall", "rustyIronDoor"],
+                        path: ["", "darkHall", "rustyIronDoor"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
                     $tempMap->doors["darkHall"]->doors["rustyIronDoor"]->doors["wornGate"] = new Room(
                         name: "wornGate",
-                        path: ["hall", "darkHall", "rustyIronDoor"],
+                        path: ["", "darkHall", "rustyIronDoor"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
                     $tempMap->doors["darkHall"]->doors["rustyCell"]->doors["hidden"] = new Room(
                         name: "hidden",
-                        path: ["hall", "darkHall", "rustyCell"],
+                        path: ["", "darkHall", "rustyCell"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );
                     $tempMap->doors["darkHall"]->doors["burntDoor"]->doors["spellGate"] = new Room(
                         name: "spellGate",
-                        path: ["hall", "darkHall", "burntDoor"],
+                        path: ["", "darkHall", "burntDoor"],
                         requiredRank: Rank::WANDERER,
                         curDate: false
                     );

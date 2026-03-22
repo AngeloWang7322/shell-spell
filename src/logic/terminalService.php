@@ -50,7 +50,7 @@ function executeLs()
 
 function executePwd()
 {
-    Terminal::$stdout = $_SESSION["curRoom"]->path;
+    Terminal::$stdout = [implode("/", $_SESSION["curRoom"]->path)];
 }
 
 function executeRm()
