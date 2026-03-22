@@ -68,11 +68,11 @@ class DBHelper
         ]);
         $gameState = $fetchGameState->fetch();
         $_SESSION["mapId"] = $gameState["id"];
-        $_SESSION["GameState"] = new GameState($gameState["xp"]);
+        $_SESSION["gameState"] = new GameState($gameState["xp"]);
         $_SESSION["map"] = Room::fromArray(json_decode($gameState["map_json"]));
         $_SESSION["history"] = [];
         if ($gameState["history_json"] != NULL) parseHistory($gameState["history_json"]);
-        $_SESSION["GameState"]->getCurrentMessage();
+        $_SESSION["gameState"]->getCurrentMessage();
     }
     public function getGameStates()
     {
@@ -329,7 +329,7 @@ class DBHelper
         $tempMap->items["cd.sh"] = new Spell(
             "",
             "cd",
-            [],
+            [""],
             Rank::WANDERER,
             "",
             Commands::CD,

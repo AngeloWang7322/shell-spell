@@ -61,7 +61,7 @@ function &getRoomAbsolute($path, $rankRestrictive = false): Room
         echo "doors " . json_encode(array_keys($tempRoom->doors));
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["GameState"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
+            if ($rankRestrictive && $_SESSION["gameState"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
             {
                 throw (new Exception("rank too low"));
             }
@@ -82,7 +82,7 @@ function &getRoomRelative($path, $rankRestrictive = false): Room
     {
         if (in_array($path[$i], array_keys($tempRoom->doors)))
         {
-            if ($rankRestrictive && $_SESSION["GameState"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
+            if ($rankRestrictive && $_SESSION["gameState"]->userRank->isLowerThan($tempRoom->doors[$path[$i]]->requiredRank))
             {
                 throw (new Exception("Rank too low, required Rank: " . $tempRoom->doors[$path[$i]]->requiredRank->value));
             }
@@ -279,11 +279,10 @@ function callCorrectGrepFunction()
             );
         }
     }
-    else if (!empty(Terminal::$stdin))
+    else if (!empty(Streams::$stdin))
     {
-        echo json_encode("stdin: " . json_encode(Terminal::$stdin));
         $matchingLines = grepArray(
-            Terminal::$stdin,
+            Streams::$stdin,
             $_SESSION["tokens"]["strings"][0],
             searchMatching: $searchMatching,
             isCaseInsensitive: $isCaseInsensitive
@@ -443,7 +442,7 @@ function createPrompt($prompt, $validAnswers = ["y", "n"])
     //TODO move prompt logic somewhere else
     $_SESSION["terminal"]->promptData["prompt"] = $prompt . "&nbsp DEFAULT:&nbsp " . $validAnswers[0] . "<br>" . implode("/", $validAnswers);
     $_SESSION["terminal"]->promptData["options"] = ["y", "n"];
-    Terminal::$stdout = $_SESSION["promptData"]["prompt"];
+    Streams::$stdout = $_SESSION["promptData"]["prompt"];
     $_SESSION["terminal"]->addNewHistory();
     throw new Exception("", 0);
 }
@@ -658,8 +657,8 @@ function getCounts($lines)
 }
 function getLines()
 {
-    return isset(Terminal::$stdin) ?
-        Terminal::$stdin :
+    return isset(Streams::$stdin) ?
+        Streams::$stdin :
         getLinesFromText(getItem($_SESSION["tokens"]["path"][0])->content);
 }
 
@@ -689,7 +688,7 @@ function canDelete($path, $element = NULL)
     {
         throw new Exception("Cant move room into itsself",);
     }
-    $result = RankIsHigherThanRoomRecursive($_SESSION["GameState"]->userRank, getRoomOrItem($path));
+    $result = RankIsHigherThanRoomRecursive($_SESSION["gameState"]->userRank, getRoomOrItem($path));
 
     return $result;
 }

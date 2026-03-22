@@ -7,20 +7,14 @@ class Terminal
     public bool $isSandbox;
     public bool $isPrompt;
     public array $promptData;
-    public bool $inPipe;
-    public int $pipeCount;
-    static public $stdin = [];
-    static public array $stdout = [];
-    static public $stderr = "";
+
     public function __construct()
     {
         $this->isSandbox = false;
         $this->isPrompt = false;
         $this->promptData = [];
-        $this->inPipe = false;
-        $this->pipeCount = 0;
     }
-    public function startTerminalProcess()
+    public function startTerminalProcess($isLast = true)
     {
         try
         {
@@ -44,21 +38,16 @@ class Terminal
         {
             self::handleException($e);
         }
-
-        self::closeProcess();
+        if ($isLast)
+            self::closeProcess();
     }
 
     public function closeProcess()
     {
         if (self::mustPreserveState())
-        {
             self::editLastHistory();
-        }
         else
-        {
             self::addNewHistory();
-            self::reset();
-        }
     }
 
     public function addNewHistory()
@@ -80,25 +69,15 @@ class Terminal
         current($_SESSION["history"])["response"] .= $newStr;
     }
 
-
-    public function reset()
-    {
-        self::resetStreams();
-        $this->isSandbox = false;
-        $this->isPrompt = false;
-        $this->inPipe = false;
-        $this->pipeCount = 0;
-    }
     public function resetStreams()
     {
-        self::$stdin = "";
-        self::$stdout = [];
-        self::$stderr = "";
+        Streams::$stdin = [];
+        Streams::$stdout = [];
+        Streams::$stderr = [];
     }
     public function mustPreserveState()
     {
-        return $this->pipeCount > 0
-            || $this->isSandbox
+        return  $this->isSandbox
             || $this->isPrompt;
     }
 
@@ -116,40 +95,38 @@ class Terminal
     {
         $answer = $_POST["command"];
 
-        switch (true)
+        if (in_array($answer, [$this->promptData["options"][0], ""]))
         {
-            case (in_array($_POST["command"], [$this->promptData["options"][0], ""])):
-                {
-                    try
-                    {
-                        self::executeCommand();
-                        $answer = "y";
-                    }
-                    catch (Exception $e)
-                    {
-                        $this->promptData = [];
-                        throw new Exception($e->getMessage());
-                    }
-                }
-            case (in_array($_POST["command"], ["n", "N"])):
-                {
-                    array_push(
-                        self::$stdout,
-                        ["<br> " . $answer]
-                    );
-                    self::editLastHistory();
-                    self::reset();
-                    throw new Exception("", 0);
-                }
-            default:
-                {
-                    array_push(
-                        self::$stdout,
-                        ["<br>" . $_POST["command"] . "<br>" . implode("/", $this->promptData["options"])]
-                    );
-                    self::editLastHistory();
-                    throw new Exception("", 0);
-                }
+            try
+            {
+                self::executeCommand();
+                $answer = "y";
+            }
+            catch (Exception $e)
+            {
+                $this->promptData = [];
+                throw new Exception($e->getMessage());
+            }
+        }
+        else if (in_array($_POST["command"], ["n", "N"]))
+        {
+            array_push(
+                Streams::$stdout,
+                ["<br> " . $answer]
+            );
+            self::editLastHistory();
+            // self::reset();
+            $this->isPrompt = false;
+            throw new Exception("", 0);
+        }
+        else
+        {
+            array_push(
+                Streams::$stdout,
+                ["<br>" . $_POST["command"] . "<br>" . implode("/", $this->promptData["options"])]
+            );
+            self::editLastHistory();
+            throw new Exception("", 0);
         }
     }
     public function handleFailSafe($seperator)
@@ -175,7 +152,7 @@ class Terminal
         $afterSeperator = "";
         splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
         $_POST["command"] = $beforeSeperator;
-        self::startTerminalProcess();
+        self::startTerminalProcess(false);
 
         $_SESSION["tokens"] = [];
         $_POST["command"] = $afterSeperator;
@@ -185,20 +162,18 @@ class Terminal
     }
     public function handlePipe($seperator)
     {
-        $this->pipeCount++;
         $beforeSeperator = "";
         $afterSeperator = "";
 
         splitString($_POST["command"], $beforeSeperator, $afterSeperator, $seperator);
         $_POST["command"] = $beforeSeperator;
-        self::startTerminalProcess();
+        self::startTerminalProcess(false);
 
-        self::$stdin = self::$stdout;
-        self::$stdout = [];
+        Streams::$stdin = Streams::$stdout;
+        Streams::$stdout = [];
 
         $_SESSION["tokens"] = [];
         $_POST["command"] = $afterSeperator;
-        $this->pipeCount--;
         self::prepareCommand();
         self::executeCommand();
     }
@@ -217,16 +192,17 @@ class Terminal
         $redirectFilePath = toPath($redirectFilePath);
         $_POST["command"] = $command;
         self::startTerminalProcess();
-        self::$stdout = [];
+        Streams::$stdin = Streams::$stdout;
+        Streams::$stdout = [];
         self::canRedirect(
             $redirectFilePath,
             $seperator
         );
 
-        self::redirectStdoutToFile(
+        self::redirectStdinToFile(
             $seperator,
             $redirectFilePath,
-            self::$stdout
+            Streams::$stdin
         );
     }
     public function handleSandbox()
@@ -251,7 +227,7 @@ class Terminal
     public function handleException(Exception $e)
     {
         array_push(
-            self::$stdout,
+            Streams::$stdout,
             colorizeString(colorizeRanks($e->getMessage()), "error")
         );
         $_SESSION["map"] = $_SESSION["backUpMap"];
@@ -276,10 +252,10 @@ class Terminal
     public function canRedirect($redirectFilePath, $seperator)
     {
         parsePath($redirectFilePath,);
-        if (!isset(self::$stdout))
+        if (!isset(Streams::$stdout))
             throw new Exception("invalid usage of '" . $seperator . "' operator");
     }
-    static public function redirectStdoutToFile($seperator, $redirectFilePath, $stdout)
+    static public function redirectStdinToFile($seperator, $redirectFilePath, $stdout)
     {
         $newStr = strip_tags(self::arrayKeyValueToString($stdout));
         $destItem = &getItem($redirectFilePath);
@@ -298,10 +274,9 @@ class Terminal
     public function checkPipe($command)
     {
         if (
-            $this->pipeCount > 0
-            && !$command->isWriter
+            !$command->isWriter
             //TODO check if empty works
-            && !empty(self::$stdout)
+            && !empty(Streams::$stdout)
         )
         {
             throw new Exception("command not pipable");
@@ -310,25 +285,25 @@ class Terminal
     public function renderStdout()
     {
         $responseString = "";
-        if (count(self::$stdout) == 0)
+        if (count(Streams::$stdout) == 0)
             return $responseString;
 
-        switch (gettype(current(self::$stdout)))
+        switch (gettype(current(Streams::$stdout)))
         {
             case "array":
                 {
-                    $responseString = renderGrid(self::$stdout);
+                    $responseString = renderGrid(Streams::$stdout);
                     break;
                 }
             case "string":
                 {
-                    if (is_numeric(array_key_first(self::$stdout)))
+                    if (is_numeric(array_key_first(Streams::$stdout)))
                     {
-                        $responseString .= implode(", ", self::$stdout);
+                        $responseString .= implode(", ", Streams::$stdout);
                     }
                     else
                     {
-                        foreach (self::$stdout as $key => $entry)
+                        foreach (Streams::$stdout as $key => $entry)
                         {
                             if ($entry == "")
                                 $responseString .= $key . "<br>";
@@ -340,7 +315,7 @@ class Terminal
                 }
             default:
                 {
-                    $responseString = implode("<br>", self::$stdout);
+                    $responseString = implode("<br>", Streams::$stdout);
                     break;
                 }
         }

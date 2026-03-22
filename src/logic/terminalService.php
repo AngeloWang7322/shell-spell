@@ -23,7 +23,7 @@ function executeMkdir()
             in_array(
                 $roomName,
                 array_keys($tempRoom->doors)
-            ) && !empty(Terminal::$promptData)
+            ) && !empty(Streams::$promptData)
             //TODO: check if empty works here
         )
         {
@@ -33,14 +33,14 @@ function executeMkdir()
         $tempRoom->doors[$roomName] = new Room(
             name: $roomName,
             path: $tempRoom->path,
-            requiredRank: $_SESSION["GameState"]->userRank
+            requiredRank: $_SESSION["gameState"]->userRank
         );
     }
 }
 function executeLs()
 {
     $path = $_SESSION["tokens"]["path"][0] ?? [];
-    Terminal::$stdout = getLsArray(
+    Streams::$stdout = getLsArray(
         getRoom(
             $path,
             true
@@ -50,7 +50,7 @@ function executeLs()
 
 function executePwd()
 {
-    Terminal::$stdout = [implode("/", $_SESSION["curRoom"]->path)];
+    Streams::$stdout = [implode("/", $_SESSION["curRoom"]->path)];
 }
 
 function executeRm()
@@ -89,7 +89,7 @@ function executeMv()
 function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
-    Terminal::$stdout = array($catItem->content);
+    Streams::$stdout = array($catItem->content);
 }
 
 function executeTouch()
@@ -106,15 +106,15 @@ function executeTouch()
         $destRoom->items[$fileName] = new Scroll(
             name: $fileName,
             baseName: "",
-            path: $destRoom->path,
-            requiredRank: $_SESSION["GameEngine"]->userRank,
+            path: array_slice($destRoom->path, 1),
+            requiredRank: $_SESSION["gameState"]->userRank,
             content: "",
             curDate: true
         );
 }
 function executeGrep()
 {
-    Terminal::$stdout = callCorrectGrepFunction();
+    Streams::$stdout = callCorrectGrepFunction();
 }
 
 function executeExecute()
@@ -137,7 +137,7 @@ function executeExecute()
 
 function executeEcho()
 {
-    Terminal::$stdout = [$_SESSION["tokens"]["strings"][0]];
+    Streams::$stdout = [$_SESSION["tokens"]["strings"][0]];
 }
 
 function executeFind()
@@ -160,7 +160,7 @@ function executeFind()
         )
     );
 
-    Terminal::$stdout = $matches;
+    Streams::$stdout = $matches;
 }
 
 function executeWc()
@@ -168,14 +168,14 @@ function executeWc()
     $lines = getLines();
     $counts = getCounts($lines);
 
-    Terminal::$stdout = $counts;
+    Streams::$stdout = $counts;
 }
 function executeHead()
 {
     $lines = getLines();
     $lines = getPartialArray($lines);
 
-    Terminal::$stdout = $lines;
+    Streams::$stdout = $lines;
 }
 function executeTail()
 {
@@ -184,7 +184,7 @@ function executeTail()
         false
     );
 
-    Terminal::$stdout = $lines;
+    Streams::$stdout = $lines;
 }
 
 function executeNano()
@@ -199,5 +199,5 @@ function executeNano()
 function executeMan()
 {
     $description = getCommand($_SESSION["tokens"]["misc"])->description;
-    Terminal::$stdout = getLinesFromText($description);
+    Streams::$stdout = getLinesFromText($description);
 }

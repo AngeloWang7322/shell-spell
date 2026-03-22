@@ -25,15 +25,9 @@ class Item
         $this->requiredRank = $requiredRank;
         $this->path = $path;
         $this->content = $content;
-        $this->timeOfLastChange = $date;
-        if (!$date == "")
-        {
-            $this->timeOfLastChange = $date;
-        }
-        else
-        {
-            $this->timeOfLastChange = generateDate($curDate);
-        }
+            $this->timeOfLastChange =!$date == "" 
+            ? $date
+            :  generateDate($curDate);
 
         if (empty($name))
         {
@@ -123,7 +117,7 @@ class Alter extends Item
     }
     public function execute()
     {
-        $_SESSION["GameEngine"]->levelUpUser($this);
+        $_SESSION["gameState"]->levelUpUser($this);
     }
     public static function fromArray(array $data)
     {

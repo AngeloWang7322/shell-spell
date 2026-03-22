@@ -17,6 +17,7 @@ class Data
         Rank::APPRENTICE->value => [
             Commands::MKDIR->value,
             Commands::RM->value,
+            Commands::RMDIR->value,
             Commands::PWD->value,
             Commands::LS->value,
         ],

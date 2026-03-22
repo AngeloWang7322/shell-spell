@@ -50,7 +50,9 @@ class GameState
     }
     public function calculateLvlProgress()
     {
-        return (int)($this->currentSubLvl / count($this->currentLevelData) * 100);
+        return count($this->currentLevelData) == 0 
+        ? 0
+        : (int)($this->currentSubLvl / count($this->currentLevelData) * 100);
     }
     public function calculateGameStats($xp)
     {
