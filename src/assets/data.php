@@ -38,20 +38,77 @@ class Data
         ],
         Rank::ROOT->value => []
     ];
+
+    static public function getNewSpellMessage(string $command)
+    {
+        return match ($command)
+        {
+            Commands::ECHO->value => "" .  colorizeString("<br><br> > echo [your name]", "action-tip"),
+            Commands::CAT->value => "
+                        You accidentally just activated a rune?! No it can't be... must've been a coincidence... and weird name anywat <br>
+                        Activating one requires a skilled caster and the correct chant.
+                        You should make good use of the your luck and use the spell you just gained<br>
+                        take a look at the old scrolls lying around and read something for once, you may learn something!<br> "
+                . colorizeString("<br> cat [filename]", "action-tip"),
+            Commands::CD->value => "Finally you learned how to walk, now you're a true wanderer,(Haha even more Puny now!)<br>
+                        How about you look around here and get used to your new spell.<br>"
+                . colorizeString("<br>cd [doorname]", "action-tip"),
+            Commands::MAN->value => "Since you wanderers love to forget how your spells work,<br>
+                        here's a little something hat can help even the most wandererrest of wanderers 
+                        And keep your eyes open for anything... interesting<br>"
+                . colorizeString(getCommand($command)->description, "action-tip"),
+            Commands::EXECUTE->value =>
+            "You already got here? Thats a surprise...<br>
+                        Well then this should be no biggie, you'll figure out where, on what and how to use this one<br>
+                        (or not and you're still just a wanderer)"
+                . colorizeString(getCommand($command)->description, "action-tip"),
+            Commands::LS->value => "While calling you a wanderer was fun, i unfortunately have to congratulate you on your rank Promotion,<br>
+                        you are now officially an APPRENTICE. Not too shabby  <br> 
+                        as you can see (or rather, as you can't), invoking the alter transported you to this empty place.<br>
+                        ...unless it isn't empty and you just learnt a new spell?<br>"
+                . colorizeString(getCommand($command)->description, "action-tip"),
+            Commands::PWD->value => "this is a convenient one, use it when you're disoriented, or are wondering if you're inside a specific room <br>"
+                . colorizeString(getCommand($command)->description, "action-tip"),
+            Commands::MKDIR->value => "Now this slowly becomes interesting,<br>
+                        you now can now create your own rooms.<br>
+                        And i know its tempting, but make sure not to go crazy with creating your own maze you will never find your way out of!"
+                . colorizeString(getCommand($command)->description, "action-tip"),
+            Commands::RM->value => "Now what is this?! You can even clean up after yourself!!. <br>
+                        How about you practise by cleaning up some rooms here (please?)<br>"
+                . colorizeString(getCommand($command)->description, "action-tip"),
+            Commands::TOUCH->value => "" . colorizeString(getCommand($command)->description, "action-tip"),
+            Commands::CP->value => colorizeString("cp [sourcepath] [destinationPath]", "action-tip"),
+            Commands::MV->value => "",
+            Commands::NANO->value => "",
+            Commands::GREP->value => "",
+            Commands::FIND->value => "",
+            Commands::WC->value => "",
+            Commands::HEAD->value => "",
+            Commands::TAIL->value => "",
+            default => "NO COMMAND FOUND!!"
+        };
+    }
     static public function getSandBox(Commands $cmd)
     {
-        return match ($cmd)
+        switch ($cmd)
         {
-            Commands::CD => new SpellSandbox(
-                Commands::CD,
-                [
-                    "enter room" => "cd door",
-                    "enter multiple rooms subsequently" => "cd door/room",
-                    "go back one room" => "cd ..",
-                    "return to start" => "cd /"
-                ],
-                new Room("door")
-            ),
+            case Commands::CD:
+                {
+                    $sandboxMap = new Room($cmd->value);
+                    $sandboxMap->doors["door"] = new Room("door");
+                    return  new Sandbox(
+                        Commands::CD,
+                        [
+                            ["enter room", "cd door"],
+                            ["enter multiple rooms subsequently", "cd door/room"],
+                            ["go back one room",  "cd .."],
+                            ["return to start", "cd /"]
+                        ],
+                        $sandboxMap
+                    );
+                }
+            default:
+                throw new Exception("commmand not found");
         };
     }
     // $tutorials = [

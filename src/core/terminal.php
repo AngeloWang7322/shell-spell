@@ -10,6 +10,7 @@ class Terminal
 
     public function __construct()
     {
+        echo "CREATING TERMINAL!!";
         $this->isSandbox = false;
         $this->isPrompt = false;
         $this->promptData = [];
@@ -21,7 +22,10 @@ class Terminal
             if ($this->isPrompt)
                 self::handlePrompt();
             else if ($this->isSandbox)
+            {
                 self::handleSandbox();
+                return;
+            }
             else
             {
                 match ($operator = getLastOccuringElementIn($_POST["command"]))
@@ -65,8 +69,7 @@ class Terminal
     public function editLastHistory($str = NULL)
     {
         $newStr = $str ?? self::renderStdout();
-        end($_SESSION["history"]);
-        current($_SESSION["history"])["response"] .= $newStr;
+        end($_SESSION["history"])["response"] .= $newStr;
     }
 
     public function resetStreams()
@@ -207,23 +210,16 @@ class Terminal
     }
     public function handleSandbox()
     {
+        if (!$_SESSION["sandbox"]->isInputValid())
+        {
+            Streams::$stdout = ["wrong spell"];
+            return;
+        }
+        $_SESSION["sandbox"]->nextCommand();
+        self::prepareCommand();
+        self::executeCommand();
     }
-    public function enterSandbox(SpellSandbox $sandBox)
-    {
-        Terminal::$isSandbox = true;
 
-        $_SESSION["backupMap"] =  $_SESSION["map"];
-        $_SESSION["backupCurRoom"] =  $_SESSION["curRoom"];
-        $_SESSION["map"] = $sandBox->map;
-        $_SESSION["curRoom"] = &$_SESSION["map"];
-    }
-    public function exitSandbox()
-    {
-        Terminal::$isSandbox = false;
-        $_SESSION["map"] = $_SESSION["backupMap"];
-        $_SESSION["curRoom"] = &$_SESSION["backupCurRoom"];
-        unset($_SESSION["backupCurRoom"], $_SESSION["backupMap"]);
-    }
     public function handleException(Exception $e)
     {
         array_push(
@@ -232,7 +228,6 @@ class Terminal
         );
         $_SESSION["map"] = $_SESSION["backUpMap"];
     }
-
 
     static public function arrayKeyValueToString($array, $seperator = "<br>")
     {

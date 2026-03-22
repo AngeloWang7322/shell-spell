@@ -119,7 +119,7 @@ function executeGrep()
 
 function executeExecute()
 {
-    $itemExec = &getItem(
+    $item = &getItem(
         explode(
             "/",
             substr(
@@ -129,8 +129,8 @@ function executeExecute()
         )
     );
 
-    if (is_a($itemExec, Alter::class))
-        $itemExec->execute();
+    if ($item->isExecutable)
+        $item->execute();
     else
         throw new Exception("item not executable");
 }

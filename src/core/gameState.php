@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 class GameState
 {
@@ -40,19 +41,27 @@ class GameState
         throw new Exception("", -1);
     }
 
-    public function unlockNextCommand()
+    public function unlockSpell(Commands $newSpell)
     {
+        if (
+            !in_array($newSpell, $this->currentLevelData)
+            || in_array($newSpell, $this->unlockedCommands)
+        )
+        {
+            Streams::$stderr[] = "command already unlocked";
+            return false;
+        }
         $this->xp += (int)(1 / count($this->currentLevelData) * 100);
-        $this->latestCommand = self::getNextSpell();
+
         $this->currentSubLvl++;
-        array_push($this->unlockedCommands, $this->latestCommand);
+        array_push($this->unlockedCommands, $newSpell);
         self::getCurrentMessage();
     }
     public function calculateLvlProgress()
     {
-        return count($this->currentLevelData) == 0 
-        ? 0
-        : (int)($this->currentSubLvl / count($this->currentLevelData) * 100);
+        return count($this->currentLevelData) == 0
+            ? 0
+            : (int)($this->currentSubLvl / count($this->currentLevelData) * 100);
     }
     public function calculateGameStats($xp)
     {
@@ -84,133 +93,13 @@ class GameState
             ? current(Data::$levelData[$this->userRank->prev()->value])
             : current($this->currentLevelData);
     }
+
     public function getCurrentMessage()
     {
-        switch ($this->latestCommand)
-        {
-            //LEVEL 1
-            case Commands::ECHO->value:
-                {
-                    $response = colorizeString("<br><br> > echo [your name]", "action-tip");
-                    break;
-                }
-            case Commands::CAT->value:
-                {
-                    $this->userName = $_SESSION["tokens"]["strings"][0];
-                    $response = "
-                        You accidentally just activated a rune?! No it can't be... must've been a coincidence... and weird name anywat <br>
-                        Activating one requires a skilled caster and the correct chant.
-                        You should make good use of the your luck and use the spell you just gained<br>
-                        take a look at the old scrolls lying around and read something for once, you may learn something!<br> "
-                        . colorizeString("<br> cat [filename]", "action-tip");
-                    break;
-                }
-            case Commands::CD->value:
-                {
-                    $response = "Finally you learned how to walk, now you're a true wanderer,(Haha even more Puny now!)<br>
-                        How about you look around here and get used to your new spell.<br>"
-                        . colorizeString("<br>cd [doorname]", "action-tip");
-                    break;
-                }
-            case Commands::MAN->value:
-                {
-                    $response = "Since you wanderers love to forget how your spells work,<br>
-                        here's a little something hat can help even the most wandererrest of wanderers 
-                        And keep your eyes open for anything... interesting<br>"
-                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
-                    break;
-                }
-            case Commands::EXECUTE->value:
-                {
-                    $response = "You already got here? Thats a surprise...<br>
-                            Well then this should be no biggie, you'll figure out where, on what and how to use this one<br>
-                            (or not and you're still just a wanderer)"
-                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
-                    break;
-                }
-                //LEVEL 2
-            case Commands::LS->value:
-                {
-                    $response = "While calling you a wanderer was fun, i unfortunately have to congratulate you on your rank Promotion,<br>
-                     you are now officially an APPRENTICE. Not too shabby " . $this->userName . "<br> 
-                        as you can see (or rather, as you can't), invoking the alter transported you to this empty place.<br>
-                        ...unless it isn't empty and you just learnt a new spell?<br>"
-                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
-                    break;
-                }
-            case Commands::PWD->value:
-                {
-                    $response = "this is a convenient one, use it when you're disoriented, or are wondering if you're inside a specific room <br>"
-                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
-                    break;
-                }
-            case Commands::MKDIR->value:
-                {
-                    $response = "Now this slowly becomes interesting,<br>
-                        you now can now create your own rooms.<br>
-                        And i know its tempting, but make sure not to go crazy with creating your own maze you will never find your way out of!"
-                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
-                    break;
-                }
-            case Commands::RM->value:
-                {
-                    $response = "Now what is this?! You can even clean up after yourself!!. <br>
-                        How about you practise by cleaning up some rooms here (please?)<br>"
-                        . colorizeString(getCommand($this->latestCommand)->description, "action-tip");
-                    break;
-                }
-                //LEVEL 3
-            case Commands::TOUCH->value:
-                {
-                    $response = "Oh no...<br>
-                        Like everytime we get here, i will tell you to always keep things clean and organized,<br>
-                        and you will happily ignore me and contribute to this mess around here, but anyways, here it is"
-                        . colorizeString(getCommand($this->userRank)->description, "action-tip");
-                    break;
-                }
-            case Commands::CP->value:
-                {
-                    $response = ""
-                        . colorizeString("cp [sourcepath] [destinationPath]", "action-tip");
-                    break;
-                }
-            case Commands::MV->value:
-                {
-                    break;
-                }
-            case Commands::NANO->value:
-                {
-                    break;
-                }
-                //level 4
-            case Commands::GREP->value:
-                {
-                    break;
-                }
-            case Commands::FIND->value:
-                {
-                    break;
-                }
-            case Commands::WC->value:
-                {
-                    break;
-                }
-            case Commands::HEAD->value:
-                {
-                    break;
-                }
-            case Commands::TAIL->value:
-                {
-                    break;
-                }
-            default:
-                {
-                    if ($this->userRank->value == "root") break;
-                    throw new Exception("unknownCommand");
-                }
-        }
+        $response = Data::getNewSpellMessage($this->latestCommand);
         self::writeMessage(colorizeString($response, "guide"));
     }
+    
     public function writeMessage($message)
     {
         $message = "<br>

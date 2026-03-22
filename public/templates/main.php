@@ -2,7 +2,19 @@
 importCss("main.css");
 importScript("main.js");
 
-$baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SESSION["gameState"]->mapName . "  -" . end($_SESSION["curRoom"]->path) . " ]$ &nbsp", $_SESSION["gameState"]->userRank->value);
+$baseString = colorizeString(
+    " [ "
+        . $_SESSION["user"]["username"]
+        . "@"
+        . $_SESSION["gameState"]->mapName
+        . "  -"
+        . end($_SESSION["curRoom"]->path)
+        . " ]$ &nbsp",
+    $_SESSION["gameState"]->userRank->value
+);
+$hintString = isset($_SESSION["sandbox"])
+    ? $_SESSION["sandbox"]->commands[$_SESSION["sandbox"]->current][1]
+    : "";
 ?>
 
 <div class="game-container">
@@ -75,7 +87,7 @@ $baseString = colorizeString(" [ " . $_SESSION["user"]["username"] . "@" . $_SES
                 <form class="command-input" method="post">
                     <input type="hidden" value="enterCommand" name="action">
                     <input type="hidden" value=<?php echo '"' . $baseString . '"' ?> name="baseString">
-                    <input id="commandInputField" name="command" class="command-input" type="text" autocomplete="off" autofocus>
+                    <input id="commandInputField" name="command" class="command-input" type="text" placeholder=<?php echo '"' . $hintString . '"' ?> autocomplete="off" autofocus>
                 </form>
             </div>
             <div class="xp-display-container">

@@ -7,8 +7,9 @@ class Item
     public ItemType $type;
     public Rank $requiredRank;
     public array $path;
-    public string $content = "";
+    public string $content;
     public string $timeOfLastChange;
+    public bool $isExecutable;
 
     public function __construct(
         $name,
@@ -18,6 +19,7 @@ class Item
         $content = "gibberish",
         $curDate = true,
         $date = "",
+        $isExecutable = false
     )
     {
         $this->name = $name;
@@ -25,7 +27,8 @@ class Item
         $this->requiredRank = $requiredRank;
         $this->path = $path;
         $this->content = $content;
-            $this->timeOfLastChange =!$date == "" 
+        $this->isExecutable = $isExecutable;
+        $this->timeOfLastChange = !$date == ""
             ? $date
             :  generateDate($curDate);
 
@@ -113,6 +116,7 @@ class Alter extends Item
             $content,
             $curDate,
             $date,
+            true
         );
     }
     public function execute()
@@ -135,7 +139,7 @@ class Alter extends Item
 }
 class Spell extends Item
 {
-    public Commands $spellReward;
+    public Commands $rewardSpell;
 
     public function __construct(
         $name,
@@ -143,13 +147,13 @@ class Spell extends Item
         $path,
         $requiredRank = Rank::WANDERER,
         $content = "",
-        $spellReward,
+        $rewardSpell,
         $curDate = true,
         $date = ""
     )
     {
         $this->type = ItemType::SPELL;
-        $this->spellReward = $spellReward;
+        $this->rewardSpell = $rewardSpell;
 
         parent::__construct(
             $name,
@@ -159,23 +163,28 @@ class Spell extends Item
             $content,
             $curDate,
             $date,
+            true
         );
     }
+
     public function execute()
     {
-        //enter sandbox
+        $sandbox = Data::getSandBox($this->rewardSpell);
+        $sandbox->prepare();
+        $sandbox->writeCurrentPrompt();
     }
+    
     public static function fromArray(array $data)
     {
         // $requiredRank = Rank::from($data["requiredRank"]);
-        // $spellReward = Commands::from($data["spellReward"]);
+        // $rewardSpell = Commands::from($data["rewardSpell"]);
         // return new self(
         //     name: $data['name'],
         //     baseName: $data["baseName"],
         //     path: pathFromArray($data["path"]),
         //     requiredRank: $requiredRank,
         //     content: $data["content"],
-        //     spellReward: $spellReward,
+        //     rewardSpell: $rewardSpell,
         //     key: $data["key"],
         //     date: $data["timeOfLastChange"],
         // );

@@ -266,7 +266,7 @@ class DBHelper
             path: $cellar->path,
             requiredRank: Rank::WANDERER,
             content: "the answer lies in something sweet...",
-            spellReward: Commands::MAN,
+            rewardSpell: Commands::MAN,
         );
         $cellar->items["honeyfigcake.txt"] = new Scroll(
             name: "",
