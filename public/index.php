@@ -19,6 +19,7 @@ require __DIR__ . '/assets/layout.php';
 
 session_start();
 // session_unset();
+
 if (
     !isset($_SESSION["map"])
     && $_SERVER['REQUEST_URI'] != "/newgame"

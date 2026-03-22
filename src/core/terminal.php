@@ -9,7 +9,7 @@ class Terminal
     public array $promptData;
     public bool $inPipe;
     public int $pipeCount;
-    public $stdin = "";
+    static public $stdin = [];
     static public array $stdout = [];
     static public $stderr = "";
     public function __construct()
@@ -19,7 +19,6 @@ class Terminal
         $this->promptData = [];
         $this->inPipe = false;
         $this->pipeCount = 0;
-        $this->stdin = "";
     }
     public function startTerminalProcess()
     {
@@ -92,7 +91,7 @@ class Terminal
     }
     public function resetStreams()
     {
-        $this->stdin = "";
+        self::$stdin = "";
         self::$stdout = [];
         self::$stderr = "";
     }
@@ -194,7 +193,7 @@ class Terminal
         $_POST["command"] = $beforeSeperator;
         self::startTerminalProcess();
 
-        $this->stdin = self::$stdout;
+        self::$stdin = self::$stdout;
         self::$stdout = [];
 
         $_SESSION["tokens"] = [];

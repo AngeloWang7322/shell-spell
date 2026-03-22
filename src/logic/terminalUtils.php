@@ -281,6 +281,7 @@ function callCorrectGrepFunction()
     }
     else if (!empty(Terminal::$stdin))
     {
+        echo json_encode("stdin: " . json_encode(Terminal::$stdin));
         $matchingLines = grepArray(
             Terminal::$stdin,
             $_SESSION["tokens"]["strings"][0],
@@ -380,7 +381,7 @@ function grepArray($array, $condition, $searchMatching, $isCaseInsensitive)
     foreach ($array as $key => $line)
     {
         if (grepLine(
-            $line,
+            $key,
             $condition,
             $isCaseInsensitive,
             $searchMatching,
@@ -657,8 +658,8 @@ function getCounts($lines)
 }
 function getLines()
 {
-    return isset(Terminal::$stdout) ?
-        Terminal::$stdout :
+    return isset(Terminal::$stdin) ?
+        Terminal::$stdin :
         getLinesFromText(getItem($_SESSION["tokens"]["path"][0])->content);
 }
 
