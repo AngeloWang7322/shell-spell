@@ -790,5 +790,5 @@ function renderGrid(array $grid): string
         }
     }
 
-    return implode("<br>", $lines);
+    return implode(" <br> ", $lines);
 }

@@ -258,7 +258,10 @@ span {
     text-align: center;
     image-rendering: pixelated;
 }
-
+.quiet{
+    color: rgb(128, 116, 90);
+    font-size: 22px;
+}
 .door {
     height: 200px;
     width: 180px;
@@ -310,7 +313,25 @@ span {
     background-size: contain;
     background-repeat: no-repeat;
 }
-
+.narration{
+    /* text-align: center; */
+    color: floralwhite;
+    font-size: 32px;
+}
+.spell-name{
+    color:aqua;
+}
+.info{
+    font-size: 24px;
+    color: rgb(168, 168, 168);
+}
+.inline {
+    font-size: 24px;
+    /* background-color:rgba(187, 187, 187, 0.322); */
+}
+.success{
+    color: rgb(92, 219, 88);
+}
 @media (max-width: 1200px) {
     .spellbook-wrapper {
         max-height: 30vh;

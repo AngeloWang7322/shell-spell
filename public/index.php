@@ -17,7 +17,7 @@ require __DIR__ . "/../src/core/gameState.php";
 require __DIR__ . "/../src/core/streams.php";
 require __DIR__ . "/../src/logic/terminalService.php";
 require __DIR__ . "/../src/logic/terminalUtils.php";
-require __DIR__ . '/assets/layout.php';
+require __DIR__ . "/assets/layout.php";
 
 session_start();
 // session_unset();

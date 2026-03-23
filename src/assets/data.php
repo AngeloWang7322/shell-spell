@@ -42,9 +42,24 @@ class Data
     {
         return match ($command)
         {
-            Commands::EXECUTE->value => "Unlock the new spell!<br><br>" . colorizeString("./cd.sh", "action-tip"),
-            Commands::CD->value => "Finally you learned how to walk, now you're a true wanderer! (get it?)<br>
-                        How about you look around here and get used to your new spell.<br>"
+            Commands::EXECUTE->value =>
+            "A new student has entered Shell Spell!"
+                . colorizeString("
+                <br> " . colorizeString("<br>Finally. It has been... a long time since anyone found this place", "quiet") .  "
+                <br>You showing up means someone is finally interested in learning the Spells of Shell again! So lets get started.
+                <br>
+                <br>Everything here is yours to command, or at least will be... 
+                <br>First you have to earn the Spells and skills to use them.
+                <br>Lets start by activating the Spell Rune infront of you.
+                <br>
+                <br>repeat after me. And good luck... I won't be able to see you through it.
+                <br>
+                <br>
+                ", "info") . colorizeString("./cd.sh", "action-tip"),
+            Commands::CD->value => colorizeString("That was quick!
+                <br>Keep going and use your first spell to traverse Shell Spell and gain more skils.
+                <br>
+                <br>And QUICK TIP: You can always reactive the Spell Runes incase you're out of practise", "info")
                 . colorizeString("<br>cd [doorname]", "action-tip"),
             Commands::ECHO->value => "echo [text]" .  colorizeString("<br><br>echo [your name]", "action-tip"),
             Commands::CAT->value => "Wow you can finally read! Maybe you can learn something useful from all these scrolls lying around"
@@ -96,19 +111,22 @@ class Data
                             ["enter multiple rooms subsequently", "cd door/room"],
                             ["return to start", "cd /"]
                         ],
+                        "moves you to another room",
                         $sandboxMap
                     );
                 }
             case Commands::CAT:
                 {
                     $sandboxMap->doors["room"] = new Room("room");
-                    $sandboxMap->items["text.txt"] = new Scroll("text.txt", "test", content: "once upon a time... there was a lost wanderer");
+                    $sandboxMap->items["text.txt"] = new Scroll("text.txt", "text", content: 'scroll content');
+                    $sandboxMap->doors["room"]->items["text.txt"] = new Scroll("text.txt", "text", content: "other scrolls content");
                     return  new Sandbox(
                         $cmd,
                         [
                             ["read item", "cat text.txt"],
                             ["read item in next room", "cat room/text.txt"],
                         ],
+                        "reveals an items contents",
                         $sandboxMap
                     );
                 }
@@ -117,6 +135,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -125,6 +144,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -133,6 +153,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -141,6 +162,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -149,6 +171,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -157,6 +180,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -165,6 +189,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -173,6 +198,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -181,6 +207,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -189,6 +216,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -197,6 +225,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -205,6 +234,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -213,6 +243,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -221,6 +252,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -229,6 +261,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }
@@ -237,6 +270,7 @@ class Data
                     return  new Sandbox(
                         $cmd,
                         [],
+                        "description",
                         $sandboxMap
                     );
                 }

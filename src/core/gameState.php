@@ -47,7 +47,6 @@ class GameState
             Streams::$stderr[] = "command already unlocked";
             return false;
         }
-        Streams::$stdout = ["new spell unlocked!: " . $newSpell->value];
         $this->newestSpell = $newSpell->value;
         $this->xp += (int)(1 / count($this->currentLevelData) * 100);
 
@@ -95,13 +94,16 @@ class GameState
     public function getCurrentMessage()
     {
         $response = Data::getNewSpellMessage($this->newestSpell);
+        if(empty ($response))
+            $response = "coming soon!";
         self::writeMessage(colorizeString($response, "guide"));
     }
 
     public function writeMessage($message)
     {
-        Streams::$stdout[] = "<br>
-        -------- strangevoice -------- <br><br>" .
+
+        Streams::$stdout[] = 
+        "------------------------------ <br>" .
             $message . "<br>
         ------------------------------ <br><br>";
         $_SESSION["terminal"]->editLastHistory();

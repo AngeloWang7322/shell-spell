@@ -205,7 +205,7 @@ class Terminal
             $seperator
         );
 
-        self::redirectStdinToFile(
+        self::redirectStdoutToFile(
             $seperator,
             $redirectFilePath,
             Streams::$stdin
@@ -257,7 +257,7 @@ class Terminal
         if (!isset(Streams::$stdout))
             throw new Exception("invalid usage of '" . $seperator . "' operator");
     }
-    static public function redirectStdinToFile($seperator, $redirectFilePath, $stdout)
+    static public function redirectStdoutToFile($seperator, $redirectFilePath, $stdout)
     {
         $newStr = strip_tags(self::arrayKeyValueToString($stdout));
         $destItem = &getItem($redirectFilePath);
@@ -271,7 +271,7 @@ class Terminal
     {
         $_SESSION["command"] = getCommand(explode(" ", trim($_POST["command"]))[0]);
         $_SESSION["command"]->parseInput();
-        self::checkPipe($_SESSION["command"]);
+        // self::checkPipe($_SESSION["command"]);
     }
     public function checkPipe($command)
     {

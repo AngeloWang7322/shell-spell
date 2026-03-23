@@ -130,25 +130,14 @@ function getCommand($command)
             tokenSyntax: [TokenType::PATH],
             validOptions: [],
             validKeyValueOptions: [],
-            description: "NAME<br>
-                              cd - change current room<br>
-                        <br>
-                        SYNOPSIS<br>
-                              cd (path)<br>
-                              cd ..<br>
-                              cd /<br>
-                              cd -<br>   
-                        <br>
-                        DESCRIPTION<br>
-                              Changes the current room to the given destination.<br>
+            description: colorizeString("cd [path]", "action-tip") . "
+            <br>move between rooms<br>
+                        <br>use anytime you want to move to another room on map<br>
                         <br>
                               cd (path)  Move into the specified room if it exists.<br>
                               cd ..       Move to the parent room.<br>
                               cd /         Move to the root room.<br>
-                              cd -     Move back to the previous room.<br>
-                        <br>
-                              Movement may fail if the target room does not exist<br>
-                              or your rank is not high enough to enter it.",
+                              cd -     Move back to the previous room.<br>"
         ),
         "mkdir" == $command
         => new Command(
@@ -354,17 +343,11 @@ function getCommand($command)
             tokenSyntax: [TokenTYPE::MISC],
             validOptions: [],
             validKeyValueOptions: [],
-            description: "NAME<br>
-                              man - display command manual<br>
+            description: colorizeString("man [spell]", "action-tip") . "
+                            <br> look up spell 
                             <br>
-                          SYNOPSIS<br>
-                              man (command)<br>
-                        <br>
-                          DESCRIPTION<br>
-                              Displays the manual page for a command.<br>
-                        <br>
-                              man (command)  Shows detailed help for the given command.
-                              ",
+                            <br> Quick way of finding out the details of an unlocked Spell.<br>
+                            ",
             isWriter: true,
             miscParser: "parseMiscMan",
             finalValidator: "finalValidateMan"
@@ -375,13 +358,9 @@ function getCommand($command)
             tokenSyntax: [TokenTYPE::PATH],
             validOptions: [],
             validKeyValueOptions: [],
-            description: "NAME<br>
-                              cat - read a scroll<br>
-                        <br>
-                          SYNOPSIS<br>
-                              cat (scrollname)<br>
-                        <br>
-                          DESCRIPTION<br>
+            description: colorizeString("cat [itempath]", "action-tip") . "
+                        <br>reveal items contents
+                        <br><br>
                               Opens and displays the contents of a scroll<br>
                               if it exists in the current room<br>
                               and your level is high enough to read it.

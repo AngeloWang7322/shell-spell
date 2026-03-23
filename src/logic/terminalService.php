@@ -89,7 +89,7 @@ function executeMv()
 function executeCat()
 {
     $catItem = &getItem($_SESSION["tokens"]["path"][0]);
-    Streams::$stdout = array($catItem->content);
+    Streams::$stdout[] =$catItem->content;
 }
 
 function executeTouch()

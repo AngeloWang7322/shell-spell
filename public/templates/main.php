@@ -70,11 +70,21 @@ $hintString = isset($_SESSION["sandbox"])
                 <?php
                 //HISTORY
                 for ($i = 0; $i < count($_SESSION["history"]); $i++)
-                    echo "<p class='prev-command'>"
-                        . $_SESSION["history"][$i]["directory"]
-                        . $_SESSION["history"][$i]["command"] . "<br>"
-                        . $_SESSION["history"][$i]["response"]
-                        . "</p>";
+                    if ($_SESSION["history"][$i]["directory"] == "narration")
+                    {
+                        echo "<p class='prev-command narration'>"
+                            . $_SESSION["history"][$i]["command"] . "<br></p>"
+                            . $_SESSION["history"][$i]["response"]
+                        ;
+                    }
+                    else
+                    {
+                        echo "<p class='prev-command'>"
+                            . $_SESSION["history"][$i]["directory"]
+                            . $_SESSION["history"][$i]["command"] . "<br>"
+                            . $_SESSION["history"][$i]["response"]
+                            . "</p>";
+                    }
                 ?>
             </div>
             <div class="input-line">
